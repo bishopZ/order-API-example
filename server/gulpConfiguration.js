@@ -27,7 +27,7 @@ const pages = [
   {
     path: 'avero',
     build: builds.react,
-    entryPoints: [ 'js/app.js' ],
+    entryPoints: [ 'js/home.js' ],
     sass: libs.bootstrapcss,
     fonts: libs.fontawesome
   }
