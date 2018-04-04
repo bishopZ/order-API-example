@@ -239,11 +239,84 @@ var HomePage = function HomePage(_ref) {
   requestApiKey();
   return _react2.default.createElement(
     'div',
-    { className: 'render-group' },
+    { className: 'container' },
     _react2.default.createElement(
-      'h1',
+      'section',
+      { className: 'control-bar' },
+      _react2.default.createElement(
+        'p',
+        null,
+        'Viewing: ',
+        _react2.default.createElement(
+          'strong',
+          null,
+          'Open'
+        ),
+        ' - ',
+        _react2.default.createElement(
+          'a',
+          { href: '#' },
+          'Closed'
+        )
+      ),
+      _react2.default.createElement(
+        'button',
+        null,
+        'Create New'
+      )
+    ),
+    _react2.default.createElement(
+      'main',
       null,
-      'Home Page'
+      _react2.default.createElement(
+        'table',
+        null,
+        _react2.default.createElement(
+          'tbody',
+          null,
+          _react2.default.createElement(
+            'tr',
+            null,
+            _react2.default.createElement(
+              'td',
+              null,
+              _react2.default.createElement(
+                'button',
+                null,
+                'Item #1'
+              )
+            ),
+            _react2.default.createElement(
+              'td',
+              null,
+              'Table #7'
+            )
+          ),
+          _react2.default.createElement(
+            'tr',
+            null,
+            _react2.default.createElement(
+              'td',
+              null,
+              _react2.default.createElement(
+                'button',
+                null,
+                'Item #2'
+              )
+            ),
+            _react2.default.createElement(
+              'td',
+              null,
+              'Table #7'
+            )
+          )
+        )
+      )
+    ),
+    _react2.default.createElement(
+      'section',
+      { className: 'edit-form' },
+      'Edit Form'
     )
   );
 };

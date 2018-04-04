@@ -10,3 +10,21 @@ button { border: 1px solid #d0d0d0; margin: 10px; background-color:#efefef; widt
 ul { margin: 20px 0; }
 li { list-style: none; text-align: left; }
 hr { height: 1px; border: none; background-color: #ddd; }
+
+.container {
+  margin: auto;
+  max-width: 800px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-gap: 10px;
+  grid-template-rows: 1fr 100%;
+
+  .control-bar { grid-column: 1 / 3; grid-row: 1 / 1; background-color: #dfdfdf; }
+  main { grid-column: 1 / 1; grid-row: 2 / 2; background-color: #dfdfdf; }
+  .edit-form { grid-column: 2 / 2; grid-row: 2 / 2; background-color: #dfdfdf; }
+}
+
+.control-bar {
+  p { float: left; margin-left: 2vw; }
+  button { float: right; }
+}
