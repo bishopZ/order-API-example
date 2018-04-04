@@ -6,7 +6,7 @@ import { HashRouter as Router, Route } from 'react-router-dom';
 import { Provider, connect } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 
-// import { history, store } from './database/store.js';
+import { history, store } from './database/store.js';
 
 // import * as Actions from './database/actions.js';
 

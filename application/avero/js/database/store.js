@@ -4,15 +4,12 @@ import { applyMiddleware, compose, createStore, combineReducers } from 'redux';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
 import thunk from 'redux-thunk';
 
-import dataReducer from './dataReducer.js';
-import statusReducer from './statusReducer.js';
+import reducer from './reducer.js';
 
 const history = createBrowserHistory();
 
 const reducers = combineReducers({
-  data: dataReducer,
-  status: statusReducer
-  //, ...more reducers
+  data: reducer
 });
 
 const connectedReducers = connectRouter(history)(reducers);
