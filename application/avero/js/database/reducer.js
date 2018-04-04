@@ -6,7 +6,8 @@ const dataReducer = (state = Manager.defaultState, action) => {
 
   switch (action.type) { 
   case Actions.RECEIVED_API_KEY:
-    return Manager.updateToken(action.token);
+    Manager.updateToken(action.token);
+    return state;
   default: return state;
   } 
 

@@ -1,14 +1,16 @@
 
 // default state
 export const defaultState = {
-  token: ''
 };
 
 // private state storage
 var currentState = defaultState;
+var currentApiToken = null;
 
 // accessor methods
 export const updateToken = (token)=>{
-  currentState.token = token;
+  currentApiToken = token;
   return Object.assign(currentState);
 };
+
+export const apiToken = ()=>(currentApiToken);

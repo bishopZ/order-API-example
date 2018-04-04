@@ -2,8 +2,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-var HomePage = ({requestApiKey}) => {
+var HomePage = ({requestApiKey, requestCheckList}) => {
   requestApiKey();
+  requestCheckList();
   return (
     <div className="container">
       <section className="control-bar">
@@ -32,7 +33,8 @@ var HomePage = ({requestApiKey}) => {
 };
 
 HomePage.propTypes = {
-  requestApiKey: PropTypes.func.isRequired
+  requestApiKey: PropTypes.func.isRequired,
+  requestCheckList: PropTypes.func.isRequired
 };
 
 module.exports = HomePage;

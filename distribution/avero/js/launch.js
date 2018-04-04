@@ -38,54 +38,106 @@ module.exports = Navbar;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.requestCheckList = exports.RECEIVED_CHECK_LIST = exports.requestApiKey = exports.RECEIVED_API_KEY = undefined;
 
-var communication = require('./communication.js');
+var _communication = require('./communication.js');
+
+var _communication2 = _interopRequireDefault(_communication);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // get API Authorization Token
 var RECEIVED_API_KEY = exports.RECEIVED_API_KEY = 'RECEIVED_API_KEY';
 var requestApiKey = exports.requestApiKey = function requestApiKey() {
-  return communication.requestApiKey(RECEIVED_API_KEY);
+  return _communication2.default.getApiKey(RECEIVED_API_KEY);
+};
+
+var RECEIVED_CHECK_LIST = exports.RECEIVED_CHECK_LIST = 'RECEIVED_CHECK_LIST';
+var requestCheckList = exports.requestCheckList = function requestCheckList() {
+  return _communication2.default.getCheckList(RECEIVED_CHECK_LIST);
 };
 
 },{"./communication.js":3}],3:[function(require,module,exports){
 'use strict';
 
-var request = require('superagent');
+var _superagent = require('superagent');
 
-var communication = {};
+var _superagent2 = _interopRequireDefault(_superagent);
 
-communication.requestApiKey = function (action) {
-  return function (dispatch) {
-    request.get('/api/token').end(function (error, response) {
-      dispatch({
-        type: action,
-        token: response.text
+var _dataManager = require('./dataManager.js');
+
+var Manager = _interopRequireWildcard(_dataManager);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// helper method
+var pathBase = 'https://check-api.herokuapp.com';
+
+var makeAPIRequest = function makeAPIRequest(method, path, callback) {
+  var data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+  var apiToken = Manager.apiToken();
+  var apiRequest = _superagent2.default[method](pathBase + path);
+  if (data !== null) {
+    apiRequest.send(data);
+  }
+  apiRequest.set('Authorization', apiToken);
+  apiRequest.end(callback);
+};
+
+// communication interface
+var communication = {
+
+  getApiKey: function getApiKey(action) {
+    return function (dispatch) {
+      _superagent2.default.get('/api/token').end(function (error, response) {
+        dispatch({
+          type: action,
+          token: response.text
+        });
       });
-    });
-  };
+    };
+  },
+
+  getCheckList: function getCheckList(action) {
+    return function (dispatch) {
+      makeAPIRequest('get', '/checks', null, function (response) {
+        dispatch({
+          type: action,
+          text: response.text
+        });
+      });
+    };
+  }
+
 };
 
 module.exports = communication;
 
-},{"superagent":119}],4:[function(require,module,exports){
-'use strict';
+},{"./dataManager.js":4,"superagent":119}],4:[function(require,module,exports){
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
 // default state
-var defaultState = exports.defaultState = {
-  token: ''
-};
+var defaultState = exports.defaultState = {};
 
 // private state storage
 var currentState = defaultState;
+var currentApiToken = null;
 
 // accessor methods
 var updateToken = exports.updateToken = function updateToken(token) {
-  currentState.token = token;
+  currentApiToken = token;
   return Object.assign(currentState);
+};
+
+var apiToken = exports.apiToken = function apiToken() {
+  return currentApiToken;
 };
 
 },{}],5:[function(require,module,exports){
@@ -108,7 +160,8 @@ var dataReducer = function dataReducer() {
 
   switch (action.type) {
     case Actions.RECEIVED_API_KEY:
-      return Manager.updateToken(action.token);
+      Manager.updateToken(action.token);
+      return state;
     default:
       return state;
   }
@@ -234,9 +287,11 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var HomePage = function HomePage(_ref) {
-  var requestApiKey = _ref.requestApiKey;
+  var requestApiKey = _ref.requestApiKey,
+      requestCheckList = _ref.requestCheckList;
 
   requestApiKey();
+  requestCheckList();
   return _react2.default.createElement(
     'div',
     { className: 'container' },
@@ -322,7 +377,8 @@ var HomePage = function HomePage(_ref) {
 };
 
 HomePage.propTypes = {
-  requestApiKey: _propTypes2.default.func.isRequired
+  requestApiKey: _propTypes2.default.func.isRequired,
+  requestCheckList: _propTypes2.default.func.isRequired
 };
 
 module.exports = HomePage;
