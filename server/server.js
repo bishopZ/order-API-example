@@ -1,6 +1,8 @@
 
 'use strict';
 
+require('dotenv').config(); // import env variables
+
 const express = require('express');
 const http = require('http');
 
