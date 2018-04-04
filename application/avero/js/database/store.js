@@ -23,7 +23,6 @@ const middleware = compose(
 );
 
 const initialState = {};
-
 const store = createStore(connectedReducers, initialState, middleware);
 
 module.exports = { history, store };
