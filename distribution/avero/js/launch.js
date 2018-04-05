@@ -35,9 +35,9 @@ var CheckList = function CheckList(_ref) {
         'tbody',
         null,
         displayList.map(function (name, index) {
-          _react2.default.createElement(
+          return _react2.default.createElement(
             'tr',
-            null,
+            { key: index },
             _react2.default.createElement(
               'td',
               null,
@@ -93,7 +93,8 @@ var _MenuItem2 = _interopRequireDefault(_MenuItem);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var ControlBar = function ControlBar(_ref) {
-  var mode = _ref.mode;
+  var mode = _ref.mode,
+      tables = _ref.tables;
 
   var ViewStatus = _react2.default.createElement(
     'p',
@@ -148,16 +149,19 @@ var ControlBar = function ControlBar(_ref) {
         _SelectField2.default,
         {
           floatingLabelText: 'Table',
-          value: 1
+          value: tables[0].id
         },
-        _react2.default.createElement(_MenuItem2.default, { value: 1, primaryText: 'None' })
+        tables.map(function (table, index) {
+          return _react2.default.createElement(_MenuItem2.default, { key: index, value: table.id, primaryText: 'Table #' + table.number });
+        })
       )
     )
   );
 };
 
 ControlBar.propTypes = {
-  mode: _propTypes2.default.string.isRequired
+  mode: _propTypes2.default.string.isRequired,
+  tables: _propTypes2.default.array.isRequired
 };
 
 module.exports = ControlBar;
@@ -192,7 +196,8 @@ var _MenuItem2 = _interopRequireDefault(_MenuItem);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var EditForm = function EditForm(_ref) {
-  var editId = _ref.editId;
+  var editId = _ref.editId,
+      tables = _ref.tables;
 
   return _react2.default.createElement(
     'section',
@@ -210,9 +215,11 @@ var EditForm = function EditForm(_ref) {
         {
           style: { width: '100%' },
           floatingLabelText: 'Table',
-          value: 1
+          value: tables[0].id
         },
-        _react2.default.createElement(_MenuItem2.default, { value: 1, primaryText: 'None' })
+        tables.map(function (table, index) {
+          return _react2.default.createElement(_MenuItem2.default, { key: index, value: table.id, primaryText: 'Table #' + table.number });
+        })
       )
     ),
     _react2.default.createElement(
@@ -229,7 +236,8 @@ var EditForm = function EditForm(_ref) {
 };
 
 EditForm.propTypes = {
-  editId: _propTypes2.default.number.isRequired
+  editId: _propTypes2.default.number.isRequired,
+  tables: _propTypes2.default.array.isRequired
 };
 
 module.exports = EditForm;
@@ -274,7 +282,7 @@ module.exports = Navbar;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.requestCheckList = exports.RECEIVED_CHECK_LIST = exports.requestApiKey = exports.RECEIVED_API_KEY = undefined;
+exports.requestTableList = exports.RECEIVED_TABLE_LIST = exports.requestCheckList = exports.RECEIVED_CHECK_LIST = exports.requestApiKey = exports.RECEIVED_API_KEY = undefined;
 
 var _communication = require('./communication.js');
 
@@ -297,6 +305,13 @@ var requestCheckList = exports.requestCheckList = function requestCheckList() {
   };
 };
 
+var RECEIVED_TABLE_LIST = exports.RECEIVED_TABLE_LIST = 'RECEIVED_TABLE_LIST';
+var requestTableList = exports.requestTableList = function requestTableList() {
+  return function (dispatch) {
+    return _communication2.default.getTableList(RECEIVED_TABLE_LIST, dispatch);
+  };
+};
+
 },{"./communication.js":6}],6:[function(require,module,exports){
 'use strict';
 
@@ -313,7 +328,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var PATH_BASE = 'https://check-api.herokuapp.com/';
-var STANDARD_DELAY = 1.2 * 1000; // 1.2 seconds
+var STANDARD_DELAY = 1 * 1000; // 1 second
 
 // helper method
 var makeApiRequest = function makeApiRequest(method, path, callback) {
@@ -350,6 +365,17 @@ var communication = {
         });
       }, STANDARD_DELAY);
     });
+  },
+
+  getTableList: function getTableList(action, dispatch) {
+    makeApiRequest('get', 'tables', function (error, response) {
+      setTimeout(function () {
+        dispatch({
+          type: action,
+          tableList: JSON.parse(response.text)
+        });
+      }, STANDARD_DELAY);
+    });
   }
 
 };
@@ -368,7 +394,8 @@ var defaultState = exports.defaultState = {
   documentPhase: 0,
   viewMode: 'open',
   editId: 0,
-  checkList: []
+  checkList: [],
+  tableList: []
 };
 
 // private state storage
@@ -399,6 +426,12 @@ var updateCheckList = exports.updateCheckList = function updateCheckList(checkLi
   return returnNewState();
 };
 
+var updateTableList = exports.updateTableList = function updateTableList(tableList) {
+  currentState.tableList = tableList;
+  currentState.documentPhase = 3;
+  return returnNewState();
+};
+
 },{}],8:[function(require,module,exports){
 'use strict';
 
@@ -422,6 +455,8 @@ var dataReducer = function dataReducer() {
       return Manager.updateToken(action.token);
     case Actions.RECEIVED_CHECK_LIST:
       return Manager.updateCheckList(action.checkList);
+    case Actions.RECEIVED_TABLE_LIST:
+      return Manager.updateTableList(action.tableList);
     default:
       return state;
   }
@@ -594,6 +629,8 @@ var HomePage = function (_React$Component) {
     value: function componentWillUpdate() {
       if (this.props.data.documentPhase === 1) {
         this.props.requestCheckList();
+      } else if (this.props.data.documentPhase === 2) {
+        this.props.requestTableList();
       }
     }
   }, {
@@ -614,16 +651,26 @@ var HomePage = function (_React$Component) {
           );
         case 2:
           return _react2.default.createElement(
+            'h1',
+            null,
+            'Getting Table List'
+          );
+        case 3:
+          return _react2.default.createElement(
             'div',
             { className: 'container' },
             _react2.default.createElement(_controlbar2.default, {
-              mode: this.props.data.viewMode
+              mode: this.props.data.viewMode,
+              tables: this.props.data.tableList
             }),
             _react2.default.createElement(_checklist2.default, {
               mode: this.props.data.viewMode,
               list: this.props.data.checkList
             }),
-            _react2.default.createElement(_editform2.default, { editId: this.props.data.editId })
+            _react2.default.createElement(_editform2.default, {
+              editId: this.props.data.editId,
+              tables: this.props.data.tableList
+            })
           );
       }
     }
@@ -635,8 +682,10 @@ var HomePage = function (_React$Component) {
 HomePage.propTypes = {
   requestApiKey: _propTypes2.default.func.isRequired,
   requestCheckList: _propTypes2.default.func.isRequired,
+  requestTableList: _propTypes2.default.func.isRequired,
   data: _propTypes2.default.shape({
     documentPhase: _propTypes2.default.number.isRequired,
+    tableList: _propTypes2.default.array,
     checkList: _propTypes2.default.array,
     viewMode: _propTypes2.default.string.isRequired,
     editId: _propTypes2.default.number

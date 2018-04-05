@@ -10,8 +10,8 @@ var CheckList = ({list, mode})=>{
       <table>
         <tbody>
           {displayList.map(function(name, index){
-            (
-              <tr>
+            return (
+              <tr key={index}>
                 <td><button>Item #{index}</button></td>
                 <td>{name}</td>
               </tr>

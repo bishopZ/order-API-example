@@ -7,17 +7,19 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
 
-var EditForm = ({editId})=>{
+var EditForm = ({editId, tables})=>{
   return (
     <section className="edit-form">
       
       <div>{editId}</div>
       <div><SelectField
-          style={{width: '100%'}} 
-          floatingLabelText="Table"
-          value={1}
-        >
-          <MenuItem value={1} primaryText="None" />
+        style={{width: '100%'}} 
+        floatingLabelText="Table"
+        value={tables[0].id}
+      >
+        { tables.map((table, index)=>{
+          return (<MenuItem key={index} value={table.id} primaryText={'Table #' + table.number} />);
+        })}
       </SelectField></div>
       <div><TextField style={{width: '100%'}} floatingLabelText="Floating Label Text" /></div>
       <div><RaisedButton style={{float: 'right'}} label="Save" /></div>
@@ -27,7 +29,8 @@ var EditForm = ({editId})=>{
 };
 
 EditForm.propTypes = {
-  editId: PropTypes.number.isRequired
+  editId: PropTypes.number.isRequired,
+  tables: PropTypes.array.isRequired
 };
 
 module.exports = EditForm;

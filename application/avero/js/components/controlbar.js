@@ -5,7 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
-var ControlBar = ({mode})=>{
+var ControlBar = ({mode, tables})=>{
   var ViewStatus = <p>Viewing: <strong>Open</strong> - <a href="#">Closed</a></p>;
   if (mode !== 'open') {
     ViewStatus = <p>Viewing: <a href="#">Open</a> - <strong>Closed</strong></p>;
@@ -18,17 +18,20 @@ var ControlBar = ({mode})=>{
         label="Create New Check" 
       /></div>
       <div><SelectField
-          floatingLabelText="Table"
-          value={1}
-        >
-          <MenuItem value={1} primaryText="None" />
+        floatingLabelText="Table"
+        value={tables[0].id}
+      >
+        { tables.map((table, index)=>{
+          return (<MenuItem key={index} value={table.id} primaryText={'Table #' + table.number} />);
+        })}
       </SelectField></div>
     </section>
   );
 };
 
 ControlBar.propTypes = {
-  mode: PropTypes.string.isRequired
+  mode: PropTypes.string.isRequired,
+  tables: PropTypes.array.isRequired
 };
 
 module.exports = ControlBar;

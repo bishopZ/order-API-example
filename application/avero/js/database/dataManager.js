@@ -4,7 +4,8 @@ export const defaultState = {
   documentPhase: 0,
   viewMode: 'open',
   editId: 0,
-  checkList: []
+  checkList: [],
+  tableList: []
 };
 
 // private state storage
@@ -28,5 +29,11 @@ export const updateToken = (token)=>{
 export const updateCheckList = (checkList)=>{
   currentState.checkList = checkList;
   currentState.documentPhase = 2;
+  return returnNewState();  
+};
+
+export const updateTableList = (tableList)=>{
+  currentState.tableList = tableList;
+  currentState.documentPhase = 3;
   return returnNewState();  
 };

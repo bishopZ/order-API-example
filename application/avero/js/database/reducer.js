@@ -9,6 +9,8 @@ const dataReducer = (state = Manager.defaultState, action)=>{
     return Manager.updateToken(action.token);
   case Actions.RECEIVED_CHECK_LIST:
     return Manager.updateCheckList(action.checkList);
+  case Actions.RECEIVED_TABLE_LIST:
+    return Manager.updateTableList(action.tableList);
   default: return state;
   } 
 
