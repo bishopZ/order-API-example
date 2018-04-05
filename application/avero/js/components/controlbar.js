@@ -1,6 +1,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import RaisedButton from 'material-ui/RaisedButton';
 
 var ControlBar = ({mode})=>{
   var ViewStatus = <p>Viewing: <strong>Open</strong> - <a href="#">Closed</a></p>;
@@ -10,7 +11,7 @@ var ControlBar = ({mode})=>{
   return (
     <section className="control-bar">
       {ViewStatus}
-      <button>Create New</button>
+      <RaisedButton label="Create New" />
     </section>
   );
 };

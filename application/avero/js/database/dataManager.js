@@ -3,6 +3,7 @@
 export const defaultState = {
   documentPhase: 0,
   viewMode: 'open',
+  editId: 0,
   checkList: []
 };
 
@@ -28,4 +29,4 @@ export const updateCheckList = (checkList)=>{
   currentState.checkList = checkList;
   currentState.documentPhase = 2;
   return returnNewState();  
-}
+};

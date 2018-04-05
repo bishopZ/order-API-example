@@ -1,6 +1,6 @@
 
 /* some sensible defaults */
-body { text-align: center; font-family: Helvetica, Arial, san-serif; }
+body { text-align: center; font-family: Roboto, Helvetica, Arial, san-serif; }
 
 a { text-decoration: none;  &:hover { text-decoration: underline; } }
 button { border: 1px solid #d0d0d0; margin: 10px; background-color:#efefef; width: 12vw; padding: 2vw; display: inline-block; }
@@ -25,6 +25,7 @@ hr { height: 1px; border: none; background-color: #ddd; }
 
 /* page sections */
 .control-bar {
-  p { float: left; margin-left: 2vw; }
-  button { float: right; }
+  padding-top: 2vw;
+  & > p { float: left; margin-left: 2vw; }
+  & > div { float: right; margin-right: 2vw; }
 }

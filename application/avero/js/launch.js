@@ -8,6 +8,7 @@ import { ConnectedRouter } from 'connected-react-router';
 
 import { history, store } from './database/store.js';
 import * as Actions from './database/actions.js';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import NavBar from './components/navbar.js';
 import HomePage from './pages/home.js';
@@ -28,10 +29,12 @@ render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <Router>
-        <div className="one-router-child">
-          <NavBar />
-          <Route exact path="/" component={container(HomePage)}/>
-        </div>
+        <MuiThemeProvider>
+          <div className="one-child">
+            <NavBar />
+            <Route exact path="/" component={container(HomePage)}/>
+          </div>
+        </MuiThemeProvider>
       </Router>
     </ConnectedRouter>
   </Provider>,

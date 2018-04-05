@@ -24,9 +24,14 @@ class HomePage extends React.Component {
     case 2: 
       return (
         <div className="container">
-          <ControlBar mode={this.props.data.viewMode} />
-          <CheckList mode={this.props.data.viewMode} list={this.props.data.checkList} />
-          <EditForm />
+          <ControlBar 
+            mode={this.props.data.viewMode} 
+          />
+          <CheckList 
+            mode={this.props.data.viewMode} 
+            list={this.props.data.checkList} 
+          />
+          <EditForm editId={this.props.data.editId} />
         </div>
       );
     }
@@ -39,7 +44,8 @@ HomePage.propTypes = {
   data: PropTypes.shape({
     documentPhase: PropTypes.number.isRequired,
     checkList: PropTypes.array,
-    viewMode: PropTypes.string.isRequired
+    viewMode: PropTypes.string.isRequired,
+    editId: PropTypes.number
   }).isRequired
 };
 
