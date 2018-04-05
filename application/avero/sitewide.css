@@ -11,7 +11,8 @@ hr { height: 1px; border: none; background-color: #ddd; }
 /* grid system */
 .container {
   margin: auto;
-  max-width: 800px;
+  width: 95vw;
+  max-width: 890px;
   display: grid;
   grid-template-columns: 1fr 2fr;
   grid-gap: 10px;

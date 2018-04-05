@@ -2,6 +2,7 @@
 // default state
 export const defaultState = {
   documentPhase: 0,
+  viewMode: 'open',
   checkList: []
 };
 

@@ -2,25 +2,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-var CheckList = ({})=>{
+var CheckList = ({list, mode})=>{
+  const displayList = list.filter((item)=>(item.closed === (mode === 'open')));
+  if (displayList.length < 1) return (<h1>no {mode} checks</h1>);
   return (
     <main>
       <table>
         <tbody>
-          <tr>
-            <td><button>Item #1</button></td>
-            <td>Table #7</td>
-          </tr>
-          <tr>
-            <td><button>Item #2</button></td>
-            <td>Table #7</td>
-          </tr>
+          {displayList.map(function(name, index){
+            <tr>
+              <td><button>Item #{index}</button></td>
+              <td>{name}</td>
+            </tr>            
+          })}
         </tbody>
       </table>
     </main>
   );
 };
 
-CheckList.propTypes = {};
+CheckList.propTypes = {
+  list: PropTypes.array.isRequired,
+  mode: PropTypes.string
+};
 
 module.exports = CheckList;

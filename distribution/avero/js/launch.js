@@ -11,11 +11,20 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectDestructuringEmpty(obj) { if (obj == null) throw new TypeError("Cannot destructure undefined"); }
-
 var CheckList = function CheckList(_ref) {
-  _objectDestructuringEmpty(_ref);
+  var list = _ref.list,
+      mode = _ref.mode;
 
+  var displayList = list.filter(function (item) {
+    return item.closed === (mode === 'open');
+  });
+  if (displayList.length < 1) return _react2.default.createElement(
+    'h1',
+    null,
+    'no ',
+    mode,
+    ' checks'
+  );
   return _react2.default.createElement(
     'main',
     null,
@@ -25,48 +34,36 @@ var CheckList = function CheckList(_ref) {
       _react2.default.createElement(
         'tbody',
         null,
-        _react2.default.createElement(
-          'tr',
-          null,
+        displayList.map(function (name, index) {
           _react2.default.createElement(
-            'td',
+            'tr',
             null,
             _react2.default.createElement(
-              'button',
+              'td',
               null,
-              'Item #1'
-            )
-          ),
-          _react2.default.createElement(
-            'td',
-            null,
-            'Table #7'
-          )
-        ),
-        _react2.default.createElement(
-          'tr',
-          null,
-          _react2.default.createElement(
-            'td',
-            null,
+              _react2.default.createElement(
+                'button',
+                null,
+                'Item #',
+                index
+              )
+            ),
             _react2.default.createElement(
-              'button',
+              'td',
               null,
-              'Item #2'
+              name
             )
-          ),
-          _react2.default.createElement(
-            'td',
-            null,
-            'Table #7'
-          )
-        )
+          );
+        })
       )
     )
   );
 };
 
-CheckList.propTypes = {};
+CheckList.propTypes = {
+  list: _propTypes2.default.array.isRequired,
+  mode: _propTypes2.default.string
+};
 
 module.exports = CheckList;
 
@@ -83,30 +80,47 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectDestructuringEmpty(obj) { if (obj == null) throw new TypeError("Cannot destructure undefined"); }
-
 var ControlBar = function ControlBar(_ref) {
-  _objectDestructuringEmpty(_ref);
+  var mode = _ref.mode;
 
-  return _react2.default.createElement(
-    'section',
-    { className: 'control-bar' },
+  var ViewStatus = _react2.default.createElement(
+    'p',
+    null,
+    'Viewing: ',
     _react2.default.createElement(
+      'strong',
+      null,
+      'Open'
+    ),
+    ' - ',
+    _react2.default.createElement(
+      'a',
+      { href: '#' },
+      'Closed'
+    )
+  );
+  if (mode !== 'open') {
+    ViewStatus = _react2.default.createElement(
       'p',
       null,
       'Viewing: ',
       _react2.default.createElement(
-        'strong',
-        null,
+        'a',
+        { href: '#' },
         'Open'
       ),
       ' - ',
       _react2.default.createElement(
-        'a',
-        { href: '#' },
+        'strong',
+        null,
         'Closed'
       )
-    ),
+    );
+  }
+  return _react2.default.createElement(
+    'section',
+    { className: 'control-bar' },
+    ViewStatus,
     _react2.default.createElement(
       'button',
       null,
@@ -115,7 +129,9 @@ var ControlBar = function ControlBar(_ref) {
   );
 };
 
-ControlBar.propTypes = {};
+ControlBar.propTypes = {
+  mode: _propTypes2.default.string.isRequired
+};
 
 module.exports = ControlBar;
 
@@ -271,7 +287,7 @@ var communication = {
 module.exports = communication;
 
 },{"./dataManager.js":7,"superagent":122}],7:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -280,6 +296,7 @@ Object.defineProperty(exports, "__esModule", {
 // default state
 var defaultState = exports.defaultState = {
   documentPhase: 0,
+  viewMode: 'open',
   checkList: []
 };
 
@@ -489,18 +506,28 @@ var HomePage = function (_React$Component) {
   }
 
   _createClass(HomePage, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      this.props.requestApiKey();
+    }
+  }, {
+    key: 'componentWillUpdate',
+    value: function componentWillUpdate() {
+      if (this.props.data.documentPhase === 1) {
+        this.props.requestCheckList();
+      }
+    }
+  }, {
     key: 'render',
     value: function render() {
       switch (this.props.data.documentPhase) {
         case 0:
-          this.props.requestApiKey();
           return _react2.default.createElement(
             'h1',
             null,
             'Authorizing'
           );
         case 1:
-          this.props.requestCheckList();
           return _react2.default.createElement(
             'h1',
             null,
@@ -510,8 +537,8 @@ var HomePage = function (_React$Component) {
           return _react2.default.createElement(
             'div',
             { className: 'container' },
-            _react2.default.createElement(_controlbar2.default, null),
-            _react2.default.createElement(_checklist2.default, null),
+            _react2.default.createElement(_controlbar2.default, { mode: this.props.data.viewMode }),
+            _react2.default.createElement(_checklist2.default, { mode: this.props.data.viewMode, list: this.props.data.checkList }),
             _react2.default.createElement(_editform2.default, null)
           );
       }
@@ -525,7 +552,9 @@ HomePage.propTypes = {
   requestApiKey: _propTypes2.default.func.isRequired,
   requestCheckList: _propTypes2.default.func.isRequired,
   data: _propTypes2.default.shape({
-    documentPhase: _propTypes2.default.number.isRequired
+    documentPhase: _propTypes2.default.number.isRequired,
+    checkList: _propTypes2.default.array,
+    viewMode: _propTypes2.default.string.isRequired
   }).isRequired
 };
 
