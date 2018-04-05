@@ -25,6 +25,6 @@ hr { height: 1px; border: none; background-color: #ddd; }
 
 /* page sections */
 .control-bar {
-  & > p { float: left; margin-left: 2vw; }
-  & > div { float: right; margin-right: 2vw; }
+  & > p { float: left; margin-left: 2vw; padding-top: 2vw; }
+  & > div { float: right; margin-right: 2vw; text-align: left; }
 }
