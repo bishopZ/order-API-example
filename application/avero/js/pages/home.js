@@ -2,39 +2,37 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-var HomePage = ({requestApiKey, requestCheckList})=>{
-  requestApiKey();
-  requestCheckList();
-  return (
-    <div className="container">
-      <section className="control-bar">
-        <p>Viewing: <strong>Open</strong> - <a href="#">Closed</a></p>
-        <button>Create New</button>
-      </section>
-      <main>
-        <table>
-          <tbody>
-            <tr>
-              <td><button>Item #1</button></td>
-              <td>Table #7</td>
-            </tr>
-            <tr>
-              <td><button>Item #2</button></td>
-              <td>Table #7</td>
-            </tr>
-          </tbody>
-        </table>
-      </main>
-      <section className="edit-form">
-        Edit Form
-      </section>
-    </div>
-  );
-};
+import ControlBar from '../components/controlbar.js';
+import CheckList from '../components/checklist.js';
+import EditForm from '../components/editform.js';
+
+class HomePage extends React.Component {
+  render(){
+    switch(this.props.data.documentPhase){
+    case 0: 
+      this.props.requestApiKey(); 
+      return (<h1>Authorizing</h1>);
+    case 1: 
+      this.props.requestCheckList(); 
+      return (<h1>Getting Check List</h1>);
+    case 2: 
+      return (
+        <div className="container">
+          <ControlBar />
+          <CheckList />
+          <EditForm />
+        </div>
+      );
+    }
+  }
+}
 
 HomePage.propTypes = {
   requestApiKey: PropTypes.func.isRequired,
-  requestCheckList: PropTypes.func.isRequired
+  requestCheckList: PropTypes.func.isRequired,
+  data: PropTypes.shape({
+    documentPhase: PropTypes.number.isRequired
+  }).isRequired
 };
 
 module.exports = HomePage;

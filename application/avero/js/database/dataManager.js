@@ -1,6 +1,9 @@
 
 // default state
-export const defaultState = {};
+export const defaultState = {
+  documentPhase: 0,
+  checkList: []
+};
 
 // private state storage
 var currentState = defaultState;
@@ -9,12 +12,19 @@ var currentRefrence = {
 };
 
 // helper methods
-const returnNewState = ()=>(Object.freeze(Object.assign(currentState)));
+const returnNewState = ()=>(Object.freeze(Object.assign({}, currentState)));
 
-// accessor methods
-export const updateToken = (token, state)=>{
+// interface
+export const apiToken = ()=>(currentRefrence.token);
+
+export const updateToken = (token)=>{
   currentRefrence.token = token;
-  return state;
+  currentState.documentPhase = 1;
+  return returnNewState();
 };
 
-export const apiToken = ()=>(currentRefrence.token);
+export const updateCheckList = (checkList)=>{
+  currentState.checkList = checkList;
+  currentState.documentPhase = 2;
+  return returnNewState();  
+}

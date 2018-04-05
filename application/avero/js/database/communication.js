@@ -4,6 +4,7 @@ import request from 'superagent';
 import * as Manager from './dataManager.js';
 
 const PATH_BASE = 'https://check-api.herokuapp.com/';
+const STANDARD_DELAY = 1.2 * 1000; // 1.2 seconds
 
 // helper method
 const makeApiRequest = (method, path, callback, data = null)=>{
@@ -21,19 +22,23 @@ const communication = {
   getApiKey: (action, dispatch)=>{
     request.get('/api/token')
       .end((error, response)=>{
-        dispatch({
-          type: action,
-          token: response.text
-        });
+        setTimeout(()=>{
+          dispatch({
+            type: action,
+            token: response.text
+          });
+        }, STANDARD_DELAY);
       });
   },
 
   getCheckList: (action, dispatch)=>{
     makeApiRequest('get', 'checks', (error, response)=>{
-      dispatch({
-        type: action,
-        text: response.text
-      });
+      setTimeout(()=>{
+        dispatch({
+          type: action,
+          checkList: JSON.parse(response.text)
+        });
+      }, STANDARD_DELAY);
     });
   }
 
