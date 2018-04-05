@@ -2,6 +2,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 
 var ControlBar = ({mode})=>{
   var ViewStatus = <p>Viewing: <strong>Open</strong> - <a href="#">Closed</a></p>;
@@ -11,7 +13,16 @@ var ControlBar = ({mode})=>{
   return (
     <section className="control-bar">
       {ViewStatus}
-      <RaisedButton label="Create New" />
+      <div><RaisedButton 
+        style={{ marginTop: '2vw'}}
+        label="Create New Check" 
+      /></div>
+      <div><SelectField
+          floatingLabelText="Table"
+          value={1}
+        >
+          <MenuItem value={1} primaryText="None" />
+      </SelectField></div>
     </section>
   );
 };
