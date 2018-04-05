@@ -11,8 +11,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Navbar = function Navbar() {
   return _react2.default.createElement(
-    'div',
-    { className: 'navbar' },
+    'nav',
+    null,
     _react2.default.createElement(
       'ul',
       null,
@@ -49,12 +49,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // get API Authorization Token
 var RECEIVED_API_KEY = exports.RECEIVED_API_KEY = 'RECEIVED_API_KEY';
 var requestApiKey = exports.requestApiKey = function requestApiKey() {
-  return _communication2.default.getApiKey(RECEIVED_API_KEY);
+  return function (dispatch) {
+    return _communication2.default.getApiKey(RECEIVED_API_KEY, dispatch);
+  };
 };
 
 var RECEIVED_CHECK_LIST = exports.RECEIVED_CHECK_LIST = 'RECEIVED_CHECK_LIST';
 var requestCheckList = exports.requestCheckList = function requestCheckList() {
-  return _communication2.default.getCheckList(RECEIVED_CHECK_LIST);
+  return function (dispatch) {
+    return _communication2.default.getCheckList(RECEIVED_CHECK_LIST, dispatch);
+  };
 };
 
 },{"./communication.js":3}],3:[function(require,module,exports){
@@ -72,44 +76,39 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// helper method
-var pathBase = 'https://check-api.herokuapp.com';
+var PATH_BASE = 'https://check-api.herokuapp.com/';
 
-var makeAPIRequest = function makeAPIRequest(method, path, callback) {
+// helper method
+var makeApiRequest = function makeApiRequest(method, path, callback) {
   var data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
-  var apiToken = Manager.apiToken();
-  var apiRequest = _superagent2.default[method](pathBase + path);
+  var apiRequest = _superagent2.default[method](PATH_BASE + path);
+  apiRequest.set('Authorization', Manager.apiToken());
   if (data !== null) {
     apiRequest.send(data);
   }
-  apiRequest.set('Authorization', apiToken);
   apiRequest.end(callback);
 };
 
-// communication interface
+// API communication interface
 var communication = {
 
-  getApiKey: function getApiKey(action) {
-    return function (dispatch) {
-      _superagent2.default.get('/api/token').end(function (error, response) {
-        dispatch({
-          type: action,
-          token: response.text
-        });
+  getApiKey: function getApiKey(action, dispatch) {
+    _superagent2.default.get('/api/token').end(function (error, response) {
+      dispatch({
+        type: action,
+        token: response.text
       });
-    };
+    });
   },
 
-  getCheckList: function getCheckList(action) {
-    return function (dispatch) {
-      makeAPIRequest('get', '/checks', null, function (response) {
-        dispatch({
-          type: action,
-          text: response.text
-        });
+  getCheckList: function getCheckList(action, dispatch) {
+    makeApiRequest('get', 'checks', function (error, response) {
+      dispatch({
+        type: action,
+        text: response.text
       });
-    };
+    });
   }
 
 };
@@ -128,16 +127,23 @@ var defaultState = exports.defaultState = {};
 
 // private state storage
 var currentState = defaultState;
-var currentApiToken = null;
+var currentRefrence = {
+  token: null
+};
+
+// helper methods
+var returnNewState = function returnNewState() {
+  return Object.freeze(Object.assign(currentState));
+};
 
 // accessor methods
-var updateToken = exports.updateToken = function updateToken(token) {
-  currentApiToken = token;
-  return Object.assign(currentState);
+var updateToken = exports.updateToken = function updateToken(token, state) {
+  currentRefrence.token = token;
+  return state;
 };
 
 var apiToken = exports.apiToken = function apiToken() {
-  return currentApiToken;
+  return currentRefrence.token;
 };
 
 },{}],5:[function(require,module,exports){
@@ -160,8 +166,7 @@ var dataReducer = function dataReducer() {
 
   switch (action.type) {
     case Actions.RECEIVED_API_KEY:
-      Manager.updateToken(action.token);
-      return state;
+      return Manager.updateToken(action.token, state);
     default:
       return state;
   }
@@ -240,17 +245,18 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // simple way to create pass-along redux containers
-var defaultMapStateToProps = function defaultMapStateToProps(a) {
+var mapStateToProps = function mapStateToProps(a) {
   return a;
 }; // give them everything
-var defaultMapDispatchToProps = Actions; // give them everything
+var mapDispatchToProps = Actions; // give them everything
 var container = function container(Page) {
-  return (0, _reactRedux.connect)(defaultMapStateToProps, // which properties are sent to the page
-  defaultMapDispatchToProps // which functions are sent to the page
+  return (0, _reactRedux.connect)(mapStateToProps, // which properties are sent to the page
+  mapDispatchToProps // which functions are sent to the page
   )(Page);
 };
 
-// render the router
+// render the provided connection to the rendered router route
+// with a navbar
 (0, _reactDom.render)(_react2.default.createElement(
   _reactRedux.Provider,
   { store: _store.store },
@@ -262,7 +268,7 @@ var container = function container(Page) {
       null,
       _react2.default.createElement(
         'div',
-        null,
+        { className: 'one-router-child' },
         _react2.default.createElement(_navbar2.default, null),
         _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: container(_home2.default) })
       )

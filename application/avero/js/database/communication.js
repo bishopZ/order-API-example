@@ -3,44 +3,38 @@ import request from 'superagent';
 
 import * as Manager from './dataManager.js';
 
-// helper method
-const pathBase = 'https://check-api.herokuapp.com';
+const PATH_BASE = 'https://check-api.herokuapp.com/';
 
-const makeAPIRequest = (method, path, callback, data = null) => {
-  const apiToken = Manager.apiToken();
-  const apiRequest = request[method](pathBase + path);
+// helper method
+const makeApiRequest = (method, path, callback, data = null)=>{
+  const apiRequest = request[method](PATH_BASE + path);
+  apiRequest.set('Authorization', Manager.apiToken());
   if (data !== null) {
     apiRequest.send(data);
   }
-  apiRequest.set('Authorization', apiToken);
   apiRequest.end(callback);
 };
 
-// communication interface
+// API communication interface
 const communication = {
 
-  getApiKey: (action)=>{
-    return (dispatch)=>{
-      request
-        .get('/api/token')
-        .end((error, response) => {
-          dispatch({
-            type: action,
-            token: response.text
-          });
-        });
-    };
-  },
-
-  getCheckList: (action)=>{
-    return (dispatch)=>{
-      makeAPIRequest('get', '/checks', null, (response)=>{
+  getApiKey: (action, dispatch)=>{
+    request.get('/api/token')
+      .end((error, response)=>{
         dispatch({
           type: action,
-          text: response.text
+          token: response.text
         });
       });
-    };
+  },
+
+  getCheckList: (action, dispatch)=>{
+    makeApiRequest('get', 'checks', (error, response)=>{
+      dispatch({
+        type: action,
+        text: response.text
+      });
+    });
   }
 
 };

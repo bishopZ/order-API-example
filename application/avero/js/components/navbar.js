@@ -1,16 +1,14 @@
 
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-var Navbar = () => {
-  return (
-    <div className="navbar">
-      <ul>
-        <li><Link to="/">Home</Link></li>
-      </ul>
-      <hr />
-    </div>
-  );
-};
+var Navbar = ()=>(
+  <nav>
+    <ul>
+      <li><Link to="/">Home</Link></li>
+    </ul>
+    <hr />
+  </nav>
+);
 
 module.exports = Navbar;

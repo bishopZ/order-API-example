@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-var HomePage = ({requestApiKey, requestCheckList}) => {
+var HomePage = ({requestApiKey, requestCheckList})=>{
   requestApiKey();
   requestCheckList();
   return (

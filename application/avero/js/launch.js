@@ -7,28 +7,28 @@ import { Provider, connect } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 
 import { history, store } from './database/store.js';
-
 import * as Actions from './database/actions.js';
 
 import NavBar from './components/navbar.js';
 import HomePage from './pages/home.js';
 
 // simple way to create pass-along redux containers
-const defaultMapStateToProps = (a)=>(a); // give them everything
-const defaultMapDispatchToProps = Actions; // give them everything
+const mapStateToProps = (a)=>(a); // give them everything
+const mapDispatchToProps = Actions; // give them everything
 const container = (Page) => {
   return connect(
-    defaultMapStateToProps, // which properties are sent to the page
-    defaultMapDispatchToProps // which functions are sent to the page
+    mapStateToProps, // which properties are sent to the page
+    mapDispatchToProps // which functions are sent to the page
   )(Page);
 };
 
-// render the router
+// render the provided connection to the rendered router route
+// with a navbar
 render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <Router>
-        <div>
+        <div className="one-router-child">
           <NavBar />
           <Route exact path="/" component={container(HomePage)}/>
         </div>

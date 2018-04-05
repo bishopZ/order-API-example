@@ -1,16 +1,20 @@
 
 // default state
-export const defaultState = {
-};
+export const defaultState = {};
 
 // private state storage
 var currentState = defaultState;
-var currentApiToken = null;
-
-// accessor methods
-export const updateToken = (token)=>{
-  currentApiToken = token;
-  return Object.assign(currentState);
+var currentRefrence = {
+  token: null
 };
 
-export const apiToken = ()=>(currentApiToken);
+// helper methods
+const returnNewState = ()=>(Object.freeze(Object.assign(currentState)));
+
+// accessor methods
+export const updateToken = (token, state)=>{
+  currentRefrence.token = token;
+  return state;
+};
+
+export const apiToken = ()=>(currentRefrence.token);
