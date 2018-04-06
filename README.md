@@ -4,7 +4,7 @@
 
 ## Deployed Server
 
-You can see it running at: ...
+You can see it running [on Heroku](https://protected-journey-35092.herokuapp.com).
 
 ## Setup Instuctions
 
