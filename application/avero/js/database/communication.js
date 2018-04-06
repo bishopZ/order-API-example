@@ -93,4 +93,3 @@ const communication = {
 };
 
 module.exports = communication;
-

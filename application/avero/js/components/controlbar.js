@@ -46,7 +46,7 @@ class ControlBar extends React.Component {
         <div><SelectField
           floatingLabelText="Table"
           value={this.state.currentTable}
-          onChange={()=>(this.updateTable())}
+          onChange={(e,i,v)=>(this.updateTable(v))}
         >
           {displayTables.map((table, index)=>(
             <MenuItem key={index} value={table.id} primaryText={'Table #' + table.number} />
@@ -55,7 +55,7 @@ class ControlBar extends React.Component {
       </section>
     );
   }
-  updateTable(event, index, value) {
+  updateTable(value) {
     this.setState({currentTable: value});
   }
   createNewCheck(){

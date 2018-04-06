@@ -14,7 +14,9 @@ var CheckList = ({list, mode, editCheck})=>{
         {displayList.map(function(item, index){
           return (
             <li key={index}>
-              <button onClick={()=>(editCheck(item.id))}>{mode} check for <br /> table #{item.table.number}</button>
+              <button onClick={()=>(editCheck(item.id))}>
+                {mode} check for <br /> table #{item.table.number}
+              </button>
             </li>
           );            
         })}

@@ -198,8 +198,8 @@ var ControlBar = function (_React$Component) {
             {
               floatingLabelText: 'Table',
               value: this.state.currentTable,
-              onChange: function onChange() {
-                return _this2.updateTable();
+              onChange: function onChange(e, i, v) {
+                return _this2.updateTable(v);
               }
             },
             displayTables.map(function (table, index) {
@@ -211,7 +211,7 @@ var ControlBar = function (_React$Component) {
     }
   }, {
     key: 'updateTable',
-    value: function updateTable(event, index, value) {
+    value: function updateTable(value) {
       this.setState({ currentTable: value });
     }
   }, {
