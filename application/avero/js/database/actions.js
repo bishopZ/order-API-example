@@ -29,7 +29,6 @@ export const initApplication = ()=>((dispatch)=>{
           });
         }
       ],
-      // optional callback
       ()=>{
         dispatch({type: BASE_DATA_RECIEVED});
       });
@@ -45,4 +44,10 @@ export const createNewCheck = (tableId)=>((dispatch)=>{
       dispatch({ checkList: data, tableId, type: RECEIVED_CHECK_LIST});
     });
   });
+});
+
+export const UPDATE_VIEW_MODE = 'UPDATE_VIEW_MODE';
+export const updateViewMode = (newMode)=>({
+  type: UPDATE_VIEW_MODE,
+  mode: newMode
 });

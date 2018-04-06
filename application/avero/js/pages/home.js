@@ -21,6 +21,7 @@ class HomePage extends React.Component {
             mode={this.props.data.viewMode}
             tables={this.props.data.tableList}
             createNewCheck={this.props.createNewCheck}
+            updateViewMode={this.props.updateViewMode}
           />
           <CheckList 
             mode={this.props.data.viewMode} 
@@ -39,12 +40,13 @@ class HomePage extends React.Component {
 HomePage.propTypes = {
   initApplication: PropTypes.func.isRequired,
   createNewCheck: PropTypes.func.isRequired,
+  updateViewMode: PropTypes.func.isRequired,
   data: PropTypes.shape({
     documentPhase: PropTypes.number.isRequired,
     tableList: PropTypes.array,
     checkList: PropTypes.array,
     viewMode: PropTypes.string.isRequired,
-    editId: PropTypes.number
+    editId: PropTypes.string
   }).isRequired
 };
 

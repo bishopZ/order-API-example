@@ -7,6 +7,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
 var EditForm = ({editId, tables})=>{
+  if (editId === '') return (<p></p>);
   return (
     <section className="edit-form">
       
@@ -28,7 +29,7 @@ var EditForm = ({editId, tables})=>{
 };
 
 EditForm.propTypes = {
-  editId: PropTypes.number.isRequired,
+  editId: PropTypes.string.isRequired,
   tables: PropTypes.array.isRequired
 };
 

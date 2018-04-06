@@ -25,37 +25,26 @@ var CheckList = function CheckList(_ref) {
     mode,
     ' checks'
   );
+
   return _react2.default.createElement(
     'main',
     null,
     _react2.default.createElement(
-      'table',
+      'ul',
       null,
-      _react2.default.createElement(
-        'tbody',
-        null,
-        displayList.map(function (item, index) {
-          return _react2.default.createElement(
-            'tr',
-            { key: index },
-            _react2.default.createElement(
-              'td',
-              null,
-              _react2.default.createElement(
-                'button',
-                null,
-                'Item #',
-                index
-              )
-            ),
-            _react2.default.createElement(
-              'td',
-              null,
-              item.id
-            )
-          );
-        })
-      )
+      displayList.map(function (item, index) {
+        return _react2.default.createElement(
+          'div',
+          { key: index },
+          _react2.default.createElement(
+            'button',
+            null,
+            mode,
+            ' check for table #',
+            item.table.number
+          )
+        );
+      })
     )
   );
 };
@@ -113,6 +102,8 @@ var ControlBar = function (_React$Component) {
     key: 'componentWillMount',
     value: function componentWillMount() {
       this.updateTable = this.updateTable.bind(this);
+      this.createNewCheck = this.createNewCheck.bind(this);
+      this.updateViewMode = this.updateViewMode.bind(this);
       this.setState({ currentTable: this.props.tables[0].id });
     }
   }, {
@@ -134,9 +125,13 @@ var ControlBar = function (_React$Component) {
         ),
         ' - ',
         _react2.default.createElement(
-          'a',
-          { href: '#' },
-          'Closed'
+          'span',
+          { onClick: this.updateViewMode },
+          _react2.default.createElement(
+            'a',
+            { href: '#' },
+            'Closed'
+          )
         )
       );
       if (mode !== 'open') {
@@ -145,9 +140,13 @@ var ControlBar = function (_React$Component) {
           null,
           'Viewing: ',
           _react2.default.createElement(
-            'a',
-            { href: '#' },
-            'Open'
+            'span',
+            { onClick: this.updateViewMode },
+            _react2.default.createElement(
+              'a',
+              { href: '#' },
+              'Open'
+            )
           ),
           ' - ',
           _react2.default.createElement(
@@ -197,12 +196,18 @@ var ControlBar = function (_React$Component) {
     value: function createNewCheck() {
       this.props.createNewCheck(this.state.currentTable);
     }
+  }, {
+    key: 'updateViewMode',
+    value: function updateViewMode() {
+      this.props.updateViewMode(this.props.mode === 'open' ? 'closed' : 'open');
+    }
   }]);
 
   return ControlBar;
 }(_react2.default.Component);
 
 ControlBar.propTypes = {
+  updateViewMode: _propTypes2.default.func.isRequired,
   createNewCheck: _propTypes2.default.func.isRequired,
   mode: _propTypes2.default.string.isRequired,
   tables: _propTypes2.default.array.isRequired
@@ -243,6 +248,7 @@ var EditForm = function EditForm(_ref) {
   var editId = _ref.editId,
       tables = _ref.tables;
 
+  if (editId === '') return _react2.default.createElement('p', null);
   return _react2.default.createElement(
     'section',
     { className: 'edit-form' },
@@ -280,7 +286,7 @@ var EditForm = function EditForm(_ref) {
 };
 
 EditForm.propTypes = {
-  editId: _propTypes2.default.number.isRequired,
+  editId: _propTypes2.default.string.isRequired,
   tables: _propTypes2.default.array.isRequired
 };
 
@@ -326,7 +332,7 @@ module.exports = Navbar;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
+exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
 
 var _async = require('async');
 
@@ -368,9 +374,7 @@ var initApplication = exports.initApplication = function initApplication() {
             dispatch({ checkList: data, type: RECEIVED_CHECK_LIST });
             callback(null);
           });
-        }],
-        // optional callback
-        function () {
+        }], function () {
           dispatch({ type: BASE_DATA_RECIEVED });
         });
       });
@@ -386,6 +390,14 @@ var createNewCheck = exports.createNewCheck = function createNewCheck(tableId) {
         dispatch({ checkList: data, tableId: tableId, type: RECEIVED_CHECK_LIST });
       });
     });
+  };
+};
+
+var UPDATE_VIEW_MODE = exports.UPDATE_VIEW_MODE = 'UPDATE_VIEW_MODE';
+var updateViewMode = exports.updateViewMode = function updateViewMode(newMode) {
+  return {
+    type: UPDATE_VIEW_MODE,
+    mode: newMode
   };
 };
 
@@ -455,7 +467,7 @@ var communication = {
 
   createNewCheck: function createNewCheck(tableId, callback) {
     makeApiRequest('post', 'checks', { tableId: tableId }, function () {
-      undefined.getCheckList(callback);
+      communication.getCheckList(callback);
     });
   }
 
@@ -474,7 +486,7 @@ Object.defineProperty(exports, "__esModule", {
 var defaultState = exports.defaultState = {
   documentPhase: 0,
   viewMode: 'open',
-  editId: 0,
+  editId: '',
   checkList: [],
   tableList: []
 };
@@ -490,6 +502,16 @@ var returnNewState = function returnNewState() {
   return Object.freeze(Object.assign({}, currentState));
 };
 
+var linkChecksToTables = function linkChecksToTables() {
+  currentState.checkList = currentState.checkList.map(function (check) {
+    var table = currentState.tableList.filter(function (table) {
+      return table.id === check.tableId;
+    });
+    check.table = table[0];
+    return check;
+  });
+};
+
 // interface
 var apiToken = exports.apiToken = function apiToken() {
   return currentRefrence.token;
@@ -501,14 +523,21 @@ var updateToken = exports.updateToken = function updateToken(token) {
 
 var updateCheckList = exports.updateCheckList = function updateCheckList(checkList) {
   currentState.checkList = checkList;
+  linkChecksToTables();
 };
 
 var updateTableList = exports.updateTableList = function updateTableList(tableList) {
   currentState.tableList = tableList;
+  linkChecksToTables();
 };
 
 var initComplete = exports.initComplete = function initComplete() {
   currentState.documentPhase = 1;
+  return returnNewState();
+};
+
+var updateViewMode = exports.updateViewMode = function updateViewMode(newMode) {
+  currentState.viewMode = newMode;
   return returnNewState();
 };
 
@@ -541,6 +570,8 @@ var dataReducer = function dataReducer() {
       Manager.updateTableList(action.tableList);break;
     case Actions.BASE_DATA_RECIEVED:
       return Manager.initComplete();
+    case Actions.UPDATE_VIEW_MODE:
+      return Manager.updateViewMode(action.mode);
     default:
       break;
   }
@@ -727,7 +758,8 @@ var HomePage = function (_React$Component) {
             _react2.default.createElement(_controlbar2.default, {
               mode: this.props.data.viewMode,
               tables: this.props.data.tableList,
-              createNewCheck: this.props.createNewCheck
+              createNewCheck: this.props.createNewCheck,
+              updateViewMode: this.props.updateViewMode
             }),
             _react2.default.createElement(_checklist2.default, {
               mode: this.props.data.viewMode,
@@ -748,12 +780,13 @@ var HomePage = function (_React$Component) {
 HomePage.propTypes = {
   initApplication: _propTypes2.default.func.isRequired,
   createNewCheck: _propTypes2.default.func.isRequired,
+  updateViewMode: _propTypes2.default.func.isRequired,
   data: _propTypes2.default.shape({
     documentPhase: _propTypes2.default.number.isRequired,
     tableList: _propTypes2.default.array,
     checkList: _propTypes2.default.array,
     viewMode: _propTypes2.default.string.isRequired,
-    editId: _propTypes2.default.number
+    editId: _propTypes2.default.string
   }).isRequired
 };
 

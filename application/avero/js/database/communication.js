@@ -52,7 +52,7 @@ const communication = {
 
   createNewCheck: (tableId, callback)=>{
     makeApiRequest('post', 'checks', {tableId}, ()=>{
-      this.getCheckList(callback);
+      communication.getCheckList(callback);
     });
   }
 
