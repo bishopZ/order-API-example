@@ -3,7 +3,7 @@
 body { text-align: center; font-family: Roboto, Helvetica, Arial, san-serif; }
 
 a { text-decoration: none;  &:hover { text-decoration: underline; } }
-button { border: 1px solid #d0d0d0; margin: 10px; background-color:#efefef; width: 12vw; padding: 2vw; display: inline-block; }
+button { border: 1px solid #d0d0d0; margin: 10px; background-color:#efefef; width: 12vw; padding: 1vw; display: inline-block; }
 ul { margin: 20px 0; }
 li { list-style: none; text-align: left; }
 hr { height: 1px; border: none; background-color: #ddd; }

@@ -458,7 +458,6 @@ var RECEIVED_ITEM_LIST = exports.RECEIVED_ITEM_LIST = 'RECEIVED_ITEM_LIST';
 var initApplication = exports.initApplication = function initApplication() {
   return function (dispatch) {
 
-    // request api
     _communication2.default.getApiKey(function (_ref) {
       var data = _ref.data;
 

@@ -10,7 +10,6 @@ export const RECEIVED_ITEM_LIST = 'RECEIVED_ITEM_LIST';
 
 export const initApplication = ()=>((dispatch)=>{
 
-  // request api
   communication.getApiKey(({data})=>{
 
     dispatch({ token: data, type: RECEIVED_API_KEY });
