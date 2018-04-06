@@ -25,7 +25,7 @@ const dataReducer = (state = Manager.defaultState, action)=>{
   case Actions.UPDATE_VIEW_MODE:
     return Manager.updateViewMode(action.mode);
   case Actions.EDIT_CHECK:
-    return Manager.newEditId(action.editId);
+    return Manager.newEditId(action.editId, action.editItems);
   default: break;
   } 
 

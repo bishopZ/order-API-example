@@ -32,6 +32,7 @@ class HomePage extends React.Component {
             editId={this.props.data.editId}
             checkList={this.props.data.checkList}
             itemList={this.props.data.itemList}
+            editItems={this.props.data.editItems}
           />
         </div>
       );
@@ -49,6 +50,7 @@ HomePage.propTypes = {
     tableList: PropTypes.array,
     checkList: PropTypes.array,
     itemList: PropTypes.array,
+    editItems: PropTypes.array,
     viewMode: PropTypes.string.isRequired,
     editId: PropTypes.string
   }).isRequired

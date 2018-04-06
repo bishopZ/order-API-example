@@ -13,10 +13,20 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
-var EditForm = ({editId, checkList, itemList})=>{
+// helper function
+const dollarFormat = (price)=>(price.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,'));
+
+
+var EditForm = ({editId, checkList, itemList, editItems})=>{
   if (editId === '') return (<p></p>);
 
   const editCheck = checkList.find((check)=>(check.id === editId));
+
+  editItems = editItems.map((orderedItem)=>{
+    const itemDetails = itemList.find((item)=>(item.id === orderedItem.itemId));
+    orderedItem.item = itemDetails;
+    return orderedItem;
+  });
 
   return (
     <section className="edit-form">
@@ -38,16 +48,18 @@ var EditForm = ({editId, checkList, itemList})=>{
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHeaderColumn>ID</TableHeaderColumn>
+              <TableHeaderColumn>Price</TableHeaderColumn>
               <TableHeaderColumn>Name</TableHeaderColumn>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableRowColumn>1</TableRowColumn>
-              <TableRowColumn>Corn Soup</TableRowColumn>
-            </TableRow>
-          </TableBody>
+          {editItems.map((orderedItem, index)=>(
+            <TableBody key={index}>
+              <TableRow>
+                <TableRowColumn>{dollarFormat(orderedItem.item.price)}</TableRowColumn>
+                <TableRowColumn>{orderedItem.item.name}</TableRowColumn>
+              </TableRow>
+            </TableBody>
+          ))}
         </Table>
 
         <div className="button-well">
@@ -81,7 +93,8 @@ var EditForm = ({editId, checkList, itemList})=>{
 EditForm.propTypes = {
   editId: PropTypes.string.isRequired,
   checkList: PropTypes.array.isRequired,
-  itemList: PropTypes.array.isRequired
+  itemList: PropTypes.array.isRequired,
+  editItems: PropTypes.array.isRequired
 };
 
 module.exports = EditForm;

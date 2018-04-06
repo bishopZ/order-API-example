@@ -6,7 +6,8 @@ export const defaultState = {
   editId: '',
   checkList: [],
   tableList: [],
-  itemList: []
+  itemList: [],
+  editItems: []
 };
 
 // private state storage
@@ -63,7 +64,8 @@ export const updateEditId = (tableId)=>{
   return returnNewState();
 };
 
-export const newEditId = (editId)=>{
+export const newEditId = (editId, editItems)=>{
   currentState.editId = editId;
+  currentState.editItems = editItems;
   return returnNewState();
 };

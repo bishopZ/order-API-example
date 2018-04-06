@@ -253,15 +253,29 @@ var _Table = require('material-ui/Table');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// helper function
+var dollarFormat = function dollarFormat(price) {
+  return price.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+};
+
 var EditForm = function EditForm(_ref) {
   var editId = _ref.editId,
       checkList = _ref.checkList,
-      itemList = _ref.itemList;
+      itemList = _ref.itemList,
+      editItems = _ref.editItems;
 
   if (editId === '') return _react2.default.createElement('p', null);
 
   var editCheck = checkList.find(function (check) {
     return check.id === editId;
+  });
+
+  editItems = editItems.map(function (orderedItem) {
+    var itemDetails = itemList.find(function (item) {
+      return item.id === orderedItem.itemId;
+    });
+    orderedItem.item = itemDetails;
+    return orderedItem;
   });
 
   return _react2.default.createElement(
@@ -331,7 +345,7 @@ var EditForm = function EditForm(_ref) {
             _react2.default.createElement(
               _Table.TableHeaderColumn,
               null,
-              'ID'
+              'Price'
             ),
             _react2.default.createElement(
               _Table.TableHeaderColumn,
@@ -340,24 +354,26 @@ var EditForm = function EditForm(_ref) {
             )
           )
         ),
-        _react2.default.createElement(
-          _Table.TableBody,
-          null,
-          _react2.default.createElement(
-            _Table.TableRow,
-            null,
+        editItems.map(function (orderedItem, index) {
+          return _react2.default.createElement(
+            _Table.TableBody,
+            { key: index },
             _react2.default.createElement(
-              _Table.TableRowColumn,
+              _Table.TableRow,
               null,
-              '1'
-            ),
-            _react2.default.createElement(
-              _Table.TableRowColumn,
-              null,
-              'Corn Soup'
+              _react2.default.createElement(
+                _Table.TableRowColumn,
+                null,
+                dollarFormat(orderedItem.item.price)
+              ),
+              _react2.default.createElement(
+                _Table.TableRowColumn,
+                null,
+                orderedItem.item.name
+              )
             )
-          )
-        )
+          );
+        })
       ),
       _react2.default.createElement(
         'div',
@@ -394,7 +410,8 @@ var EditForm = function EditForm(_ref) {
 EditForm.propTypes = {
   editId: _propTypes2.default.string.isRequired,
   checkList: _propTypes2.default.array.isRequired,
-  itemList: _propTypes2.default.array.isRequired
+  itemList: _propTypes2.default.array.isRequired,
+  editItems: _propTypes2.default.array.isRequired
 };
 
 module.exports = EditForm;
@@ -501,7 +518,9 @@ var NEW_CHECK = exports.NEW_CHECK = 'NEW_CHECK';
 var createNewCheck = exports.createNewCheck = function createNewCheck(tableId) {
   return function (dispatch) {
     _communication2.default.createNewCheck(tableId, function () {
-      _communication2.default.getCheckList(function (data) {
+      _communication2.default.getCheckList(function (_ref5) {
+        var data = _ref5.data;
+
         dispatch({ checkList: data, tableId: tableId, type: RECEIVED_CHECK_LIST });
       });
     });
@@ -518,9 +537,16 @@ var updateViewMode = exports.updateViewMode = function updateViewMode(newMode) {
 
 var EDIT_CHECK = exports.EDIT_CHECK = 'EDIT_CHECK';
 var editCheck = exports.editCheck = function editCheck(editId) {
-  return {
-    type: EDIT_CHECK,
-    editId: editId
+  return function (dispatch) {
+    _communication2.default.getCheckItems(editId, function (_ref6) {
+      var data = _ref6.data;
+
+      dispatch({
+        type: EDIT_CHECK,
+        editId: editId,
+        editItems: data
+      });
+    });
   };
 };
 
@@ -593,6 +619,14 @@ var communication = {
     makeApiRequest('post', 'checks', { tableId: tableId }, function () {
       communication.getCheckList(callback);
     });
+  },
+
+  getCheckItems: function getCheckItems(editId, callback) {
+    makeApiRequest('get', 'checks/' + editId, null, function (error, response) {
+      callback({
+        data: JSON.parse(response.text).orderedItems
+      });
+    });
   }
 
 };
@@ -613,7 +647,8 @@ var defaultState = exports.defaultState = {
   editId: '',
   checkList: [],
   tableList: [],
-  itemList: []
+  itemList: [],
+  editItems: []
 };
 
 // private state storage
@@ -678,8 +713,9 @@ var updateEditId = exports.updateEditId = function updateEditId(tableId) {
   return returnNewState();
 };
 
-var newEditId = exports.newEditId = function newEditId(editId) {
+var newEditId = exports.newEditId = function newEditId(editId, editItems) {
   currentState.editId = editId;
+  currentState.editItems = editItems;
   return returnNewState();
 };
 
@@ -722,7 +758,7 @@ var dataReducer = function dataReducer() {
     case Actions.UPDATE_VIEW_MODE:
       return Manager.updateViewMode(action.mode);
     case Actions.EDIT_CHECK:
-      return Manager.newEditId(action.editId);
+      return Manager.newEditId(action.editId, action.editItems);
     default:
       break;
   }
@@ -920,7 +956,8 @@ var HomePage = function (_React$Component) {
             _react2.default.createElement(_editform2.default, {
               editId: this.props.data.editId,
               checkList: this.props.data.checkList,
-              itemList: this.props.data.itemList
+              itemList: this.props.data.itemList,
+              editItems: this.props.data.editItems
             })
           );
       }
@@ -940,6 +977,7 @@ HomePage.propTypes = {
     tableList: _propTypes2.default.array,
     checkList: _propTypes2.default.array,
     itemList: _propTypes2.default.array,
+    editItems: _propTypes2.default.array,
     viewMode: _propTypes2.default.string.isRequired,
     editId: _propTypes2.default.string
   }).isRequired

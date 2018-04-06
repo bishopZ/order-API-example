@@ -55,6 +55,14 @@ const communication = {
     makeApiRequest('post', 'checks', {tableId}, ()=>{
       communication.getCheckList(callback);
     });
+  },
+
+  getCheckItems: (editId, callback)=>{
+    makeApiRequest('get', 'checks/' + editId, null, (error, response)=>{
+      callback({
+        data: JSON.parse(response.text).orderedItems
+      });
+    });
   }
 
 };

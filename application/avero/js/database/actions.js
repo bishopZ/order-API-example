@@ -47,7 +47,7 @@ export const initApplication = ()=>((dispatch)=>{
 export const NEW_CHECK = 'NEW_CHECK';
 export const createNewCheck = (tableId)=>((dispatch)=>{
   communication.createNewCheck(tableId, ()=>{
-    communication.getCheckList((data)=>{
+    communication.getCheckList(({data})=>{
       dispatch({ checkList: data, tableId, type: RECEIVED_CHECK_LIST});
     });
   });
@@ -60,7 +60,12 @@ export const updateViewMode = (newMode)=>({
 });
 
 export const EDIT_CHECK = 'EDIT_CHECK';
-export const editCheck = (editId)=>({
-  type: EDIT_CHECK,
-  editId
+export const editCheck = (editId)=>((dispatch)=>{
+  communication.getCheckItems(editId, ({data})=>{
+    dispatch({
+      type: EDIT_CHECK,
+      editId,
+      editItems: data
+    });
+  });
 });
