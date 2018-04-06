@@ -80,3 +80,12 @@ export const voidItems = (itemIds, editId)=>((dispatch)=>{
     dispatch(editCheck(editId));
   });
 });
+
+export const closeCheck = (editId)=>((dispatch)=>{
+  communication.closeCheck(editId, ()=>{
+    communication.getCheckList(({data})=>{
+      dispatch({ checkList: data, type: RECEIVED_CHECK_LIST });
+      dispatch({ type: BASE_DATA_RECIEVED});
+    });
+  });
+});

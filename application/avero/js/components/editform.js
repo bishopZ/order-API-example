@@ -43,8 +43,8 @@ class EditForm extends React.Component {
         <div className="right">
           <div>#{editCheck.table.number}</div>
           <div>{editId}</div>
-          <div>{editCheck.tax || 'not calculated'}</div>
-          <div>{editCheck.tip || 'not calculated'}</div>
+          <div>{(editCheck.tax) ? '$' + dollarFormat(editCheck.tax) : 'not calculated'}</div>
+          <div>{(editCheck.tip) ? '$' + dollarFormat(editCheck.tip) : 'not calculated'}</div>
         </div>
 
         <div className="full">
@@ -96,7 +96,7 @@ class EditForm extends React.Component {
           </div>
 
           <div className="button-well">
-            <RaisedButton label="Close Check" />
+            <RaisedButton label="Close Check" onClick={()=>(this.closeCheck())} />
           </div>
 
         </div>
@@ -126,9 +126,13 @@ class EditForm extends React.Component {
       this.setState({voidable:[]});
     }
   }
+  closeCheck() {
+    this.props.closeCheck(this.props.editId);
+  }
 }
 
 EditForm.propTypes = {
+  closeCheck: PropTypes.func.isRequired,
   voidItems: PropTypes.func.isRequired,
   addItem: PropTypes.func.isRequired,
   editId: PropTypes.string.isRequired,

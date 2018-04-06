@@ -84,6 +84,12 @@ const communication = {
     });
   },
 
+  closeCheck: (editId, callback)=>{
+    makeApiRequest('put', 'checks/' + editId + '/close', {}, ()=>{
+      callback();
+    });
+  }
+
 };
 
 module.exports = communication;

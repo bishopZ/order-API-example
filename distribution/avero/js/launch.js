@@ -45,7 +45,9 @@ var CheckList = function CheckList(_ref) {
                 return editCheck(item.id);
               } },
             mode,
-            ' check for table #',
+            ' check for ',
+            _react2.default.createElement('br', null),
+            ' table #',
             item.table.number
           )
         );
@@ -364,12 +366,12 @@ var EditForm = function (_React$Component) {
           _react2.default.createElement(
             'div',
             null,
-            editCheck.tax || 'not calculated'
+            editCheck.tax ? '$' + dollarFormat(editCheck.tax) : 'not calculated'
           ),
           _react2.default.createElement(
             'div',
             null,
-            editCheck.tip || 'not calculated'
+            editCheck.tip ? '$' + dollarFormat(editCheck.tip) : 'not calculated'
           )
         ),
         _react2.default.createElement(
@@ -460,7 +462,9 @@ var EditForm = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'button-well' },
-            _react2.default.createElement(_RaisedButton2.default, { label: 'Close Check' })
+            _react2.default.createElement(_RaisedButton2.default, { label: 'Close Check', onClick: function onClick() {
+                return _this2.closeCheck();
+              } })
           )
         )
       );
@@ -503,12 +507,18 @@ var EditForm = function (_React$Component) {
         this.setState({ voidable: [] });
       }
     }
+  }, {
+    key: 'closeCheck',
+    value: function closeCheck() {
+      this.props.closeCheck(this.props.editId);
+    }
   }]);
 
   return EditForm;
 }(_react2.default.Component);
 
 EditForm.propTypes = {
+  closeCheck: _propTypes2.default.func.isRequired,
   voidItems: _propTypes2.default.func.isRequired,
   addItem: _propTypes2.default.func.isRequired,
   editId: _propTypes2.default.string.isRequired,
@@ -525,7 +535,7 @@ module.exports = EditForm;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.voidItems = exports.addItem = exports.editCheck = exports.EDIT_CHECK = exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_ITEM_LIST = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
+exports.closeCheck = exports.voidItems = exports.addItem = exports.editCheck = exports.EDIT_CHECK = exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_ITEM_LIST = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
 
 var _async = require('async');
 
@@ -634,6 +644,19 @@ var voidItems = exports.voidItems = function voidItems(itemIds, editId) {
   };
 };
 
+var closeCheck = exports.closeCheck = function closeCheck(editId) {
+  return function (dispatch) {
+    _communication2.default.closeCheck(editId, function () {
+      _communication2.default.getCheckList(function (_ref7) {
+        var data = _ref7.data;
+
+        dispatch({ checkList: data, type: RECEIVED_CHECK_LIST });
+        dispatch({ type: BASE_DATA_RECIEVED });
+      });
+    });
+  };
+};
+
 },{"./communication.js":5,"async":11}],5:[function(require,module,exports){
 'use strict';
 
@@ -731,6 +754,12 @@ var communication = {
         });
       };
     }), function () {
+      callback();
+    });
+  },
+
+  closeCheck: function closeCheck(editId, callback) {
+    makeApiRequest('put', 'checks/' + editId + '/close', {}, function () {
       callback();
     });
   }
@@ -1056,7 +1085,8 @@ var HomePage = function (_React$Component) {
               itemList: this.props.data.itemList,
               editItems: this.props.data.editItems,
               addItem: this.props.addItem,
-              voidItems: this.props.voidItems
+              voidItems: this.props.voidItems,
+              closeCheck: this.props.closeCheck
             })
           );
       }
@@ -1073,6 +1103,7 @@ HomePage.propTypes = {
   editCheck: _propTypes2.default.func.isRequired,
   addItem: _propTypes2.default.func.isRequired,
   voidItems: _propTypes2.default.func.isRequired,
+  closeCheck: _propTypes2.default.func.isRequired,
   data: _propTypes2.default.shape({
     documentPhase: _propTypes2.default.number.isRequired,
     viewMode: _propTypes2.default.string.isRequired,
