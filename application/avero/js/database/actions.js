@@ -74,3 +74,9 @@ export const addItem = (selectedItemId, editId)=>((dispatch)=>{
     dispatch(editCheck(editId));
   });
 });
+
+export const voidItems = (itemIds, editId)=>((dispatch)=>{
+  communication.voidMenuItems(itemIds, editId, ()=>{
+    dispatch(editCheck(editId));
+  });
+});

@@ -1,5 +1,6 @@
 
 import request from 'superagent';
+import async from 'async';
 
 import * as Manager from './dataManager.js';
 
@@ -69,7 +70,19 @@ const communication = {
     makeApiRequest('put', 'checks/' + checkId + '/addItem', {itemId}, ()=>{
       callback();
     });
-  }
+  },
+
+  voidMenuItems: (itemIds, checkId, callback)=>{
+    async.parallel(itemIds.map((itemId)=>(
+      (requestCallback)=>{
+        makeApiRequest('put', 'checks/' + checkId + '/voidItem', {orderedItemId: itemId}, ()=>{
+          requestCallback(null);
+        });
+      }
+    )), ()=>{
+      callback();
+    });
+  },
 
 };
 

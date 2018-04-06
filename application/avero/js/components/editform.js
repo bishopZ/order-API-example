@@ -13,7 +13,10 @@ const dollarFormat = (price)=>(price.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '
 
 class EditForm extends React.Component {
   componentWillMount() {
-    this.setState({selectedItem: this.props.itemList[0].id});
+    this.setState({
+      selectedItem: this.props.itemList[0].id,
+      voidable: []
+    });
   }
   render() {
     var {editId, checkList, itemList, editItems} = this.props;
@@ -48,17 +51,24 @@ class EditForm extends React.Component {
 
           {editItems.length > 0 &&
             <div className="one-child">
-              <Table>
-                <TableHeader>
+              <Table 
+                onRowSelection={(v)=>(this.handleRowSelection(v))} 
+                multiSelectable={true}
+              >
+                <TableHeader
+                  displaySelectAll={false}
+                >
                   <TableRow>
                     <TableHeaderColumn>Price</TableHeaderColumn>
                     <TableHeaderColumn>Name</TableHeaderColumn>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody
+                  deselectOnClickaway={false}
+                >
                   {editItems.map((orderedItem, index)=>(
-                    <TableRow key={index}>
-                      <TableRowColumn>{dollarFormat(orderedItem.item.price)}</TableRowColumn>
+                    <TableRow key={index} selected={this.isSelected(index)} className={(orderedItem.voided) ? 'void': ''}>
+                      <TableRowColumn>{'$' + dollarFormat(orderedItem.item.price)}</TableRowColumn>
                       <TableRowColumn>{orderedItem.item.name}</TableRowColumn>
                     </TableRow>
                   ))}
@@ -66,7 +76,7 @@ class EditForm extends React.Component {
               </Table>
             
               <div className="button-well">
-                <RaisedButton label="Void Selected Items" />
+                <RaisedButton label="Void Selected Items" onClick={()=>(this.voidItems())} />
               </div>
             </div>
           }
@@ -100,9 +110,26 @@ class EditForm extends React.Component {
   addItem() {
     this.props.addItem(this.state.selectedItem, this.props.editId);
   }
+  handleRowSelection(selectedRows) {
+    const filteredRows = selectedRows.filter((rowIndex)=>(
+      this.props.editItems[rowIndex].voided === false
+    ));
+    this.setState({voidable: filteredRows});
+  }
+  isSelected(index) {
+    return this.state.voidable.indexOf(index) !== -1;
+  }
+  voidItems() {
+    if (this.state.voidable.length) {
+      const voidableItems = this.state.voidable.map((itemIndex)=>(this.props.editItems[itemIndex].id));
+      this.props.voidItems(voidableItems, this.props.editId);
+      this.setState({voidable:[]});
+    }
+  }
 }
 
 EditForm.propTypes = {
+  voidItems: PropTypes.func.isRequired,
   addItem: PropTypes.func.isRequired,
   editId: PropTypes.string.isRequired,
   checkList: PropTypes.array.isRequired,

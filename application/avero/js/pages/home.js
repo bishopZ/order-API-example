@@ -35,6 +35,7 @@ class HomePage extends React.Component {
             itemList={this.props.data.itemList}
             editItems={this.props.data.editItems}
             addItem={this.props.addItem}
+            voidItems={this.props.voidItems}
           />
         </div>
       );
@@ -48,6 +49,7 @@ HomePage.propTypes = {
   updateViewMode: PropTypes.func.isRequired,
   editCheck: PropTypes.func.isRequired,
   addItem: PropTypes.func.isRequired,
+  voidItems: PropTypes.func.isRequired,
   data: PropTypes.shape({
     documentPhase: PropTypes.number.isRequired,
     viewMode: PropTypes.string.isRequired,

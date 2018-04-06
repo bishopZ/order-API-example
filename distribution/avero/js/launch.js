@@ -289,7 +289,10 @@ var EditForm = function (_React$Component) {
   _createClass(EditForm, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
-      this.setState({ selectedItem: this.props.itemList[0].id });
+      this.setState({
+        selectedItem: this.props.itemList[0].id,
+        voidable: []
+      });
     }
   }, {
     key: 'render',
@@ -377,10 +380,17 @@ var EditForm = function (_React$Component) {
             { className: 'one-child' },
             _react2.default.createElement(
               _Table.Table,
-              null,
+              {
+                onRowSelection: function onRowSelection(v) {
+                  return _this2.handleRowSelection(v);
+                },
+                multiSelectable: true
+              },
               _react2.default.createElement(
                 _Table.TableHeader,
-                null,
+                {
+                  displaySelectAll: false
+                },
                 _react2.default.createElement(
                   _Table.TableRow,
                   null,
@@ -398,15 +408,17 @@ var EditForm = function (_React$Component) {
               ),
               _react2.default.createElement(
                 _Table.TableBody,
-                null,
+                {
+                  deselectOnClickaway: false
+                },
                 editItems.map(function (orderedItem, index) {
                   return _react2.default.createElement(
                     _Table.TableRow,
-                    { key: index },
+                    { key: index, selected: _this2.isSelected(index), className: orderedItem.voided ? 'void' : '' },
                     _react2.default.createElement(
                       _Table.TableRowColumn,
                       null,
-                      dollarFormat(orderedItem.item.price)
+                      '$' + dollarFormat(orderedItem.item.price)
                     ),
                     _react2.default.createElement(
                       _Table.TableRowColumn,
@@ -420,7 +432,9 @@ var EditForm = function (_React$Component) {
             _react2.default.createElement(
               'div',
               { className: 'button-well' },
-              _react2.default.createElement(_RaisedButton2.default, { label: 'Void Selected Items' })
+              _react2.default.createElement(_RaisedButton2.default, { label: 'Void Selected Items', onClick: function onClick() {
+                  return _this2.voidItems();
+                } })
             )
           ),
           _react2.default.createElement(
@@ -461,12 +475,41 @@ var EditForm = function (_React$Component) {
     value: function addItem() {
       this.props.addItem(this.state.selectedItem, this.props.editId);
     }
+  }, {
+    key: 'handleRowSelection',
+    value: function handleRowSelection(selectedRows) {
+      var _this3 = this;
+
+      var filteredRows = selectedRows.filter(function (rowIndex) {
+        return _this3.props.editItems[rowIndex].voided === false;
+      });
+      this.setState({ voidable: filteredRows });
+    }
+  }, {
+    key: 'isSelected',
+    value: function isSelected(index) {
+      return this.state.voidable.indexOf(index) !== -1;
+    }
+  }, {
+    key: 'voidItems',
+    value: function voidItems() {
+      var _this4 = this;
+
+      if (this.state.voidable.length) {
+        var voidableItems = this.state.voidable.map(function (itemIndex) {
+          return _this4.props.editItems[itemIndex].id;
+        });
+        this.props.voidItems(voidableItems, this.props.editId);
+        this.setState({ voidable: [] });
+      }
+    }
   }]);
 
   return EditForm;
 }(_react2.default.Component);
 
 EditForm.propTypes = {
+  voidItems: _propTypes2.default.func.isRequired,
   addItem: _propTypes2.default.func.isRequired,
   editId: _propTypes2.default.string.isRequired,
   checkList: _propTypes2.default.array.isRequired,
@@ -482,7 +525,7 @@ module.exports = EditForm;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.addItem = exports.editCheck = exports.EDIT_CHECK = exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_ITEM_LIST = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
+exports.voidItems = exports.addItem = exports.editCheck = exports.EDIT_CHECK = exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_ITEM_LIST = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
 
 var _async = require('async');
 
@@ -583,12 +626,24 @@ var addItem = exports.addItem = function addItem(selectedItemId, editId) {
   };
 };
 
+var voidItems = exports.voidItems = function voidItems(itemIds, editId) {
+  return function (dispatch) {
+    _communication2.default.voidMenuItems(itemIds, editId, function () {
+      dispatch(editCheck(editId));
+    });
+  };
+};
+
 },{"./communication.js":5,"async":11}],5:[function(require,module,exports){
 'use strict';
 
 var _superagent = require('superagent');
 
 var _superagent2 = _interopRequireDefault(_superagent);
+
+var _async = require('async');
+
+var _async2 = _interopRequireDefault(_async);
 
 var _dataManager = require('./dataManager.js');
 
@@ -666,13 +721,25 @@ var communication = {
     makeApiRequest('put', 'checks/' + checkId + '/addItem', { itemId: itemId }, function () {
       callback();
     });
+  },
+
+  voidMenuItems: function voidMenuItems(itemIds, checkId, callback) {
+    _async2.default.parallel(itemIds.map(function (itemId) {
+      return function (requestCallback) {
+        makeApiRequest('put', 'checks/' + checkId + '/voidItem', { orderedItemId: itemId }, function () {
+          requestCallback(null);
+        });
+      };
+    }), function () {
+      callback();
+    });
   }
 
 };
 
 module.exports = communication;
 
-},{"./dataManager.js":6,"superagent":351}],6:[function(require,module,exports){
+},{"./dataManager.js":6,"async":11,"superagent":351}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -988,7 +1055,8 @@ var HomePage = function (_React$Component) {
               checkList: this.props.data.checkList,
               itemList: this.props.data.itemList,
               editItems: this.props.data.editItems,
-              addItem: this.props.addItem
+              addItem: this.props.addItem,
+              voidItems: this.props.voidItems
             })
           );
       }
@@ -1004,6 +1072,7 @@ HomePage.propTypes = {
   updateViewMode: _propTypes2.default.func.isRequired,
   editCheck: _propTypes2.default.func.isRequired,
   addItem: _propTypes2.default.func.isRequired,
+  voidItems: _propTypes2.default.func.isRequired,
   data: _propTypes2.default.shape({
     documentPhase: _propTypes2.default.number.isRequired,
     viewMode: _propTypes2.default.string.isRequired,
