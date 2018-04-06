@@ -21,6 +21,7 @@ class HomePage extends React.Component {
             mode={this.props.data.viewMode}
             tables={this.props.data.tableList}
             createNewCheck={this.props.createNewCheck}
+            checkList={this.props.data.checkList}
             updateViewMode={this.props.updateViewMode}
           />
           <CheckList 

@@ -10,8 +10,13 @@ class ControlBar extends React.Component {
     this.setState({currentTable: this.props.tables[0].id});
   }
   render() {
-    const {mode, tables} = this.props;
+    const {mode, tables, checkList} = this.props;
     
+    const displayTables = tables.filter((table)=>{
+      const openTable = checkList.filter((check)=>(check.closed === false && check.tableId === table.id));
+      return openTable.length === 0;
+    });
+
     var ViewStatus = (<p>
       Viewing:&nbsp;
       <strong>Open</strong>
@@ -43,7 +48,7 @@ class ControlBar extends React.Component {
           value={this.state.currentTable}
           onChange={()=>(this.updateTable())}
         >
-          {tables.map((table, index)=>(
+          {displayTables.map((table, index)=>(
             <MenuItem key={index} value={table.id} primaryText={'Table #' + table.number} />
           ))}
         </SelectField></div>
@@ -65,7 +70,8 @@ ControlBar.propTypes = {
   updateViewMode: PropTypes.func.isRequired,
   createNewCheck: PropTypes.func.isRequired,
   mode: PropTypes.string.isRequired,
-  tables: PropTypes.array.isRequired
+  tables: PropTypes.array.isRequired,
+  checkList: PropTypes.array.isRequired
 };
 
 module.exports = ControlBar;

@@ -116,8 +116,16 @@ var ControlBar = function (_React$Component) {
 
       var _props = this.props,
           mode = _props.mode,
-          tables = _props.tables;
+          tables = _props.tables,
+          checkList = _props.checkList;
 
+
+      var displayTables = tables.filter(function (table) {
+        var openTable = checkList.filter(function (check) {
+          return check.closed === false && check.tableId === table.id;
+        });
+        return openTable.length === 0;
+      });
 
       var ViewStatus = _react2.default.createElement(
         'p',
@@ -192,7 +200,7 @@ var ControlBar = function (_React$Component) {
                 return _this2.updateTable();
               }
             },
-            tables.map(function (table, index) {
+            displayTables.map(function (table, index) {
               return _react2.default.createElement(_MenuItem2.default, { key: index, value: table.id, primaryText: 'Table #' + table.number });
             })
           )
@@ -223,7 +231,8 @@ ControlBar.propTypes = {
   updateViewMode: _propTypes2.default.func.isRequired,
   createNewCheck: _propTypes2.default.func.isRequired,
   mode: _propTypes2.default.string.isRequired,
-  tables: _propTypes2.default.array.isRequired
+  tables: _propTypes2.default.array.isRequired,
+  checkList: _propTypes2.default.array.isRequired
 };
 
 module.exports = ControlBar;
@@ -908,6 +917,7 @@ var HomePage = function (_React$Component) {
               mode: this.props.data.viewMode,
               tables: this.props.data.tableList,
               createNewCheck: this.props.createNewCheck,
+              checkList: this.props.data.checkList,
               updateViewMode: this.props.updateViewMode
             }),
             _react2.default.createElement(_checklist2.default, {
