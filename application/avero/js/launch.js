@@ -10,7 +10,6 @@ import { history, store } from './database/store.js';
 import * as Actions from './database/actions.js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import NavBar from './components/navbar.js';
 import HomePage from './pages/home.js';
 
 // simple way to create pass-along redux containers
@@ -24,14 +23,12 @@ const container = (Page) => {
 };
 
 // render the provided connection to the rendered router themed route
-// ...with a navbar
 render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <Router>
         <MuiThemeProvider>
           <div className="one-child">
-            <NavBar />
             <Route exact path="/" component={container(HomePage)}/>
           </div>
         </MuiThemeProvider>
