@@ -19,8 +19,7 @@ const returnNewState = ()=>(Object.freeze(Object.assign({}, currentState)));
 
 const linkChecksToTables = ()=>{
   currentState.checkList = currentState.checkList.map((check)=>{
-    const table = currentState.tableList.filter((table)=>(table.id === check.tableId));
-    check.table = table[0];
+    check.table = currentState.tableList.find((table)=>(table.id === check.tableId));
     return check;
   });
 };
@@ -49,5 +48,16 @@ export const initComplete = ()=>{
 
 export const updateViewMode = (newMode)=>{
   currentState.viewMode = newMode;
+  return returnNewState();
+};
+
+export const updateEditId = (tableId)=>{
+  const editObject = currentState.checkList.find((check)=>(check.tableId === tableId));
+  currentState.editId = editObject.id;
+  return returnNewState();
+};
+
+export const newEditId = (editId)=>{
+  currentState.editId = editId;
   return returnNewState();
 };

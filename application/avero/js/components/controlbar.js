@@ -7,17 +7,14 @@ import MenuItem from 'material-ui/MenuItem';
 
 class ControlBar extends React.Component {
   componentWillMount() {
-    this.updateTable = this.updateTable.bind(this);
-    this.createNewCheck = this.createNewCheck.bind(this);
-    this.updateViewMode = this.updateViewMode.bind(this);
     this.setState({currentTable: this.props.tables[0].id});
   }
   render() {
     const {mode, tables} = this.props;
     
-    var ViewStatus = <p>Viewing: <strong>Open</strong> - <span onClick={this.updateViewMode}><a href="#">Closed</a></span></p>;
+    var ViewStatus = <p>Viewing: <strong>Open</strong> - <span onClick={()=>{this.updateViewMode();}}><a href="#">Closed</a></span></p>;
     if (mode !== 'open') {
-      ViewStatus = <p>Viewing: <span onClick={this.updateViewMode}><a href="#">Open</a></span> - <strong>Closed</strong></p>;
+      ViewStatus = <p>Viewing: <span onClick={()=>{this.updateViewMode();}}><a href="#">Open</a></span> - <strong>Closed</strong></p>;
     }
     return (
       <section className="control-bar">
@@ -25,12 +22,12 @@ class ControlBar extends React.Component {
         <div><RaisedButton 
           style={{ marginTop: '2vw'}}
           label="Create New Check" 
-          onClick={this.createNewCheck}
+          onClick={()=>{this.createNewCheck();}}
         /></div>
         <div><SelectField
           floatingLabelText="Table"
           value={this.state.currentTable}
-          onChange={this.updateTable}
+          onChange={()=>{this.updateTable();}}
         >
           {tables.map((table, index)=>{
             return (<MenuItem key={index} value={table.id} primaryText={'Table #' + table.number} />);

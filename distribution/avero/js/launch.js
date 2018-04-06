@@ -13,7 +13,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var CheckList = function CheckList(_ref) {
   var list = _ref.list,
-      mode = _ref.mode;
+      mode = _ref.mode,
+      editCheck = _ref.editCheck;
 
   var displayList = list.filter(function (item) {
     return item.closed === (mode !== 'open');
@@ -38,7 +39,9 @@ var CheckList = function CheckList(_ref) {
           { key: index },
           _react2.default.createElement(
             'button',
-            null,
+            { onClick: function onClick() {
+                return editCheck(item.id);
+              } },
             mode,
             ' check for table #',
             item.table.number
@@ -50,13 +53,14 @@ var CheckList = function CheckList(_ref) {
 };
 
 CheckList.propTypes = {
+  editCheck: _propTypes2.default.func.isRequired,
   list: _propTypes2.default.array.isRequired,
   mode: _propTypes2.default.string
 };
 
 module.exports = CheckList;
 
-},{"prop-types":265,"react":318}],2:[function(require,module,exports){
+},{"prop-types":278,"react":331}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -101,14 +105,13 @@ var ControlBar = function (_React$Component) {
   _createClass(ControlBar, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
-      this.updateTable = this.updateTable.bind(this);
-      this.createNewCheck = this.createNewCheck.bind(this);
-      this.updateViewMode = this.updateViewMode.bind(this);
       this.setState({ currentTable: this.props.tables[0].id });
     }
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       var _props = this.props,
           mode = _props.mode,
           tables = _props.tables;
@@ -126,7 +129,9 @@ var ControlBar = function (_React$Component) {
         ' - ',
         _react2.default.createElement(
           'span',
-          { onClick: this.updateViewMode },
+          { onClick: function onClick() {
+              _this2.updateViewMode();
+            } },
           _react2.default.createElement(
             'a',
             { href: '#' },
@@ -141,7 +146,9 @@ var ControlBar = function (_React$Component) {
           'Viewing: ',
           _react2.default.createElement(
             'span',
-            { onClick: this.updateViewMode },
+            { onClick: function onClick() {
+                _this2.updateViewMode();
+              } },
             _react2.default.createElement(
               'a',
               { href: '#' },
@@ -166,7 +173,9 @@ var ControlBar = function (_React$Component) {
           _react2.default.createElement(_RaisedButton2.default, {
             style: { marginTop: '2vw' },
             label: 'Create New Check',
-            onClick: this.createNewCheck
+            onClick: function onClick() {
+              _this2.createNewCheck();
+            }
           })
         ),
         _react2.default.createElement(
@@ -177,7 +186,9 @@ var ControlBar = function (_React$Component) {
             {
               floatingLabelText: 'Table',
               value: this.state.currentTable,
-              onChange: this.updateTable
+              onChange: function onChange() {
+                _this2.updateTable();
+              }
             },
             tables.map(function (table, index) {
               return _react2.default.createElement(_MenuItem2.default, { key: index, value: table.id, primaryText: 'Table #' + table.number });
@@ -215,7 +226,7 @@ ControlBar.propTypes = {
 
 module.exports = ControlBar;
 
-},{"material-ui/MenuItem":207,"material-ui/RaisedButton":214,"material-ui/SelectField":216,"prop-types":265,"react":318}],3:[function(require,module,exports){
+},{"material-ui/MenuItem":209,"material-ui/RaisedButton":216,"material-ui/SelectField":218,"prop-types":278,"react":331}],3:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -230,10 +241,6 @@ var _RaisedButton = require('material-ui/RaisedButton');
 
 var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
 
-var _TextField = require('material-ui/TextField');
-
-var _TextField2 = _interopRequireDefault(_TextField);
-
 var _SelectField = require('material-ui/SelectField');
 
 var _SelectField2 = _interopRequireDefault(_SelectField);
@@ -242,20 +249,91 @@ var _MenuItem = require('material-ui/MenuItem');
 
 var _MenuItem2 = _interopRequireDefault(_MenuItem);
 
+var _Table = require('material-ui/Table');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var EditForm = function EditForm(_ref) {
   var editId = _ref.editId,
-      tables = _ref.tables;
+      checkList = _ref.checkList;
 
   if (editId === '') return _react2.default.createElement('p', null);
+
+  var editCheck = checkList.find(function (check) {
+    return check.id === editId;
+  });
+
   return _react2.default.createElement(
     'section',
     { className: 'edit-form' },
     _react2.default.createElement(
       'div',
       null,
+      'Check ID: ',
       editId
+    ),
+    _react2.default.createElement(
+      'div',
+      null,
+      'Table #',
+      editCheck.table.number
+    ),
+    _react2.default.createElement(
+      'div',
+      null,
+      'Tax: ',
+      editCheck.tax || 'not calculated'
+    ),
+    _react2.default.createElement(
+      'div',
+      null,
+      'Tip: ',
+      editCheck.tip || 'not calculated'
+    ),
+    _react2.default.createElement(
+      'div',
+      null,
+      'Menu Items'
+    ),
+    _react2.default.createElement(
+      _Table.Table,
+      null,
+      _react2.default.createElement(
+        _Table.TableHeader,
+        null,
+        _react2.default.createElement(
+          _Table.TableRow,
+          null,
+          _react2.default.createElement(
+            _Table.TableHeaderColumn,
+            null,
+            'ID'
+          ),
+          _react2.default.createElement(
+            _Table.TableHeaderColumn,
+            null,
+            'Name'
+          )
+        )
+      ),
+      _react2.default.createElement(
+        _Table.TableBody,
+        null,
+        _react2.default.createElement(
+          _Table.TableRow,
+          null,
+          _react2.default.createElement(
+            _Table.TableRowColumn,
+            null,
+            '1'
+          ),
+          _react2.default.createElement(
+            _Table.TableRowColumn,
+            null,
+            'Corn Soup'
+          )
+        )
+      )
     ),
     _react2.default.createElement(
       'div',
@@ -263,36 +341,32 @@ var EditForm = function EditForm(_ref) {
       _react2.default.createElement(
         _SelectField2.default,
         {
-          style: { width: '100%' },
-          floatingLabelText: 'Table',
-          value: tables[0].id
+          floatingLabelText: 'New Menu Item',
+          value: 0,
+          onChange: function onChange() {
+            return 0;
+          }
         },
-        tables.map(function (table, index) {
-          return _react2.default.createElement(_MenuItem2.default, { key: index, value: table.id, primaryText: 'Table #' + table.number });
-        })
+        _react2.default.createElement(_MenuItem2.default, { value: 0, primaryText: 'None' })
       )
     ),
     _react2.default.createElement(
       'div',
       null,
-      _react2.default.createElement(_TextField2.default, { style: { width: '100%' }, floatingLabelText: 'Floating Label Text' })
-    ),
-    _react2.default.createElement(
-      'div',
-      null,
-      _react2.default.createElement(_RaisedButton2.default, { style: { float: 'right' }, label: 'Save' })
+      _react2.default.createElement(_RaisedButton2.default, { style: { float: 'right' }, label: 'Close Check' }),
+      _react2.default.createElement(_RaisedButton2.default, { style: { float: 'right' }, label: 'Add Item' })
     )
   );
 };
 
 EditForm.propTypes = {
   editId: _propTypes2.default.string.isRequired,
-  tables: _propTypes2.default.array.isRequired
+  checkList: _propTypes2.default.array.isRequired
 };
 
 module.exports = EditForm;
 
-},{"material-ui/MenuItem":207,"material-ui/RaisedButton":214,"material-ui/SelectField":216,"material-ui/TextField":226,"prop-types":265,"react":318}],4:[function(require,module,exports){
+},{"material-ui/MenuItem":209,"material-ui/RaisedButton":216,"material-ui/SelectField":218,"material-ui/Table":230,"prop-types":278,"react":331}],4:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -326,13 +400,13 @@ var Navbar = function Navbar() {
 
 module.exports = Navbar;
 
-},{"react":318,"react-router-dom":300}],5:[function(require,module,exports){
+},{"react":331,"react-router-dom":313}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
+exports.editCheck = exports.EDIT_CHECK = exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
 
 var _async = require('async');
 
@@ -398,6 +472,14 @@ var updateViewMode = exports.updateViewMode = function updateViewMode(newMode) {
   return {
     type: UPDATE_VIEW_MODE,
     mode: newMode
+  };
+};
+
+var EDIT_CHECK = exports.EDIT_CHECK = 'EDIT_CHECK';
+var editCheck = exports.editCheck = function editCheck(editId) {
+  return {
+    type: EDIT_CHECK,
+    editId: editId
   };
 };
 
@@ -475,7 +557,7 @@ var communication = {
 
 module.exports = communication;
 
-},{"./dataManager.js":7,"superagent":339}],7:[function(require,module,exports){
+},{"./dataManager.js":7,"superagent":352}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -504,10 +586,9 @@ var returnNewState = function returnNewState() {
 
 var linkChecksToTables = function linkChecksToTables() {
   currentState.checkList = currentState.checkList.map(function (check) {
-    var table = currentState.tableList.filter(function (table) {
+    check.table = currentState.tableList.find(function (table) {
       return table.id === check.tableId;
     });
-    check.table = table[0];
     return check;
   });
 };
@@ -541,6 +622,19 @@ var updateViewMode = exports.updateViewMode = function updateViewMode(newMode) {
   return returnNewState();
 };
 
+var updateEditId = exports.updateEditId = function updateEditId(tableId) {
+  var editObject = currentState.checkList.find(function (check) {
+    return check.tableId === tableId;
+  });
+  currentState.editId = editObject.id;
+  return returnNewState();
+};
+
+var newEditId = exports.newEditId = function newEditId(editId) {
+  currentState.editId = editId;
+  return returnNewState();
+};
+
 },{}],8:[function(require,module,exports){
 'use strict';
 
@@ -565,13 +659,20 @@ var dataReducer = function dataReducer() {
     case Actions.RECEIVED_API_KEY:
       Manager.updateToken(action.token);break;
     case Actions.RECEIVED_CHECK_LIST:
-      Manager.updateCheckList(action.checkList);break;
+      Manager.updateCheckList(action.checkList);
+      // only updates status when there is a new check
+      if (action.tableId) {
+        return Manager.updateEditId(action.tableId);
+      }
+      break;
     case Actions.RECEIVED_TABLE_LIST:
       Manager.updateTableList(action.tableList);break;
     case Actions.BASE_DATA_RECIEVED:
       return Manager.initComplete();
     case Actions.UPDATE_VIEW_MODE:
       return Manager.updateViewMode(action.mode);
+    case Actions.EDIT_CHECK:
+      return Manager.newEditId(action.editId);
     default:
       break;
   }
@@ -618,7 +719,7 @@ var store = (0, _redux.createStore)(connectedReducers, initialState, middleware)
 
 module.exports = { history: history, store: store };
 
-},{"./reducer.js":8,"connected-react-router":37,"history":153,"redux":334,"redux-thunk":328}],10:[function(require,module,exports){
+},{"./reducer.js":8,"connected-react-router":37,"history":153,"redux":347,"redux-thunk":341}],10:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -694,7 +795,7 @@ var container = function container(Page) {
 // it has begun
 console.log('%c App Started', 'color:green');
 
-},{"./components/navbar.js":4,"./database/actions.js":5,"./database/store.js":9,"./pages/home.js":11,"connected-react-router":37,"material-ui/styles/MuiThemeProvider":238,"react":318,"react-dom":270,"react-redux":283,"react-router-dom":300}],11:[function(require,module,exports){
+},{"./components/navbar.js":4,"./database/actions.js":5,"./database/store.js":9,"./pages/home.js":11,"connected-react-router":37,"material-ui/styles/MuiThemeProvider":249,"react":331,"react-dom":283,"react-redux":296,"react-router-dom":313}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -763,11 +864,12 @@ var HomePage = function (_React$Component) {
             }),
             _react2.default.createElement(_checklist2.default, {
               mode: this.props.data.viewMode,
-              list: this.props.data.checkList
+              list: this.props.data.checkList,
+              editCheck: this.props.editCheck
             }),
             _react2.default.createElement(_editform2.default, {
               editId: this.props.data.editId,
-              tables: this.props.data.tableList
+              checkList: this.props.data.checkList
             })
           );
       }
@@ -781,6 +883,7 @@ HomePage.propTypes = {
   initApplication: _propTypes2.default.func.isRequired,
   createNewCheck: _propTypes2.default.func.isRequired,
   updateViewMode: _propTypes2.default.func.isRequired,
+  editCheck: _propTypes2.default.func.isRequired,
   data: _propTypes2.default.shape({
     documentPhase: _propTypes2.default.number.isRequired,
     tableList: _propTypes2.default.array,
@@ -792,7 +895,7 @@ HomePage.propTypes = {
 
 module.exports = HomePage;
 
-},{"../components/checklist.js":1,"../components/controlbar.js":2,"../components/editform.js":3,"prop-types":265,"react":318}],12:[function(require,module,exports){
+},{"../components/checklist.js":1,"../components/controlbar.js":2,"../components/editform.js":3,"prop-types":278,"react":331}],12:[function(require,module,exports){
 (function (process,global){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -6391,7 +6494,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":261}],13:[function(require,module,exports){
+},{"_process":274}],13:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/array/from"), __esModule: true };
 },{"core-js/library/fn/array/from":43}],14:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/object/assign"), __esModule: true };
@@ -7813,7 +7916,7 @@ exports.__set__ = _set__;
 exports.__ResetDependency__ = _reset__;
 exports.__RewireAPI__ = _RewireAPI__;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./actions":35,"prop-types":265,"react":318,"react-redux":283,"react-router":310}],35:[function(require,module,exports){
+},{"./actions":35,"prop-types":278,"react":331,"react-redux":296,"react-router":323}],35:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -11606,7 +11709,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":261}],138:[function(require,module,exports){
+},{"_process":274}],138:[function(require,module,exports){
 'use strict';
 
 /**
@@ -11767,7 +11870,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":261}],142:[function(require,module,exports){
+},{"_process":274}],142:[function(require,module,exports){
 'use strict';
 
 /**
@@ -11944,7 +12047,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":136,"_process":261}],146:[function(require,module,exports){
+},{"./emptyFunction":136,"_process":274}],146:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12079,7 +12182,7 @@ var createLocation = exports.createLocation = function createLocation(path, stat
 var locationsAreEqual = exports.locationsAreEqual = function locationsAreEqual(a, b) {
   return a.pathname === b.pathname && a.search === b.search && a.hash === b.hash && a.key === b.key && (0, _valueEqual2.default)(a.state, b.state);
 };
-},{"./PathUtils":148,"resolve-pathname":336,"value-equal":346}],148:[function(require,module,exports){
+},{"./PathUtils":148,"resolve-pathname":349,"value-equal":359}],148:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12449,7 +12552,7 @@ var createBrowserHistory = function createBrowserHistory() {
 };
 
 exports.default = createBrowserHistory;
-},{"./DOMUtils":146,"./LocationUtils":147,"./PathUtils":148,"./createTransitionManager":152,"invariant":180,"warning":347}],150:[function(require,module,exports){
+},{"./DOMUtils":146,"./LocationUtils":147,"./PathUtils":148,"./createTransitionManager":152,"invariant":180,"warning":360}],150:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12774,7 +12877,7 @@ var createHashHistory = function createHashHistory() {
 };
 
 exports.default = createHashHistory;
-},{"./DOMUtils":146,"./LocationUtils":147,"./PathUtils":148,"./createTransitionManager":152,"invariant":180,"warning":347}],151:[function(require,module,exports){
+},{"./DOMUtils":146,"./LocationUtils":147,"./PathUtils":148,"./createTransitionManager":152,"invariant":180,"warning":360}],151:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12945,7 +13048,7 @@ var createMemoryHistory = function createMemoryHistory() {
 };
 
 exports.default = createMemoryHistory;
-},{"./LocationUtils":147,"./PathUtils":148,"./createTransitionManager":152,"warning":347}],152:[function(require,module,exports){
+},{"./LocationUtils":147,"./PathUtils":148,"./createTransitionManager":152,"warning":360}],152:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13031,7 +13134,7 @@ var createTransitionManager = function createTransitionManager() {
 };
 
 exports.default = createTransitionManager;
-},{"warning":347}],153:[function(require,module,exports){
+},{"warning":360}],153:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14291,7 +14394,7 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 }).call(this,require('_process'))
-},{"_process":261}],181:[function(require,module,exports){
+},{"_process":274}],181:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
@@ -17180,6 +17283,318 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _EnhancedSwitch = require('../internal/EnhancedSwitch');
+
+var _EnhancedSwitch2 = _interopRequireDefault(_EnhancedSwitch);
+
+var _transitions = require('../styles/transitions');
+
+var _transitions2 = _interopRequireDefault(_transitions);
+
+var _checkBoxOutlineBlank = require('../svg-icons/toggle/check-box-outline-blank');
+
+var _checkBoxOutlineBlank2 = _interopRequireDefault(_checkBoxOutlineBlank);
+
+var _checkBox = require('../svg-icons/toggle/check-box');
+
+var _checkBox2 = _interopRequireDefault(_checkBox);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getStyles(props, context) {
+  var checkbox = context.muiTheme.checkbox;
+
+  var checkboxSize = 24;
+
+  return {
+    icon: {
+      height: checkboxSize,
+      width: checkboxSize
+    },
+    check: {
+      position: 'absolute',
+      opacity: 0,
+      transform: 'scale(0)',
+      transitionOrigin: '50% 50%',
+      transition: _transitions2.default.easeOut('450ms', 'opacity', '0ms') + ', ' + _transitions2.default.easeOut('0ms', 'transform', '450ms'),
+      fill: checkbox.checkedColor
+    },
+    checkWhenSwitched: {
+      opacity: 1,
+      transform: 'scale(1)',
+      transition: _transitions2.default.easeOut('0ms', 'opacity', '0ms') + ', ' + _transitions2.default.easeOut('800ms', 'transform', '0ms')
+    },
+    checkWhenDisabled: {
+      fill: checkbox.disabledColor
+    },
+    box: {
+      position: 'absolute',
+      opacity: 1,
+      fill: checkbox.boxColor,
+      transition: _transitions2.default.easeOut('1000ms', 'opacity', '200ms')
+    },
+    boxWhenSwitched: {
+      opacity: 0,
+      transition: _transitions2.default.easeOut('650ms', 'opacity', '150ms'),
+      fill: checkbox.checkedColor
+    },
+    boxWhenDisabled: {
+      fill: props.checked ? 'transparent' : checkbox.disabledColor
+    },
+    label: {
+      color: props.disabled ? checkbox.labelDisabledColor : checkbox.labelColor
+    }
+  };
+}
+
+var Checkbox = function (_Component) {
+  (0, _inherits3.default)(Checkbox, _Component);
+
+  function Checkbox() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    (0, _classCallCheck3.default)(this, Checkbox);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = Checkbox.__proto__ || (0, _getPrototypeOf2.default)(Checkbox)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      switched: false
+    }, _this.handleStateChange = function (newSwitched) {
+      _this.setState({
+        switched: newSwitched
+      });
+    }, _this.handleCheck = function (event, isInputChecked) {
+      if (_this.props.onCheck) {
+        _this.props.onCheck(event, isInputChecked);
+      }
+    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+  }
+
+  (0, _createClass3.default)(Checkbox, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      var _props = this.props,
+          checked = _props.checked,
+          defaultChecked = _props.defaultChecked,
+          valueLink = _props.valueLink;
+
+
+      if (checked || defaultChecked || valueLink && valueLink.value) {
+        this.setState({
+          switched: true
+        });
+      }
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      if (this.props.checked !== nextProps.checked) {
+        this.setState({
+          switched: nextProps.checked
+        });
+      }
+    }
+  }, {
+    key: 'isChecked',
+    value: function isChecked() {
+      return this.refs.enhancedSwitch.isSwitched();
+    }
+  }, {
+    key: 'setChecked',
+    value: function setChecked(newCheckedValue) {
+      this.refs.enhancedSwitch.setSwitched(newCheckedValue);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props2 = this.props,
+          iconStyle = _props2.iconStyle,
+          onCheck = _props2.onCheck,
+          checkedIcon = _props2.checkedIcon,
+          uncheckedIcon = _props2.uncheckedIcon,
+          other = (0, _objectWithoutProperties3.default)(_props2, ['iconStyle', 'onCheck', 'checkedIcon', 'uncheckedIcon']);
+
+      var styles = getStyles(this.props, this.context);
+      var boxStyles = (0, _simpleAssign2.default)(styles.box, this.state.switched && styles.boxWhenSwitched, iconStyle, this.props.disabled && styles.boxWhenDisabled);
+      var checkStyles = (0, _simpleAssign2.default)(styles.check, this.state.switched && styles.checkWhenSwitched, iconStyle, this.props.disabled && styles.checkWhenDisabled);
+
+      var checkedElement = checkedIcon ? _react2.default.cloneElement(checkedIcon, {
+        style: (0, _simpleAssign2.default)(checkStyles, checkedIcon.props.style)
+      }) : _react2.default.createElement(_checkBox2.default, {
+        style: checkStyles
+      });
+
+      var unCheckedElement = uncheckedIcon ? _react2.default.cloneElement(uncheckedIcon, {
+        style: (0, _simpleAssign2.default)(boxStyles, uncheckedIcon.props.style)
+      }) : _react2.default.createElement(_checkBoxOutlineBlank2.default, {
+        style: boxStyles
+      });
+
+      var checkboxElement = _react2.default.createElement(
+        'div',
+        null,
+        unCheckedElement,
+        checkedElement
+      );
+
+      var rippleColor = this.state.switched ? checkStyles.fill : boxStyles.fill;
+      var mergedIconStyle = (0, _simpleAssign2.default)(styles.icon, iconStyle);
+
+      var labelStyle = (0, _simpleAssign2.default)(styles.label, this.props.labelStyle);
+
+      var enhancedSwitchProps = {
+        ref: 'enhancedSwitch',
+        inputType: 'checkbox',
+        switched: this.state.switched,
+        switchElement: checkboxElement,
+        rippleColor: rippleColor,
+        iconStyle: mergedIconStyle,
+        onSwitch: this.handleCheck,
+        labelStyle: labelStyle,
+        onParentShouldUpdate: this.handleStateChange,
+        labelPosition: this.props.labelPosition
+      };
+
+      return _react2.default.createElement(_EnhancedSwitch2.default, (0, _extends3.default)({}, other, enhancedSwitchProps));
+    }
+  }]);
+  return Checkbox;
+}(_react.Component);
+
+Checkbox.defaultProps = {
+  labelPosition: 'right',
+  disabled: false
+};
+Checkbox.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
+Checkbox.propTypes = process.env.NODE_ENV !== "production" ? {
+  /**
+   * Checkbox is checked if true.
+   */
+  checked: _propTypes2.default.bool,
+  /**
+   * The SvgIcon to use for the checked state.
+   * This is useful to create icon toggles.
+   */
+  checkedIcon: _propTypes2.default.element,
+  /**
+   * The default state of our checkbox component.
+   * **Warning:** This cannot be used in conjunction with `checked`.
+   * Decide between using a controlled or uncontrolled input element and remove one of these props.
+   * More info: https://fb.me/react-controlled-components
+   */
+  defaultChecked: _propTypes2.default.bool,
+  /**
+   * Disabled if true.
+   */
+  disabled: _propTypes2.default.bool,
+  /**
+   * Overrides the inline-styles of the icon element.
+   */
+  iconStyle: _propTypes2.default.object,
+  /**
+   * Overrides the inline-styles of the input element.
+   */
+  inputStyle: _propTypes2.default.object,
+  /**
+   * Where the label will be placed next to the checkbox.
+   */
+  labelPosition: _propTypes2.default.oneOf(['left', 'right']),
+  /**
+   * Overrides the inline-styles of the Checkbox element label.
+   */
+  labelStyle: _propTypes2.default.object,
+  /**
+   * Callback function that is fired when the checkbox is checked.
+   *
+   * @param {object} event `change` event targeting the underlying checkbox `input`.
+   * @param {boolean} isInputChecked The `checked` value of the underlying checkbox `input`.
+   */
+  onCheck: _propTypes2.default.func,
+  /**
+   * Override the inline-styles of the root element.
+   */
+  style: _propTypes2.default.object,
+  /**
+   * The SvgIcon to use for the unchecked state.
+   * This is useful to create icon toggles.
+   */
+  uncheckedIcon: _propTypes2.default.element,
+  /**
+   * ValueLink for when using controlled checkbox.
+   */
+  valueLink: _propTypes2.default.object
+} : {};
+exports.default = Checkbox;
+}).call(this,require('_process'))
+},{"../internal/EnhancedSwitch":242,"../styles/transitions":254,"../svg-icons/toggle/check-box":262,"../svg-icons/toggle/check-box-outline-blank":261,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],196:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = undefined;
+
+var _Checkbox = require('./Checkbox');
+
+var _Checkbox2 = _interopRequireDefault(_Checkbox);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _Checkbox2.default;
+},{"./Checkbox":195}],197:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _simpleAssign = require('simple-assign');
+
+var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
@@ -17727,7 +18142,7 @@ DropDownMenu.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = DropDownMenu;
 }).call(this,require('_process'))
-},{"../IconButton":200,"../Menu/Menu":204,"../Popover/Popover":210,"../Popover/PopoverAnimationVertical":212,"../internal/ClearFix":229,"../styles/transitions":243,"../svg-icons/navigation/arrow-drop-down":246,"../utils/events":258,"../utils/propTypes":259,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"keycode":182,"prop-types":265,"react":318,"react-dom":270,"simple-assign":337}],196:[function(require,module,exports){
+},{"../IconButton":202,"../Menu/Menu":206,"../Popover/Popover":212,"../Popover/PopoverAnimationVertical":214,"../internal/ClearFix":239,"../styles/transitions":254,"../svg-icons/navigation/arrow-drop-down":257,"../utils/events":271,"../utils/propTypes":272,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"keycode":182,"prop-types":278,"react":331,"react-dom":283,"simple-assign":350}],198:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -17748,7 +18163,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.DropDownMenu = _DropDownMenu3.default;
 exports.MenuItem = _MenuItem3.default;
 exports.default = _DropDownMenu3.default;
-},{"../MenuItem/MenuItem":206,"./DropDownMenu":195}],197:[function(require,module,exports){
+},{"../MenuItem/MenuItem":208,"./DropDownMenu":197}],199:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -17909,7 +18324,7 @@ FontIcon.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = FontIcon;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],198:[function(require,module,exports){
+},{"../styles/transitions":254,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],200:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -17924,7 +18339,7 @@ var _FontIcon2 = _interopRequireDefault(_FontIcon);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _FontIcon2.default;
-},{"./FontIcon":197}],199:[function(require,module,exports){
+},{"./FontIcon":199}],201:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -18311,7 +18726,7 @@ IconButton.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = IconButton;
 }).call(this,require('_process'))
-},{"../FontIcon":198,"../internal/EnhancedButton":231,"../internal/Tooltip":236,"../styles/transitions":243,"../utils/childUtils":255,"../utils/propTypes":259,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],200:[function(require,module,exports){
+},{"../FontIcon":200,"../internal/EnhancedButton":241,"../internal/Tooltip":247,"../styles/transitions":254,"../utils/childUtils":268,"../utils/propTypes":272,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],202:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18326,7 +18741,7 @@ var _IconButton2 = _interopRequireDefault(_IconButton);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _IconButton2.default;
-},{"./IconButton":199}],201:[function(require,module,exports){
+},{"./IconButton":201}],203:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -18437,7 +18852,7 @@ List.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = List;
 }).call(this,require('_process'))
-},{"../Subheader":218,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],202:[function(require,module,exports){
+},{"../Subheader":220,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],204:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -19196,7 +19611,7 @@ ListItem.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = ListItem;
 }).call(this,require('_process'))
-},{"../IconButton":200,"../internal/EnhancedButton":231,"../styles/transitions":243,"../svg-icons/navigation/expand-less":248,"../svg-icons/navigation/expand-more":249,"../utils/colorManipulator":256,"./NestedList":203,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-dom":270,"recompose/shallowEqual":325,"simple-assign":337}],203:[function(require,module,exports){
+},{"../IconButton":202,"../internal/EnhancedButton":241,"../styles/transitions":254,"../svg-icons/navigation/expand-less":259,"../svg-icons/navigation/expand-more":260,"../utils/colorManipulator":269,"./NestedList":205,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-dom":283,"recompose/shallowEqual":338,"simple-assign":350}],205:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -19252,7 +19667,7 @@ NestedList.propTypes = process.env.NODE_ENV !== "production" ? {
 
 exports.default = NestedList;
 }).call(this,require('_process'))
-},{"./List":201,"_process":261,"prop-types":265,"react":318}],204:[function(require,module,exports){
+},{"./List":203,"_process":274,"prop-types":278,"react":331}],206:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -19964,7 +20379,7 @@ Menu.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = Menu;
 }).call(this,require('_process'))
-},{"../List/List":201,"../internal/ClickAwayListener":230,"../utils/propTypes":259,"./menuUtils":205,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"babel-runtime/helpers/toArray":28,"keycode":182,"prop-types":265,"react":318,"react-dom":270,"recompose/shallowEqual":325,"simple-assign":337}],205:[function(require,module,exports){
+},{"../List/List":203,"../internal/ClickAwayListener":240,"../utils/propTypes":272,"./menuUtils":207,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"babel-runtime/helpers/toArray":28,"keycode":182,"prop-types":278,"react":331,"react-dom":283,"recompose/shallowEqual":338,"simple-assign":350}],207:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20004,7 +20419,7 @@ var HotKeyHolder = exports.HotKeyHolder = function () {
   }]);
   return HotKeyHolder;
 }();
-},{"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23}],206:[function(require,module,exports){
+},{"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23}],208:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -20413,7 +20828,7 @@ MenuItem.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = MenuItem;
 }).call(this,require('_process'))
-},{"../List/ListItem":202,"../Menu/Menu":204,"../Popover/Popover":210,"../svg-icons/navigation/check":247,"../utils/propTypes":259,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-dom":270,"recompose/shallowEqual":325,"simple-assign":337}],207:[function(require,module,exports){
+},{"../List/ListItem":204,"../Menu/Menu":206,"../Popover/Popover":212,"../svg-icons/navigation/check":258,"../utils/propTypes":272,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-dom":283,"recompose/shallowEqual":338,"simple-assign":350}],209:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20428,7 +20843,7 @@ var _MenuItem2 = _interopRequireDefault(_MenuItem);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _MenuItem2.default;
-},{"./MenuItem":206}],208:[function(require,module,exports){
+},{"./MenuItem":208}],210:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -20582,7 +20997,7 @@ Paper.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = Paper;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"../utils/propTypes":259,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],209:[function(require,module,exports){
+},{"../styles/transitions":254,"../utils/propTypes":272,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],211:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20597,7 +21012,7 @@ var _Paper2 = _interopRequireDefault(_Paper);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Paper2.default;
-},{"./Paper":208}],210:[function(require,module,exports){
+},{"./Paper":210}],212:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -21125,7 +21540,7 @@ Popover.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = Popover;
 }).call(this,require('_process'))
-},{"../Paper":209,"../internal/RenderToLayer":233,"../utils/propTypes":259,"./PopoverAnimationDefault":211,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"lodash.throttle":184,"prop-types":265,"react":318,"react-dom":270,"react-event-listener":272,"simple-assign":337}],211:[function(require,module,exports){
+},{"../Paper":211,"../internal/RenderToLayer":244,"../utils/propTypes":272,"./PopoverAnimationDefault":213,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"lodash.throttle":184,"prop-types":278,"react":331,"react-dom":283,"react-event-listener":285,"simple-assign":350}],213:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -21300,7 +21715,7 @@ PopoverAnimationDefault.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = PopoverAnimationDefault;
 }).call(this,require('_process'))
-},{"../Paper":209,"../styles/transitions":243,"../utils/propTypes":259,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],212:[function(require,module,exports){
+},{"../Paper":211,"../styles/transitions":254,"../utils/propTypes":272,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],214:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -21450,7 +21865,7 @@ PopoverAnimationVertical.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = PopoverAnimationVertical;
 }).call(this,require('_process'))
-},{"../Paper":209,"../styles/transitions":243,"../utils/propTypes":259,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],213:[function(require,module,exports){
+},{"../Paper":211,"../styles/transitions":254,"../utils/propTypes":272,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],215:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -21938,7 +22353,7 @@ RaisedButton.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = RaisedButton;
 }).call(this,require('_process'))
-},{"../Paper":209,"../internal/EnhancedButton":231,"../styles/transitions":243,"../utils/colorManipulator":256,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],214:[function(require,module,exports){
+},{"../Paper":211,"../internal/EnhancedButton":241,"../styles/transitions":254,"../utils/colorManipulator":269,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],216:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21953,7 +22368,7 @@ var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _RaisedButton2.default;
-},{"./RaisedButton":213}],215:[function(require,module,exports){
+},{"./RaisedButton":215}],217:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -22277,7 +22692,7 @@ SelectField.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = SelectField;
 }).call(this,require('_process'))
-},{"../DropDownMenu":196,"../TextField":226,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],216:[function(require,module,exports){
+},{"../DropDownMenu":198,"../TextField":236,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],218:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22292,7 +22707,7 @@ var _SelectField2 = _interopRequireDefault(_SelectField);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _SelectField2.default;
-},{"./SelectField":215}],217:[function(require,module,exports){
+},{"./SelectField":217}],219:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -22378,7 +22793,7 @@ Subheader.contextTypes = {
 
 exports.default = Subheader;
 }).call(this,require('_process'))
-},{"_process":261,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/objectWithoutProperties":26,"prop-types":265,"react":318,"simple-assign":337}],218:[function(require,module,exports){
+},{"_process":274,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/objectWithoutProperties":26,"prop-types":278,"react":331,"simple-assign":350}],220:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22393,7 +22808,7 @@ var _Subheader2 = _interopRequireDefault(_Subheader);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Subheader2.default;
-},{"./Subheader":217}],219:[function(require,module,exports){
+},{"./Subheader":219}],221:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -22561,7 +22976,7 @@ SvgIcon.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = SvgIcon;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],220:[function(require,module,exports){
+},{"../styles/transitions":254,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],222:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22576,7 +22991,2071 @@ var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _SvgIcon2.default;
-},{"./SvgIcon":219}],221:[function(require,module,exports){
+},{"./SvgIcon":221}],223:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _simpleAssign = require('simple-assign');
+
+var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _warning = require('warning');
+
+var _warning2 = _interopRequireDefault(_warning);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getStyles(props, context) {
+  var _context$muiTheme = context.muiTheme,
+      baseTheme = _context$muiTheme.baseTheme,
+      table = _context$muiTheme.table;
+
+
+  return {
+    root: {
+      backgroundColor: table.backgroundColor,
+      width: '100%',
+      borderCollapse: 'collapse',
+      borderSpacing: 0,
+      tableLayout: 'fixed',
+      fontFamily: baseTheme.fontFamily
+    },
+    bodyTable: {
+      height: props.fixedHeader || props.fixedFooter ? props.height : 'auto',
+      overflowX: 'hidden',
+      overflowY: 'auto'
+    },
+    tableWrapper: {
+      height: props.fixedHeader || props.fixedFooter ? 'auto' : props.height,
+      overflow: 'auto'
+    }
+  };
+}
+
+var Table = function (_Component) {
+  (0, _inherits3.default)(Table, _Component);
+
+  function Table() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    (0, _classCallCheck3.default)(this, Table);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = Table.__proto__ || (0, _getPrototypeOf2.default)(Table)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      allRowsSelected: false
+    }, _this.onCellClick = function (rowNumber, columnNumber, event) {
+      if (_this.props.onCellClick) _this.props.onCellClick(rowNumber, columnNumber, event);
+    }, _this.onCellHover = function (rowNumber, columnNumber, event) {
+      if (_this.props.onCellHover) _this.props.onCellHover(rowNumber, columnNumber, event);
+    }, _this.onCellHoverExit = function (rowNumber, columnNumber, event) {
+      if (_this.props.onCellHoverExit) _this.props.onCellHoverExit(rowNumber, columnNumber, event);
+    }, _this.onRowHover = function (rowNumber) {
+      if (_this.props.onRowHover) _this.props.onRowHover(rowNumber);
+    }, _this.onRowHoverExit = function (rowNumber) {
+      if (_this.props.onRowHoverExit) _this.props.onRowHoverExit(rowNumber);
+    }, _this.onRowSelection = function (selectedRows) {
+      if (_this.state.allRowsSelected) {
+        _this.setState({ allRowsSelected: false });
+      }
+
+      if (_this.props.onRowSelection) {
+        _this.props.onRowSelection(selectedRows);
+      }
+    }, _this.onSelectAll = function () {
+      if (_this.props.onRowSelection) {
+        if (!_this.state.allRowsSelected) {
+          _this.props.onRowSelection('all');
+        } else {
+          _this.props.onRowSelection('none');
+        }
+      }
+
+      _this.setState({ allRowsSelected: !_this.state.allRowsSelected });
+    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+  }
+
+  (0, _createClass3.default)(Table, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      if (this.props.allRowsSelected) {
+        this.setState({ allRowsSelected: true });
+      }
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      if (this.props.allRowsSelected !== nextProps.allRowsSelected) {
+        this.setState({ allRowsSelected: nextProps.allRowsSelected });
+      }
+    }
+  }, {
+    key: 'isScrollbarVisible',
+    value: function isScrollbarVisible() {
+      var tableDivHeight = this.refs.tableDiv.clientHeight;
+      var tableBodyHeight = this.refs.tableBody.clientHeight;
+
+      return tableBodyHeight > tableDivHeight;
+    }
+  }, {
+    key: 'createTableHeader',
+    value: function createTableHeader(base) {
+      return _react2.default.cloneElement(base, {
+        enableSelectAll: base.props.enableSelectAll && this.props.selectable && this.props.multiSelectable,
+        onSelectAll: this.onSelectAll,
+        selectAllSelected: this.state.allRowsSelected
+      });
+    }
+  }, {
+    key: 'createTableBody',
+    value: function createTableBody(base) {
+      return _react2.default.cloneElement(base, {
+        allRowsSelected: this.state.allRowsSelected,
+        multiSelectable: this.props.multiSelectable,
+        onCellClick: this.onCellClick,
+        onCellHover: this.onCellHover,
+        onCellHoverExit: this.onCellHoverExit,
+        onRowHover: this.onRowHover,
+        onRowHoverExit: this.onRowHoverExit,
+        onRowSelection: this.onRowSelection,
+        selectable: this.props.selectable
+      });
+    }
+  }, {
+    key: 'createTableFooter',
+    value: function createTableFooter(base) {
+      return base;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      var _props = this.props,
+          children = _props.children,
+          className = _props.className,
+          fixedFooter = _props.fixedFooter,
+          fixedHeader = _props.fixedHeader,
+          style = _props.style,
+          wrapperStyle = _props.wrapperStyle,
+          headerStyle = _props.headerStyle,
+          bodyStyle = _props.bodyStyle,
+          footerStyle = _props.footerStyle;
+      var prepareStyles = this.context.muiTheme.prepareStyles;
+
+      var styles = getStyles(this.props, this.context);
+
+      var tHead = void 0;
+      var tFoot = void 0;
+      var tBody = void 0;
+
+      _react2.default.Children.forEach(children, function (child) {
+        if (!_react2.default.isValidElement(child)) return;
+
+        var muiName = child.type.muiName;
+
+        if (muiName === 'TableBody') {
+          tBody = _this2.createTableBody(child);
+        } else if (muiName === 'TableHeader') {
+          tHead = _this2.createTableHeader(child);
+        } else if (muiName === 'TableFooter') {
+          tFoot = _this2.createTableFooter(child);
+        } else {
+          process.env.NODE_ENV !== "production" ? (0, _warning2.default)(false, 'Material-UI: Children of the Table component must be TableBody or TableHeader or TableFooter.\n           Nothing is rendered.') : void 0;
+        }
+      });
+
+      // If we could not find a table-header and a table-body, do not attempt to display anything.
+      if (!tBody && !tHead) return null;
+
+      var mergedTableStyle = (0, _simpleAssign2.default)(styles.root, style);
+      var headerTable = void 0;
+      var footerTable = void 0;
+      var inlineHeader = void 0;
+      var inlineFooter = void 0;
+
+      if (fixedHeader) {
+        headerTable = _react2.default.createElement(
+          'div',
+          { style: prepareStyles((0, _simpleAssign2.default)({}, headerStyle)) },
+          _react2.default.createElement(
+            'table',
+            { className: className, style: mergedTableStyle },
+            tHead
+          )
+        );
+      } else {
+        inlineHeader = tHead;
+      }
+
+      if (tFoot !== undefined) {
+        if (fixedFooter) {
+          footerTable = _react2.default.createElement(
+            'div',
+            { style: prepareStyles((0, _simpleAssign2.default)({}, footerStyle)) },
+            _react2.default.createElement(
+              'table',
+              { className: className, style: prepareStyles(mergedTableStyle) },
+              tFoot
+            )
+          );
+        } else {
+          inlineFooter = tFoot;
+        }
+      }
+
+      return _react2.default.createElement(
+        'div',
+        { style: prepareStyles((0, _simpleAssign2.default)(styles.tableWrapper, wrapperStyle)) },
+        headerTable,
+        _react2.default.createElement(
+          'div',
+          { style: prepareStyles((0, _simpleAssign2.default)(styles.bodyTable, bodyStyle)), ref: 'tableDiv' },
+          _react2.default.createElement(
+            'table',
+            { className: className, style: mergedTableStyle, ref: 'tableBody' },
+            inlineHeader,
+            inlineFooter,
+            tBody
+          )
+        ),
+        footerTable
+      );
+    }
+  }]);
+  return Table;
+}(_react.Component);
+
+Table.defaultProps = {
+  allRowsSelected: false,
+  fixedFooter: true,
+  fixedHeader: true,
+  height: 'inherit',
+  multiSelectable: false,
+  selectable: true
+};
+Table.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
+Table.propTypes = process.env.NODE_ENV !== "production" ? {
+  /**
+   * Set to true to indicate that all rows should be selected.
+   */
+  allRowsSelected: _propTypes2.default.bool,
+  /**
+   * Override the inline-styles of the body's table element.
+   */
+  bodyStyle: _propTypes2.default.object,
+  /**
+   * Children passed to table.
+   */
+  children: _propTypes2.default.node,
+  /**
+   * The css class name of the root element.
+   */
+  className: _propTypes2.default.string,
+  /**
+   * If true, the footer will appear fixed below the table.
+   * The default value is true.
+   */
+  fixedFooter: _propTypes2.default.bool,
+  /**
+   * If true, the header will appear fixed above the table.
+   * The default value is true.
+   */
+  fixedHeader: _propTypes2.default.bool,
+  /**
+   * Override the inline-styles of the footer's table element.
+   */
+  footerStyle: _propTypes2.default.object,
+  /**
+   * Override the inline-styles of the header's table element.
+   */
+  headerStyle: _propTypes2.default.object,
+  /**
+   * The height of the table.
+   */
+  height: _propTypes2.default.string,
+  /**
+   * If true, multiple table rows can be selected.
+   * CTRL/CMD+Click and SHIFT+Click are valid actions.
+   * The default value is false.
+   */
+  multiSelectable: _propTypes2.default.bool,
+  /**
+   * Called when a row cell is clicked.
+   * rowNumber is the row number and columnId is
+   * the column number or the column key.
+   */
+  onCellClick: _propTypes2.default.func,
+  /**
+   * Called when a table cell is hovered.
+   * rowNumber is the row number of the hovered row
+   * and columnId is the column number or the column key of the cell.
+   */
+  onCellHover: _propTypes2.default.func,
+  /**
+   * Called when a table cell is no longer hovered.
+   * rowNumber is the row number of the row and columnId
+   * is the column number or the column key of the cell.
+   */
+  onCellHoverExit: _propTypes2.default.func,
+  /**
+   * Called when a table row is hovered.
+   * rowNumber is the row number of the hovered row.
+   */
+  onRowHover: _propTypes2.default.func,
+  /**
+   * Called when a table row is no longer hovered.
+   * rowNumber is the row number of the row that is no longer hovered.
+   */
+  onRowHoverExit: _propTypes2.default.func,
+  /**
+   * Called when a row is selected.
+   * selectedRows is an array of all row selections.
+   * IF all rows have been selected, the string "all"
+   * will be returned instead to indicate that all rows have been selected.
+   */
+  onRowSelection: _propTypes2.default.func,
+  /**
+   * If true, table rows can be selected.
+   * If multiple row selection is desired, enable multiSelectable.
+   * The default value is true.
+   */
+  selectable: _propTypes2.default.bool,
+  /**
+   * Override the inline-styles of the root element.
+   */
+  style: _propTypes2.default.object,
+  /**
+   * Override the inline-styles of the table's wrapper element.
+   */
+  wrapperStyle: _propTypes2.default.object
+} : {};
+exports.default = Table;
+}).call(this,require('_process'))
+},{"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350,"warning":360}],224:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _typeof2 = require('babel-runtime/helpers/typeof');
+
+var _typeof3 = _interopRequireDefault(_typeof2);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _simpleAssign = require('simple-assign');
+
+var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _Checkbox = require('../Checkbox');
+
+var _Checkbox2 = _interopRequireDefault(_Checkbox);
+
+var _TableRowColumn = require('./TableRowColumn');
+
+var _TableRowColumn2 = _interopRequireDefault(_TableRowColumn);
+
+var _ClickAwayListener = require('../internal/ClickAwayListener');
+
+var _ClickAwayListener2 = _interopRequireDefault(_ClickAwayListener);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var TableBody = function (_Component) {
+  (0, _inherits3.default)(TableBody, _Component);
+
+  function TableBody() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    (0, _classCallCheck3.default)(this, TableBody);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = TableBody.__proto__ || (0, _getPrototypeOf2.default)(TableBody)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      selectedRows: []
+    }, _this.isControlled = false, _this.handleClickAway = function () {
+      if (_this.props.deselectOnClickaway && _this.state.selectedRows.length > 0) {
+        var selectedRows = [];
+        _this.setState({ selectedRows: selectedRows });
+        if (_this.props.onRowSelection) {
+          _this.props.onRowSelection(selectedRows);
+        }
+      }
+    }, _this.onRowClick = function (event, rowNumber) {
+      event.stopPropagation();
+
+      if (_this.props.selectable) {
+        // Prevent text selection while selecting rows.
+        if (window.getSelection().rangeCount > 0 && window.getSelection().getRangeAt(0).getClientRects.length > 0) {
+          window.getSelection().removeAllRanges();
+        }
+        _this.processRowSelection(event, rowNumber);
+      }
+    }, _this.onCellClick = function (event, rowNumber, columnNumber) {
+      event.stopPropagation();
+      if (_this.props.onCellClick) {
+        _this.props.onCellClick(rowNumber, _this.getColumnId(columnNumber), event);
+      }
+    }, _this.onCellHover = function (event, rowNumber, columnNumber) {
+      if (_this.props.onCellHover) {
+        _this.props.onCellHover(rowNumber, _this.getColumnId(columnNumber), event);
+      }
+      _this.onRowHover(event, rowNumber);
+    }, _this.onCellHoverExit = function (event, rowNumber, columnNumber) {
+      if (_this.props.onCellHoverExit) {
+        _this.props.onCellHoverExit(rowNumber, _this.getColumnId(columnNumber), event);
+      }
+      _this.onRowHoverExit(event, rowNumber);
+    }, _this.onRowHover = function (event, rowNumber) {
+      if (_this.props.onRowHover) {
+        _this.props.onRowHover(rowNumber);
+      }
+    }, _this.onRowHoverExit = function (event, rowNumber) {
+      if (_this.props.onRowHoverExit) {
+        _this.props.onRowHoverExit(rowNumber);
+      }
+    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+  }
+
+  (0, _createClass3.default)(TableBody, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      if (this.props.preScanRows) {
+        this.setState({
+          selectedRows: this.getSelectedRows(this.props)
+        });
+      }
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (!this.props.preScanRows) {
+        this.setState({ // eslint-disable-line react/no-did-mount-set-state
+          selectedRows: this.getSelectedRows(this.props)
+        });
+      }
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      if (this.props.allRowsSelected !== nextProps.allRowsSelected) {
+        if (!nextProps.allRowsSelected) {
+          this.setState({
+            selectedRows: []
+          });
+          return;
+        }
+      }
+
+      this.setState({
+        selectedRows: this.getSelectedRows(nextProps)
+      });
+    }
+  }, {
+    key: 'createRows',
+    value: function createRows() {
+      var _this2 = this;
+
+      var numChildren = _react2.default.Children.count(this.props.children);
+      var rowNumber = 0;
+      var handlers = {
+        onCellClick: this.onCellClick,
+        onCellHover: this.onCellHover,
+        onCellHoverExit: this.onCellHoverExit,
+        onRowHover: this.onRowHover,
+        onRowHoverExit: this.onRowHoverExit,
+        onRowClick: this.onRowClick
+      };
+
+      return _react2.default.Children.map(this.props.children, function (child) {
+        if (_react2.default.isValidElement(child)) {
+          var props = {
+            hoverable: _this2.props.showRowHover,
+            selected: _this2.isRowSelected(rowNumber),
+            striped: _this2.props.stripedRows && rowNumber % 2 === 0,
+            rowNumber: rowNumber++
+          };
+
+          if (rowNumber === numChildren) {
+            props.displayBorder = false;
+          }
+
+          var children = [_this2.createRowCheckboxColumn(props)];
+
+          _react2.default.Children.forEach(child.props.children, function (child) {
+            children.push(child);
+          });
+
+          return _react2.default.cloneElement(child, (0, _extends3.default)({}, props, handlers), children);
+        }
+      });
+    }
+  }, {
+    key: 'createRowCheckboxColumn',
+    value: function createRowCheckboxColumn(rowProps) {
+      if (!this.props.displayRowCheckbox) {
+        return null;
+      }
+
+      var name = rowProps.rowNumber + '-cb';
+      var disabled = !this.props.selectable;
+
+      return _react2.default.createElement(
+        _TableRowColumn2.default,
+        {
+          key: name,
+          columnNumber: 0,
+          style: {
+            width: 24,
+            cursor: disabled ? 'default' : 'inherit'
+          }
+        },
+        _react2.default.createElement(_Checkbox2.default, {
+          name: name,
+          value: 'selected',
+          disabled: disabled,
+          checked: rowProps.selected
+        })
+      );
+    }
+  }, {
+    key: 'getSelectedRows',
+    value: function getSelectedRows(props) {
+      var _this3 = this;
+
+      var selectedRows = [];
+
+      if (props.selectable) {
+        var index = 0;
+        _react2.default.Children.forEach(props.children, function (child) {
+          if (_react2.default.isValidElement(child)) {
+            if (child.props.selected !== undefined) {
+              _this3.isControlled = true;
+            }
+
+            if (child.props.selected && (selectedRows.length === 0 || props.multiSelectable)) {
+              selectedRows.push(index);
+            }
+
+            index++;
+          }
+        });
+      }
+
+      return selectedRows;
+    }
+  }, {
+    key: 'isRowSelected',
+    value: function isRowSelected(rowNumber) {
+      var _this4 = this;
+
+      if (this.props.allRowsSelected) {
+        return true;
+      }
+
+      return this.state.selectedRows.some(function (row) {
+        if ((typeof row === 'undefined' ? 'undefined' : (0, _typeof3.default)(row)) === 'object') {
+          if (_this4.isValueInRange(rowNumber, row)) {
+            return true;
+          }
+        } else {
+          if (row === rowNumber) {
+            return true;
+          }
+        }
+
+        return false;
+      });
+    }
+  }, {
+    key: 'isValueInRange',
+    value: function isValueInRange(value, range) {
+      if (!range) return false;
+
+      if (range.start <= value && value <= range.end || range.end <= value && value <= range.start) {
+        return true;
+      }
+
+      return false;
+    }
+  }, {
+    key: 'processRowSelection',
+    value: function processRowSelection(event, rowNumber) {
+      var selectedRows = [].concat((0, _toConsumableArray3.default)(this.state.selectedRows));
+
+      if (event.shiftKey && this.props.multiSelectable && selectedRows.length > 0) {
+        var lastIndex = selectedRows.length - 1;
+        var lastSelection = selectedRows[lastIndex];
+
+        if ((typeof lastSelection === 'undefined' ? 'undefined' : (0, _typeof3.default)(lastSelection)) === 'object') {
+          lastSelection.end = rowNumber;
+        } else {
+          selectedRows.splice(lastIndex, 1, {
+            start: lastSelection,
+            end: rowNumber
+          });
+        }
+      } else if ((event.ctrlKey && !event.metaKey || event.metaKey && !event.ctrlKey) && this.props.multiSelectable) {
+        var idx = selectedRows.indexOf(rowNumber);
+        if (idx < 0) {
+          var foundRange = false;
+          for (var i = 0; i < selectedRows.length; i++) {
+            var range = selectedRows[i];
+            if ((typeof range === 'undefined' ? 'undefined' : (0, _typeof3.default)(range)) !== 'object') continue;
+
+            if (this.isValueInRange(rowNumber, range)) {
+              var _selectedRows;
+
+              foundRange = true;
+              var values = this.splitRange(range, rowNumber);
+              (_selectedRows = selectedRows).splice.apply(_selectedRows, [i, 1].concat((0, _toConsumableArray3.default)(values)));
+            }
+          }
+
+          if (!foundRange) selectedRows.push(rowNumber);
+        } else {
+          selectedRows.splice(idx, 1);
+        }
+      } else {
+        if (selectedRows.length === 1 && selectedRows[0] === rowNumber) {
+          selectedRows = [];
+        } else {
+          selectedRows = [rowNumber];
+        }
+      }
+
+      if (!this.isControlled) {
+        this.setState({ selectedRows: selectedRows });
+      }
+
+      if (this.props.onRowSelection) {
+        this.props.onRowSelection(this.flattenRanges(selectedRows));
+      }
+    }
+  }, {
+    key: 'splitRange',
+    value: function splitRange(range, splitPoint) {
+      var splitValues = [];
+      var startOffset = range.start - splitPoint;
+      var endOffset = range.end - splitPoint;
+
+      // Process start half
+      splitValues.push.apply(splitValues, (0, _toConsumableArray3.default)(this.genRangeOfValues(splitPoint, startOffset)));
+
+      // Process end half
+      splitValues.push.apply(splitValues, (0, _toConsumableArray3.default)(this.genRangeOfValues(splitPoint, endOffset)));
+
+      return splitValues;
+    }
+  }, {
+    key: 'genRangeOfValues',
+    value: function genRangeOfValues(start, offset) {
+      var values = [];
+      var dir = offset > 0 ? -1 : 1; // This forces offset to approach 0 from either direction.
+      while (offset !== 0) {
+        values.push(start + offset);
+        offset += dir;
+      }
+
+      return values;
+    }
+  }, {
+    key: 'flattenRanges',
+    value: function flattenRanges(selectedRows) {
+      var _this5 = this;
+
+      return selectedRows.reduce(function (rows, row) {
+        if ((typeof row === 'undefined' ? 'undefined' : (0, _typeof3.default)(row)) === 'object') {
+          var values = _this5.genRangeOfValues(row.end, row.start - row.end);
+          rows.push.apply(rows, [row.end].concat((0, _toConsumableArray3.default)(values)));
+        } else {
+          rows.push(row);
+        }
+
+        return rows;
+      }, []).sort();
+    }
+  }, {
+    key: 'getColumnId',
+    value: function getColumnId(columnNumber) {
+      return columnNumber - 1;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          style = _props.style,
+          allRowsSelected = _props.allRowsSelected,
+          multiSelectable = _props.multiSelectable,
+          onCellClick = _props.onCellClick,
+          onCellHover = _props.onCellHover,
+          onCellHoverExit = _props.onCellHoverExit,
+          onRowHover = _props.onRowHover,
+          onRowHoverExit = _props.onRowHoverExit,
+          onRowSelection = _props.onRowSelection,
+          selectable = _props.selectable,
+          deselectOnClickaway = _props.deselectOnClickaway,
+          showRowHover = _props.showRowHover,
+          stripedRows = _props.stripedRows,
+          displayRowCheckbox = _props.displayRowCheckbox,
+          preScanRows = _props.preScanRows,
+          other = (0, _objectWithoutProperties3.default)(_props, ['style', 'allRowsSelected', 'multiSelectable', 'onCellClick', 'onCellHover', 'onCellHoverExit', 'onRowHover', 'onRowHoverExit', 'onRowSelection', 'selectable', 'deselectOnClickaway', 'showRowHover', 'stripedRows', 'displayRowCheckbox', 'preScanRows']);
+      var prepareStyles = this.context.muiTheme.prepareStyles;
+
+
+      return _react2.default.createElement(
+        _ClickAwayListener2.default,
+        { onClickAway: this.handleClickAway },
+        _react2.default.createElement(
+          'tbody',
+          (0, _extends3.default)({ style: prepareStyles((0, _simpleAssign2.default)({}, style)) }, other),
+          this.createRows()
+        )
+      );
+    }
+  }]);
+  return TableBody;
+}(_react.Component);
+
+TableBody.muiName = 'TableBody';
+TableBody.defaultProps = {
+  allRowsSelected: false,
+  deselectOnClickaway: true,
+  displayRowCheckbox: true,
+  multiSelectable: false,
+  preScanRows: true,
+  selectable: true,
+  style: {}
+};
+TableBody.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
+TableBody.propTypes = process.env.NODE_ENV !== "production" ? {
+  /**
+   * @ignore
+   * Set to true to indicate that all rows should be selected.
+   */
+  allRowsSelected: _propTypes2.default.bool,
+  /**
+   * Children passed to table body.
+   */
+  children: _propTypes2.default.node,
+  /**
+   * The css class name of the root element.
+   */
+  className: _propTypes2.default.string,
+  /**
+   * Controls whether or not to deselect all selected
+   * rows after clicking outside the table.
+   */
+  deselectOnClickaway: _propTypes2.default.bool,
+  /**
+   * Controls the display of the row checkbox. The default value is true.
+   */
+  displayRowCheckbox: _propTypes2.default.bool,
+  /**
+   * @ignore
+   * If true, multiple table rows can be selected.
+   * CTRL/CMD+Click and SHIFT+Click are valid actions.
+   * The default value is false.
+   */
+  multiSelectable: _propTypes2.default.bool,
+  /**
+   * @ignore
+   * Callback function for when a cell is clicked.
+   */
+  onCellClick: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when a table cell is hovered. rowNumber
+   * is the row number of the hovered row and columnId
+   * is the column number or the column key of the cell.
+   */
+  onCellHover: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when a table cell is no longer hovered.
+   * rowNumber is the row number of the row and columnId
+   * is the column number or the column key of the cell.
+   */
+  onCellHoverExit: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when a table row is hovered.
+   * rowNumber is the row number of the hovered row.
+   */
+  onRowHover: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when a table row is no longer
+   * hovered. rowNumber is the row number of the row
+   * that is no longer hovered.
+   */
+  onRowHoverExit: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when a row is selected. selectedRows is an
+   * array of all row selections. If all rows have been selected,
+   * the string "all" will be returned instead to indicate that
+   * all rows have been selected.
+   */
+  onRowSelection: _propTypes2.default.func,
+  /**
+   * Controls whether or not the rows are pre-scanned to determine
+   * initial state. If your table has a large number of rows and
+   * you are experiencing a delay in rendering, turn off this property.
+   */
+  preScanRows: _propTypes2.default.bool,
+  /**
+   * @ignore
+   * If true, table rows can be selected. If multiple
+   * row selection is desired, enable multiSelectable.
+   * The default value is true.
+   */
+  selectable: _propTypes2.default.bool,
+  /**
+   * If true, table rows will be highlighted when
+   * the cursor is hovering over the row. The default
+   * value is false.
+   */
+  showRowHover: _propTypes2.default.bool,
+  /**
+   * If true, every other table row starting
+   * with the first row will be striped. The default value is false.
+   */
+  stripedRows: _propTypes2.default.bool,
+  /**
+   * Override the inline-styles of the root element.
+   */
+  style: _propTypes2.default.object
+} : {};
+exports.default = TableBody;
+}).call(this,require('_process'))
+},{"../Checkbox":196,"../internal/ClickAwayListener":240,"./TableRowColumn":229,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"babel-runtime/helpers/toConsumableArray":29,"babel-runtime/helpers/typeof":30,"prop-types":278,"react":331,"simple-assign":350}],225:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _simpleAssign = require('simple-assign');
+
+var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _TableRowColumn = require('./TableRowColumn');
+
+var _TableRowColumn2 = _interopRequireDefault(_TableRowColumn);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getStyles(props, context) {
+  var tableFooter = context.muiTheme.tableFooter;
+
+
+  return {
+    cell: {
+      borderTop: '1px solid ' + tableFooter.borderColor,
+      verticalAlign: 'bottom',
+      padding: 20,
+      textAlign: 'left',
+      whiteSpace: 'nowrap'
+    }
+  };
+}
+
+var TableFooter = function (_Component) {
+  (0, _inherits3.default)(TableFooter, _Component);
+
+  function TableFooter() {
+    (0, _classCallCheck3.default)(this, TableFooter);
+    return (0, _possibleConstructorReturn3.default)(this, (TableFooter.__proto__ || (0, _getPrototypeOf2.default)(TableFooter)).apply(this, arguments));
+  }
+
+  (0, _createClass3.default)(TableFooter, [{
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          adjustForCheckbox = _props.adjustForCheckbox,
+          children = _props.children,
+          className = _props.className,
+          style = _props.style,
+          other = (0, _objectWithoutProperties3.default)(_props, ['adjustForCheckbox', 'children', 'className', 'style']);
+      var prepareStyles = this.context.muiTheme.prepareStyles;
+
+      var styles = getStyles(this.props, this.context);
+
+      var footerRows = _react2.default.Children.map(children, function (child, rowNumber) {
+        var newChildProps = {
+          displayBorder: false,
+          key: 'f-' + rowNumber,
+          rowNumber: rowNumber,
+          style: (0, _simpleAssign2.default)({}, styles.cell, child.props.style)
+        };
+
+        var newDescendants = void 0;
+
+        if (adjustForCheckbox) {
+          newDescendants = [_react2.default.createElement(_TableRowColumn2.default, { key: 'fpcb' + rowNumber, style: { width: 24 } })].concat((0, _toConsumableArray3.default)(_react2.default.Children.toArray(child.props.children)));
+        } else {
+          newDescendants = child.props.children;
+        }
+
+        return _react2.default.cloneElement(child, newChildProps, newDescendants);
+      });
+
+      return _react2.default.createElement(
+        'tfoot',
+        (0, _extends3.default)({ className: className, style: prepareStyles((0, _simpleAssign2.default)({}, style)) }, other),
+        footerRows
+      );
+    }
+  }]);
+  return TableFooter;
+}(_react.Component);
+
+TableFooter.muiName = 'TableFooter';
+TableFooter.defaultProps = {
+  adjustForCheckbox: true,
+  style: {}
+};
+TableFooter.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
+TableFooter.propTypes = process.env.NODE_ENV !== "production" ? {
+  /**
+   * @ignore
+   * Controls whether or not header rows should be adjusted
+   * for a checkbox column. If the select all checkbox is true,
+   * this property will not influence the number of columns.
+   * This is mainly useful for "super header" rows so that
+   * the checkbox column does not create an offset that needs
+   * to be accounted for manually.
+   */
+  adjustForCheckbox: _propTypes2.default.bool,
+  /**
+   * Children passed to table footer.
+   */
+  children: _propTypes2.default.node,
+  /**
+   * The css class name of the root element.
+   */
+  className: _propTypes2.default.string,
+  /**
+   * Override the inline-styles of the root element.
+   */
+  style: _propTypes2.default.object
+} : {};
+exports.default = TableFooter;
+}).call(this,require('_process'))
+},{"./TableRowColumn":229,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"babel-runtime/helpers/toConsumableArray":29,"prop-types":278,"react":331,"simple-assign":350}],226:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _simpleAssign = require('simple-assign');
+
+var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _Checkbox = require('../Checkbox');
+
+var _Checkbox2 = _interopRequireDefault(_Checkbox);
+
+var _TableHeaderColumn = require('./TableHeaderColumn');
+
+var _TableHeaderColumn2 = _interopRequireDefault(_TableHeaderColumn);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getStyles(props, context) {
+  var tableHeader = context.muiTheme.tableHeader;
+
+
+  return {
+    root: {
+      borderBottom: '1px solid ' + tableHeader.borderColor
+    }
+  };
+}
+
+var TableHeader = function (_Component) {
+  (0, _inherits3.default)(TableHeader, _Component);
+
+  function TableHeader() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    (0, _classCallCheck3.default)(this, TableHeader);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = TableHeader.__proto__ || (0, _getPrototypeOf2.default)(TableHeader)).call.apply(_ref, [this].concat(args))), _this), _this.handleCheckAll = function (event, checked) {
+      if (_this.props.onSelectAll) {
+        _this.props.onSelectAll(checked);
+      }
+    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+  }
+
+  (0, _createClass3.default)(TableHeader, [{
+    key: 'createSuperHeaderRows',
+    value: function createSuperHeaderRows() {
+      var numChildren = _react2.default.Children.count(this.props.children);
+      if (numChildren === 1) return undefined;
+
+      var superHeaders = [];
+      for (var index = 0; index < numChildren - 1; index++) {
+        var child = this.props.children[index];
+
+        if (!_react2.default.isValidElement(child)) continue;
+
+        var props = {
+          key: 'sh' + index,
+          rowNumber: index
+        };
+        superHeaders.push(this.createSuperHeaderRow(child, props));
+      }
+
+      if (superHeaders.length) return superHeaders;
+    }
+  }, {
+    key: 'createSuperHeaderRow',
+    value: function createSuperHeaderRow(child, props) {
+      var children = [];
+      if (this.props.adjustForCheckbox) {
+        children.push(this.getCheckboxPlaceholder(props));
+      }
+      _react2.default.Children.forEach(child.props.children, function (child) {
+        children.push(child);
+      });
+
+      return _react2.default.cloneElement(child, props, children);
+    }
+  }, {
+    key: 'createBaseHeaderRow',
+    value: function createBaseHeaderRow() {
+      var childrenArray = _react2.default.Children.toArray(this.props.children);
+      var numChildren = childrenArray.length;
+      if (numChildren < 1) {
+        return null;
+      }
+
+      var child = childrenArray[numChildren - 1];
+
+      var props = {
+        key: 'h' + numChildren,
+        rowNumber: numChildren
+      };
+
+      var children = [this.getSelectAllCheckboxColumn(props)];
+      _react2.default.Children.forEach(child.props.children, function (child) {
+        children.push(child);
+      });
+
+      return _react2.default.cloneElement(child, props, children);
+    }
+  }, {
+    key: 'getCheckboxPlaceholder',
+    value: function getCheckboxPlaceholder(props) {
+      if (!this.props.adjustForCheckbox) return null;
+
+      var disabled = !this.props.enableSelectAll;
+      var key = 'hpcb' + props.rowNumber;
+      return _react2.default.createElement(_TableHeaderColumn2.default, {
+        key: key,
+        style: {
+          width: 24,
+          cursor: disabled ? 'default' : 'inherit'
+        }
+      });
+    }
+  }, {
+    key: 'getSelectAllCheckboxColumn',
+    value: function getSelectAllCheckboxColumn(props) {
+      if (!this.props.displaySelectAll) return this.getCheckboxPlaceholder(props);
+
+      var disabled = !this.props.enableSelectAll;
+      var checkbox = _react2.default.createElement(_Checkbox2.default, {
+        key: 'selectallcb',
+        name: 'selectallcb',
+        value: 'selected',
+        disabled: disabled,
+        checked: this.props.selectAllSelected,
+        onCheck: this.handleCheckAll
+      });
+
+      var key = 'hpcb' + props.rowNumber;
+      return _react2.default.createElement(
+        _TableHeaderColumn2.default,
+        {
+          key: key,
+          style: {
+            width: 24,
+            cursor: disabled ? 'not-allowed' : 'inherit'
+          }
+        },
+        checkbox
+      );
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          className = _props.className,
+          style = _props.style;
+      var prepareStyles = this.context.muiTheme.prepareStyles;
+
+      var styles = getStyles(this.props, this.context);
+      var superHeaderRows = this.createSuperHeaderRows();
+      var baseHeaderRow = this.createBaseHeaderRow();
+
+      return _react2.default.createElement(
+        'thead',
+        { className: className, style: prepareStyles((0, _simpleAssign2.default)(styles.root, style)) },
+        superHeaderRows,
+        baseHeaderRow
+      );
+    }
+  }]);
+  return TableHeader;
+}(_react.Component);
+
+TableHeader.muiName = 'TableHeader';
+TableHeader.defaultProps = {
+  adjustForCheckbox: true,
+  displaySelectAll: true,
+  enableSelectAll: true,
+  selectAllSelected: false
+};
+TableHeader.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
+TableHeader.propTypes = process.env.NODE_ENV !== "production" ? {
+  /**
+   * Controls whether or not header rows should be
+   * adjusted for a checkbox column. If the select all
+   * checkbox is true, this property will not influence
+   * the number of columns. This is mainly useful for
+   * "super header" rows so that the checkbox column
+   * does not create an offset that needs to be accounted
+   * for manually.
+   */
+  adjustForCheckbox: _propTypes2.default.bool,
+  /**
+   * Children passed to table header.
+   */
+  children: _propTypes2.default.node,
+  /**
+   * The css class name of the root element.
+   */
+  className: _propTypes2.default.string,
+  /**
+   * Controls whether or not the select all checkbox is displayed.
+   */
+  displaySelectAll: _propTypes2.default.bool,
+  /**
+   * If set to true, the select all button will be interactable.
+   * If set to false, the button will not be interactable.
+   * To hide the checkbox, set displaySelectAll to false.
+   */
+  enableSelectAll: _propTypes2.default.bool,
+  /**
+   * @ignore
+   * Callback when select all has been checked.
+   */
+  onSelectAll: _propTypes2.default.func,
+  /**
+   * @ignore
+   * True when select all has been checked.
+   */
+  selectAllSelected: _propTypes2.default.bool,
+  /**
+   * Override the inline-styles of the root element.
+   */
+  style: _propTypes2.default.object
+} : {};
+exports.default = TableHeader;
+}).call(this,require('_process'))
+},{"../Checkbox":196,"./TableHeaderColumn":227,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],227:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _simpleAssign = require('simple-assign');
+
+var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _Tooltip = require('../internal/Tooltip');
+
+var _Tooltip2 = _interopRequireDefault(_Tooltip);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getStyles(props, context) {
+  var tableHeaderColumn = context.muiTheme.tableHeaderColumn;
+
+
+  return {
+    root: {
+      fontWeight: 'normal',
+      fontSize: 12,
+      paddingLeft: tableHeaderColumn.spacing,
+      paddingRight: tableHeaderColumn.spacing,
+      height: tableHeaderColumn.height,
+      textAlign: 'left',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      color: tableHeaderColumn.textColor,
+      position: 'relative'
+    },
+    tooltip: {
+      boxSizing: 'border-box',
+      marginTop: tableHeaderColumn.height / 2
+    }
+  };
+}
+
+var TableHeaderColumn = function (_Component) {
+  (0, _inherits3.default)(TableHeaderColumn, _Component);
+
+  function TableHeaderColumn() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    (0, _classCallCheck3.default)(this, TableHeaderColumn);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = TableHeaderColumn.__proto__ || (0, _getPrototypeOf2.default)(TableHeaderColumn)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      hovered: false
+    }, _this.onMouseEnter = function () {
+      if (_this.props.tooltip !== undefined) {
+        _this.setState({ hovered: true });
+      }
+    }, _this.onMouseLeave = function () {
+      if (_this.props.tooltip !== undefined) {
+        _this.setState({ hovered: false });
+      }
+    }, _this.onClick = function (event) {
+      if (_this.props.onClick) {
+        _this.props.onClick(event, _this.props.columnNumber);
+      }
+    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+  }
+
+  (0, _createClass3.default)(TableHeaderColumn, [{
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          children = _props.children,
+          className = _props.className,
+          columnNumber = _props.columnNumber,
+          hoverable = _props.hoverable,
+          onClick = _props.onClick,
+          onHover = _props.onHover,
+          onHoverExit = _props.onHoverExit,
+          style = _props.style,
+          tooltip = _props.tooltip,
+          tooltipStyle = _props.tooltipStyle,
+          other = (0, _objectWithoutProperties3.default)(_props, ['children', 'className', 'columnNumber', 'hoverable', 'onClick', 'onHover', 'onHoverExit', 'style', 'tooltip', 'tooltipStyle']);
+      var prepareStyles = this.context.muiTheme.prepareStyles;
+
+      var styles = getStyles(this.props, this.context);
+
+      var handlers = {
+        onMouseEnter: this.onMouseEnter,
+        onMouseLeave: this.onMouseLeave,
+        onClick: this.onClick
+      };
+
+      var tooltipNode = void 0;
+
+      if (tooltip !== undefined) {
+        tooltipNode = _react2.default.createElement(_Tooltip2.default, {
+          label: tooltip,
+          show: this.state.hovered,
+          style: (0, _simpleAssign2.default)(styles.tooltip, tooltipStyle)
+        });
+      }
+
+      return _react2.default.createElement(
+        'th',
+        (0, _extends3.default)({
+          className: className,
+          style: prepareStyles((0, _simpleAssign2.default)(styles.root, style))
+        }, handlers, other),
+        tooltipNode,
+        children
+      );
+    }
+  }]);
+  return TableHeaderColumn;
+}(_react.Component);
+
+TableHeaderColumn.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
+TableHeaderColumn.propTypes = process.env.NODE_ENV !== "production" ? {
+  children: _propTypes2.default.node,
+  /**
+   * The css class name of the root element.
+   */
+  className: _propTypes2.default.string,
+  /**
+   * Number to identify the header row. This property
+   * is automatically populated when used with TableHeader.
+   */
+  columnNumber: _propTypes2.default.number,
+  /**
+   * @ignore
+   * Not used here but we need to remove it from the root element.
+   */
+  hoverable: _propTypes2.default.bool,
+  /** @ignore */
+  onClick: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Not used here but we need to remove it from the root element.
+   */
+  onHover: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Not used here but we need to remove it from the root element.
+   */
+  onHoverExit: _propTypes2.default.func,
+  /**
+   * Override the inline-styles of the root element.
+   */
+  style: _propTypes2.default.object,
+  /**
+   * The string to supply to the tooltip. If not
+   * string is supplied no tooltip will be shown.
+   */
+  tooltip: _propTypes2.default.string,
+  /**
+   * Additional styling that can be applied to the tooltip.
+   */
+  tooltipStyle: _propTypes2.default.object
+} : {};
+exports.default = TableHeaderColumn;
+}).call(this,require('_process'))
+},{"../internal/Tooltip":247,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],228:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _simpleAssign = require('simple-assign');
+
+var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getStyles(props, context, state) {
+  var tableRow = context.muiTheme.tableRow;
+
+
+  var cellBgColor = 'inherit';
+  if (props.hovered || state.hovered) {
+    cellBgColor = tableRow.hoverColor;
+  } else if (props.selected) {
+    cellBgColor = tableRow.selectedColor;
+  } else if (props.striped) {
+    cellBgColor = tableRow.stripeColor;
+  }
+
+  return {
+    root: {
+      borderBottom: props.displayBorder && '1px solid ' + tableRow.borderColor,
+      color: tableRow.textColor,
+      height: tableRow.height
+    },
+    cell: {
+      backgroundColor: cellBgColor
+    }
+  };
+}
+
+var TableRow = function (_Component) {
+  (0, _inherits3.default)(TableRow, _Component);
+
+  function TableRow() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    (0, _classCallCheck3.default)(this, TableRow);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = TableRow.__proto__ || (0, _getPrototypeOf2.default)(TableRow)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      hovered: false
+    }, _this.onCellClick = function (event, columnIndex) {
+      if (_this.props.selectable && _this.props.onCellClick) {
+        _this.props.onCellClick(event, _this.props.rowNumber, columnIndex);
+      }
+      event.ctrlKey = true;
+      _this.onRowClick(event);
+    }, _this.onCellHover = function (event, columnIndex) {
+      if (_this.props.hoverable) {
+        _this.setState({ hovered: true });
+        if (_this.props.onCellHover) _this.props.onCellHover(event, _this.props.rowNumber, columnIndex);
+        _this.onRowHover(event);
+      }
+    }, _this.onCellHoverExit = function (event, columnIndex) {
+      if (_this.props.hoverable) {
+        _this.setState({ hovered: false });
+        if (_this.props.onCellHoverExit) _this.props.onCellHoverExit(event, _this.props.rowNumber, columnIndex);
+        _this.onRowHoverExit(event);
+      }
+    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+  }
+
+  (0, _createClass3.default)(TableRow, [{
+    key: 'onRowClick',
+    value: function onRowClick(event) {
+      if (this.props.selectable && this.props.onRowClick) {
+        this.props.onRowClick(event, this.props.rowNumber);
+      }
+    }
+  }, {
+    key: 'onRowHover',
+    value: function onRowHover(event) {
+      if (this.props.onRowHover) {
+        this.props.onRowHover(event, this.props.rowNumber);
+      }
+    }
+  }, {
+    key: 'onRowHoverExit',
+    value: function onRowHoverExit(event) {
+      if (this.props.onRowHoverExit) {
+        this.props.onRowHoverExit(event, this.props.rowNumber);
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      var _props = this.props,
+          className = _props.className,
+          displayBorder = _props.displayBorder,
+          hoverable = _props.hoverable,
+          hovered = _props.hovered,
+          onCellClick = _props.onCellClick,
+          onCellHover = _props.onCellHover,
+          onCellHoverExit = _props.onCellHoverExit,
+          onRowClick = _props.onRowClick,
+          onRowHover = _props.onRowHover,
+          onRowHoverExit = _props.onRowHoverExit,
+          rowNumber = _props.rowNumber,
+          selectable = _props.selectable,
+          selected = _props.selected,
+          striped = _props.striped,
+          style = _props.style,
+          other = (0, _objectWithoutProperties3.default)(_props, ['className', 'displayBorder', 'hoverable', 'hovered', 'onCellClick', 'onCellHover', 'onCellHoverExit', 'onRowClick', 'onRowHover', 'onRowHoverExit', 'rowNumber', 'selectable', 'selected', 'striped', 'style']);
+      var prepareStyles = this.context.muiTheme.prepareStyles;
+
+      var styles = getStyles(this.props, this.context, this.state);
+
+      var rowColumns = _react2.default.Children.map(this.props.children, function (child, columnNumber) {
+        if (_react2.default.isValidElement(child)) {
+          return _react2.default.cloneElement(child, {
+            columnNumber: columnNumber,
+            hoverable: _this2.props.hoverable,
+            key: _this2.props.rowNumber + '-' + columnNumber,
+            onClick: _this2.onCellClick,
+            onHover: _this2.onCellHover,
+            onHoverExit: _this2.onCellHoverExit,
+            style: (0, _simpleAssign2.default)({}, styles.cell, child.props.style)
+          });
+        }
+      });
+
+      return _react2.default.createElement(
+        'tr',
+        (0, _extends3.default)({
+          className: className,
+          style: prepareStyles((0, _simpleAssign2.default)(styles.root, style))
+        }, other),
+        rowColumns
+      );
+    }
+  }]);
+  return TableRow;
+}(_react.Component);
+
+TableRow.defaultProps = {
+  displayBorder: true,
+  hoverable: false,
+  hovered: false,
+  selectable: true,
+  striped: false
+};
+TableRow.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
+TableRow.propTypes = process.env.NODE_ENV !== "production" ? {
+  /**
+   * Children passed to table row.
+   */
+  children: _propTypes2.default.node,
+  /**
+   * The css class name of the root element.
+   */
+  className: _propTypes2.default.string,
+  /**
+   * If true, row border will be displayed for the row.
+   * If false, no border will be drawn.
+   */
+  displayBorder: _propTypes2.default.bool,
+  /**
+   * Controls whether or not the row responds to hover events.
+   */
+  hoverable: _propTypes2.default.bool,
+  /**
+   * Controls whether or not the row should be rendered as being
+   * hovered. This property is evaluated in addition to this.state.hovered
+   * and can be used to synchronize the hovered state with some other
+   * external events.
+   */
+  hovered: _propTypes2.default.bool,
+  /**
+   * @ignore
+   * Called when a row cell is clicked.
+   * rowNumber is the row number and columnId is
+   * the column number or the column key.
+   */
+  onCellClick: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when a table cell is hovered.
+   * rowNumber is the row number of the hovered row
+   * and columnId is the column number or the column key of the cell.
+   */
+  onCellHover: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when a table cell is no longer hovered.
+   * rowNumber is the row number of the row and columnId
+   * is the column number or the column key of the cell.
+   */
+  onCellHoverExit: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when row is clicked.
+   */
+  onRowClick: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when a table row is hovered.
+   * rowNumber is the row number of the hovered row.
+   */
+  onRowHover: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Called when a table row is no longer hovered.
+   * rowNumber is the row number of the row that is no longer hovered.
+   */
+  onRowHoverExit: _propTypes2.default.func,
+  /**
+   * Number to identify the row. This property is
+   * automatically populated when used with the TableBody component.
+   */
+  rowNumber: _propTypes2.default.number,
+  /**
+   * If true, table rows can be selected. If multiple row
+   * selection is desired, enable multiSelectable.
+   * The default value is true.
+   */
+  selectable: _propTypes2.default.bool,
+  /**
+   * Indicates that a particular row is selected.
+   * This property can be used to programmatically select rows.
+   */
+  selected: _propTypes2.default.bool,
+  /**
+   * Indicates whether or not the row is striped.
+   */
+  striped: _propTypes2.default.bool,
+  /**
+   * Override the inline-styles of the root element.
+   */
+  style: _propTypes2.default.object
+} : {};
+exports.default = TableRow;
+}).call(this,require('_process'))
+},{"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],229:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _simpleAssign = require('simple-assign');
+
+var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getStyles(props, context) {
+  var tableRowColumn = context.muiTheme.tableRowColumn;
+
+
+  var styles = {
+    root: {
+      paddingLeft: tableRowColumn.spacing,
+      paddingRight: tableRowColumn.spacing,
+      height: tableRowColumn.height,
+      textAlign: 'left',
+      fontSize: 13,
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis'
+    }
+  };
+
+  if (_react2.default.Children.count(props.children) === 1 && !isNaN(props.children)) {
+    styles.textAlign = 'right';
+  }
+
+  return styles;
+}
+
+var TableRowColumn = function (_Component) {
+  (0, _inherits3.default)(TableRowColumn, _Component);
+
+  function TableRowColumn() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    (0, _classCallCheck3.default)(this, TableRowColumn);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = TableRowColumn.__proto__ || (0, _getPrototypeOf2.default)(TableRowColumn)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      hovered: false
+    }, _this.onClick = function (event) {
+      if (_this.props.onClick) {
+        _this.props.onClick(event, _this.props.columnNumber);
+      }
+    }, _this.onMouseEnter = function (event) {
+      if (_this.props.hoverable) {
+        _this.setState({ hovered: true });
+        if (_this.props.onHover) {
+          _this.props.onHover(event, _this.props.columnNumber);
+        }
+      }
+    }, _this.onMouseLeave = function (event) {
+      if (_this.props.hoverable) {
+        _this.setState({ hovered: false });
+        if (_this.props.onHoverExit) {
+          _this.props.onHoverExit(event, _this.props.columnNumber);
+        }
+      }
+    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+  }
+
+  (0, _createClass3.default)(TableRowColumn, [{
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          children = _props.children,
+          className = _props.className,
+          columnNumber = _props.columnNumber,
+          hoverable = _props.hoverable,
+          onClick = _props.onClick,
+          onHover = _props.onHover,
+          onHoverExit = _props.onHoverExit,
+          style = _props.style,
+          other = (0, _objectWithoutProperties3.default)(_props, ['children', 'className', 'columnNumber', 'hoverable', 'onClick', 'onHover', 'onHoverExit', 'style']);
+      var prepareStyles = this.context.muiTheme.prepareStyles;
+
+      var styles = getStyles(this.props, this.context);
+
+      var handlers = {
+        onClick: this.onClick,
+        onMouseEnter: this.onMouseEnter,
+        onMouseLeave: this.onMouseLeave
+      };
+
+      return _react2.default.createElement(
+        'td',
+        (0, _extends3.default)({
+          className: className,
+          style: prepareStyles((0, _simpleAssign2.default)(styles.root, style))
+        }, handlers, other),
+        children
+      );
+    }
+  }]);
+  return TableRowColumn;
+}(_react.Component);
+
+TableRowColumn.defaultProps = {
+  hoverable: false
+};
+TableRowColumn.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
+TableRowColumn.propTypes = process.env.NODE_ENV !== "production" ? {
+  children: _propTypes2.default.node,
+  /**
+   * The css class name of the root element.
+   */
+  className: _propTypes2.default.string,
+  /**
+   * @ignore
+   * Number to identify the header row. This property
+   * is automatically populated when used with TableHeader.
+   */
+  columnNumber: _propTypes2.default.number,
+  /**
+   * @ignore
+   * If true, this column responds to hover events.
+   */
+  hoverable: _propTypes2.default.bool,
+  /** @ignore */
+  onClick: _propTypes2.default.func,
+  /** @ignore */
+  onHover: _propTypes2.default.func,
+  /**
+   * @ignore
+   * Callback function for hover exit event.
+   */
+  onHoverExit: _propTypes2.default.func,
+  /**
+   * Override the inline-styles of the root element.
+   */
+  style: _propTypes2.default.object
+} : {};
+exports.default = TableRowColumn;
+}).call(this,require('_process'))
+},{"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],230:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.TableRowColumn = exports.TableRow = exports.TableHeaderColumn = exports.TableHeader = exports.TableFooter = exports.TableBody = exports.Table = undefined;
+
+var _Table2 = require('./Table');
+
+var _Table3 = _interopRequireDefault(_Table2);
+
+var _TableBody2 = require('./TableBody');
+
+var _TableBody3 = _interopRequireDefault(_TableBody2);
+
+var _TableFooter2 = require('./TableFooter');
+
+var _TableFooter3 = _interopRequireDefault(_TableFooter2);
+
+var _TableHeader2 = require('./TableHeader');
+
+var _TableHeader3 = _interopRequireDefault(_TableHeader2);
+
+var _TableHeaderColumn2 = require('./TableHeaderColumn');
+
+var _TableHeaderColumn3 = _interopRequireDefault(_TableHeaderColumn2);
+
+var _TableRow2 = require('./TableRow');
+
+var _TableRow3 = _interopRequireDefault(_TableRow2);
+
+var _TableRowColumn2 = require('./TableRowColumn');
+
+var _TableRowColumn3 = _interopRequireDefault(_TableRowColumn2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.Table = _Table3.default;
+exports.TableBody = _TableBody3.default;
+exports.TableFooter = _TableFooter3.default;
+exports.TableHeader = _TableHeader3.default;
+exports.TableHeaderColumn = _TableHeaderColumn3.default;
+exports.TableRow = _TableRow3.default;
+exports.TableRowColumn = _TableRowColumn3.default;
+exports.default = _Table3.default;
+},{"./Table":223,"./TableBody":224,"./TableFooter":225,"./TableHeader":226,"./TableHeaderColumn":227,"./TableRow":228,"./TableRowColumn":229}],231:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -22836,7 +25315,7 @@ EnhancedTextarea.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = EnhancedTextarea;
 }).call(this,require('_process'))
-},{"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-event-listener":272,"simple-assign":337}],222:[function(require,module,exports){
+},{"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-event-listener":285,"simple-assign":350}],232:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -23430,7 +25909,7 @@ TextField.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = TextField;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"./EnhancedTextarea":221,"./TextFieldHint":223,"./TextFieldLabel":224,"./TextFieldUnderline":225,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-dom":270,"recompose/shallowEqual":325,"simple-assign":337,"warning":347}],223:[function(require,module,exports){
+},{"../styles/transitions":254,"./EnhancedTextarea":231,"./TextFieldHint":233,"./TextFieldLabel":234,"./TextFieldUnderline":235,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-dom":283,"recompose/shallowEqual":338,"simple-assign":350,"warning":360}],233:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -23513,7 +25992,7 @@ TextFieldHint.defaultProps = {
 
 exports.default = TextFieldHint;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"_process":261,"prop-types":265,"react":318,"simple-assign":337}],224:[function(require,module,exports){
+},{"../styles/transitions":254,"_process":274,"prop-types":278,"react":331,"simple-assign":350}],234:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -23633,7 +26112,7 @@ TextFieldLabel.defaultProps = {
 
 exports.default = TextFieldLabel;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"_process":261,"prop-types":265,"react":318,"simple-assign":337}],225:[function(require,module,exports){
+},{"../styles/transitions":254,"_process":274,"prop-types":278,"react":331,"simple-assign":350}],235:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -23775,7 +26254,7 @@ TextFieldUnderline.defaultProps = defaultProps;
 
 exports.default = TextFieldUnderline;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"_process":261,"prop-types":265,"react":318,"simple-assign":337}],226:[function(require,module,exports){
+},{"../styles/transitions":254,"_process":274,"prop-types":278,"react":331,"simple-assign":350}],236:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23790,7 +26269,7 @@ var _TextField2 = _interopRequireDefault(_TextField);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _TextField2.default;
-},{"./TextField":222}],227:[function(require,module,exports){
+},{"./TextField":232}],237:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -23947,7 +26426,7 @@ BeforeAfterWrapper.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = BeforeAfterWrapper;
 }).call(this,require('_process'))
-},{"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],228:[function(require,module,exports){
+},{"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],238:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -24122,7 +26601,7 @@ CircleRipple.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = CircleRipple;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"../utils/autoPrefix":250,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-dom":270,"recompose/shallowEqual":325,"simple-assign":337}],229:[function(require,module,exports){
+},{"../styles/transitions":254,"../utils/autoPrefix":263,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-dom":283,"recompose/shallowEqual":338,"simple-assign":350}],239:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -24191,7 +26670,7 @@ ClearFix.propTypes = process.env.NODE_ENV !== "production" ? {
 
 exports.default = ClearFix;
 }).call(this,require('_process'))
-},{"./BeforeAfterWrapper":227,"_process":261,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/objectWithoutProperties":26,"prop-types":265,"react":318}],230:[function(require,module,exports){
+},{"./BeforeAfterWrapper":237,"_process":274,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/objectWithoutProperties":26,"prop-types":278,"react":331}],240:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -24323,7 +26802,7 @@ ClickAwayListener.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = ClickAwayListener;
 }).call(this,require('_process'))
-},{"../utils/events":258,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-dom":270}],231:[function(require,module,exports){
+},{"../utils/events":271,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-dom":283}],241:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -24723,7 +27202,474 @@ EnhancedButton.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = EnhancedButton;
 }).call(this,require('_process'))
-},{"../utils/events":258,"./FocusRipple":232,"./TouchRipple":237,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"keycode":182,"prop-types":265,"react":318,"simple-assign":337}],232:[function(require,module,exports){
+},{"../utils/events":271,"./FocusRipple":243,"./TouchRipple":248,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"keycode":182,"prop-types":278,"react":331,"simple-assign":350}],242:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _simpleAssign = require('simple-assign');
+
+var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactEventListener = require('react-event-listener');
+
+var _reactEventListener2 = _interopRequireDefault(_reactEventListener);
+
+var _keycode = require('keycode');
+
+var _keycode2 = _interopRequireDefault(_keycode);
+
+var _transitions = require('../styles/transitions');
+
+var _transitions2 = _interopRequireDefault(_transitions);
+
+var _FocusRipple = require('./FocusRipple');
+
+var _FocusRipple2 = _interopRequireDefault(_FocusRipple);
+
+var _TouchRipple = require('./TouchRipple');
+
+var _TouchRipple2 = _interopRequireDefault(_TouchRipple);
+
+var _Paper = require('./../Paper');
+
+var _Paper2 = _interopRequireDefault(_Paper);
+
+var _warning = require('warning');
+
+var _warning2 = _interopRequireDefault(_warning);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getStyles(props, context) {
+  var baseTheme = context.muiTheme.baseTheme;
+
+
+  return {
+    root: {
+      cursor: props.disabled ? 'not-allowed' : 'pointer',
+      position: 'relative',
+      overflow: 'visible',
+      display: 'table',
+      height: 'auto',
+      width: '100%'
+    },
+    input: {
+      position: 'absolute',
+      cursor: 'inherit',
+      pointerEvents: 'all',
+      opacity: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 2,
+      left: 0,
+      boxSizing: 'border-box',
+      padding: 0,
+      margin: 0
+    },
+    controls: {
+      display: 'flex',
+      width: '100%',
+      height: '100%'
+    },
+    label: {
+      float: 'left',
+      position: 'relative',
+      display: 'block',
+      width: 'calc(100% - 60px)',
+      lineHeight: '24px',
+      color: baseTheme.palette.textColor,
+      fontFamily: baseTheme.fontFamily
+    },
+    wrap: {
+      transition: _transitions2.default.easeOut(),
+      float: 'left',
+      position: 'relative',
+      display: 'block',
+      flexShrink: 0,
+      width: 60 - baseTheme.spacing.desktopGutterLess,
+      marginRight: props.labelPosition === 'right' ? baseTheme.spacing.desktopGutterLess : 0,
+      marginLeft: props.labelPosition === 'left' ? baseTheme.spacing.desktopGutterLess : 0
+    },
+    ripple: {
+      color: props.rippleColor || baseTheme.palette.primary1Color,
+      height: '200%',
+      width: '200%',
+      top: -12,
+      left: -12
+    }
+  };
+}
+
+var EnhancedSwitch = function (_Component) {
+  (0, _inherits3.default)(EnhancedSwitch, _Component);
+
+  function EnhancedSwitch() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    (0, _classCallCheck3.default)(this, EnhancedSwitch);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = EnhancedSwitch.__proto__ || (0, _getPrototypeOf2.default)(EnhancedSwitch)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      isKeyboardFocused: false
+    }, _this.handleChange = function (event) {
+      _this.tabPressed = false;
+      _this.setState({
+        isKeyboardFocused: false
+      });
+
+      var isInputChecked = _this.refs.checkbox.checked;
+
+      if (!_this.props.hasOwnProperty('checked') && _this.props.onParentShouldUpdate) {
+        _this.props.onParentShouldUpdate(isInputChecked);
+      }
+
+      if (_this.props.onSwitch) {
+        _this.props.onSwitch(event, isInputChecked);
+      }
+    }, _this.handleKeyDown = function (event) {
+      var code = (0, _keycode2.default)(event);
+
+      if (code === 'tab') {
+        _this.tabPressed = true;
+      }
+      if (_this.state.isKeyboardFocused && code === 'space') {
+        _this.handleChange(event);
+      }
+    }, _this.handleKeyUp = function (event) {
+      if (_this.state.isKeyboardFocused && (0, _keycode2.default)(event) === 'space') {
+        _this.handleChange(event);
+      }
+    }, _this.handleMouseDown = function (event) {
+      // only listen to left clicks
+      if (event.button === 0) {
+        _this.refs.touchRipple.start(event);
+      }
+    }, _this.handleMouseUp = function () {
+      _this.refs.touchRipple.end();
+    }, _this.handleMouseLeave = function () {
+      _this.refs.touchRipple.end();
+    }, _this.handleTouchStart = function (event) {
+      _this.refs.touchRipple.start(event);
+    }, _this.handleTouchEnd = function () {
+      _this.refs.touchRipple.end();
+    }, _this.handleBlur = function (event) {
+      _this.setState({
+        isKeyboardFocused: false
+      });
+
+      if (_this.props.onBlur) {
+        _this.props.onBlur(event);
+      }
+    }, _this.handleFocus = function (event) {
+      // setTimeout is needed becuase the focus event fires first
+      // Wait so that we can capture if this was a keyboard focus
+      // or touch focus
+      setTimeout(function () {
+        if (_this.tabPressed) {
+          _this.setState({
+            isKeyboardFocused: true
+          });
+        }
+      }, 150);
+
+      if (_this.props.onFocus) {
+        _this.props.onFocus(event);
+      }
+    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+  }
+
+  (0, _createClass3.default)(EnhancedSwitch, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      this.componentWillReceiveProps(this.props);
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var inputNode = this.refs.checkbox;
+      if ((!this.props.switched || inputNode.checked !== this.props.switched) && this.props.onParentShouldUpdate) {
+        this.props.onParentShouldUpdate(inputNode.checked);
+      }
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var hasCheckedProp = nextProps.hasOwnProperty('checked');
+      var hasNewDefaultProp = nextProps.hasOwnProperty('defaultChecked') && nextProps.defaultChecked !== this.props.defaultChecked;
+
+      if (hasCheckedProp || hasNewDefaultProp) {
+        var switched = nextProps.checked || nextProps.defaultChecked || false;
+
+        this.setState({
+          switched: switched
+        });
+
+        if (this.props.onParentShouldUpdate && switched !== this.props.switched) {
+          this.props.onParentShouldUpdate(switched);
+        }
+      }
+    }
+  }, {
+    key: 'isSwitched',
+    value: function isSwitched() {
+      return this.refs.checkbox.checked;
+    }
+
+    // no callback here because there is no event
+
+  }, {
+    key: 'setSwitched',
+    value: function setSwitched(newSwitchedValue) {
+      if (!this.props.hasOwnProperty('checked') || this.props.checked === false) {
+        if (this.props.onParentShouldUpdate) {
+          this.props.onParentShouldUpdate(newSwitchedValue);
+        }
+        this.refs.checkbox.checked = newSwitchedValue;
+      } else {
+        process.env.NODE_ENV !== "production" ? (0, _warning2.default)(false, 'Material-UI: Cannot call set method while checked is defined as a property.') : void 0;
+      }
+    }
+  }, {
+    key: 'getValue',
+    value: function getValue() {
+      return this.refs.checkbox.value;
+    }
+
+    // Checkbox inputs only use SPACE to change their state. Using ENTER will
+    // update the ui but not the input.
+
+
+    /**
+     * Because both the ripples and the checkbox input cannot share pointer
+     * events, the checkbox input takes control of pointer events and calls
+     * ripple animations manually.
+     */
+
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          name = _props.name,
+          value = _props.value,
+          checked = _props.checked,
+          iconStyle = _props.iconStyle,
+          inputStyle = _props.inputStyle,
+          inputType = _props.inputType,
+          label = _props.label,
+          labelStyle = _props.labelStyle,
+          labelPosition = _props.labelPosition,
+          onSwitch = _props.onSwitch,
+          onBlur = _props.onBlur,
+          onFocus = _props.onFocus,
+          onMouseUp = _props.onMouseUp,
+          onMouseDown = _props.onMouseDown,
+          onMouseLeave = _props.onMouseLeave,
+          onTouchStart = _props.onTouchStart,
+          onTouchEnd = _props.onTouchEnd,
+          onParentShouldUpdate = _props.onParentShouldUpdate,
+          disabled = _props.disabled,
+          disableTouchRipple = _props.disableTouchRipple,
+          disableFocusRipple = _props.disableFocusRipple,
+          className = _props.className,
+          rippleColor = _props.rippleColor,
+          rippleStyle = _props.rippleStyle,
+          style = _props.style,
+          switched = _props.switched,
+          switchElement = _props.switchElement,
+          thumbStyle = _props.thumbStyle,
+          trackStyle = _props.trackStyle,
+          other = (0, _objectWithoutProperties3.default)(_props, ['name', 'value', 'checked', 'iconStyle', 'inputStyle', 'inputType', 'label', 'labelStyle', 'labelPosition', 'onSwitch', 'onBlur', 'onFocus', 'onMouseUp', 'onMouseDown', 'onMouseLeave', 'onTouchStart', 'onTouchEnd', 'onParentShouldUpdate', 'disabled', 'disableTouchRipple', 'disableFocusRipple', 'className', 'rippleColor', 'rippleStyle', 'style', 'switched', 'switchElement', 'thumbStyle', 'trackStyle']);
+      var prepareStyles = this.context.muiTheme.prepareStyles;
+
+      var styles = getStyles(this.props, this.context);
+      var wrapStyles = (0, _simpleAssign2.default)(styles.wrap, iconStyle);
+      var mergedRippleStyle = (0, _simpleAssign2.default)(styles.ripple, rippleStyle);
+
+      if (thumbStyle) {
+        wrapStyles.marginLeft /= 2;
+        wrapStyles.marginRight /= 2;
+      }
+
+      var labelElement = label && _react2.default.createElement(
+        'label',
+        { style: prepareStyles((0, _simpleAssign2.default)(styles.label, labelStyle)) },
+        label
+      );
+
+      var showTouchRipple = !disabled && !disableTouchRipple;
+      var showFocusRipple = !disabled && !disableFocusRipple;
+
+      var touchRipple = _react2.default.createElement(_TouchRipple2.default, {
+        ref: 'touchRipple',
+        key: 'touchRipple',
+        style: mergedRippleStyle,
+        color: mergedRippleStyle.color,
+        muiTheme: this.context.muiTheme,
+        centerRipple: true
+      });
+
+      var focusRipple = _react2.default.createElement(_FocusRipple2.default, {
+        key: 'focusRipple',
+        innerStyle: mergedRippleStyle,
+        color: mergedRippleStyle.color,
+        muiTheme: this.context.muiTheme,
+        show: this.state.isKeyboardFocused
+      });
+
+      var ripples = [showTouchRipple ? touchRipple : null, showFocusRipple ? focusRipple : null];
+
+      var touchHandlers = showTouchRipple ? {
+        onMouseUp: this.handleMouseUp,
+        onMouseDown: this.handleMouseDown,
+        onMouseLeave: this.handleMouseLeave,
+        onTouchStart: this.handleTouchStart,
+        onTouchEnd: this.handleTouchEnd
+      } : {};
+
+      var inputElement = _react2.default.createElement('input', (0, _extends3.default)({}, other, {
+        ref: 'checkbox',
+        type: inputType,
+        style: prepareStyles((0, _simpleAssign2.default)(styles.input, inputStyle)),
+        name: name,
+        value: value,
+        checked: this.state.switched,
+        disabled: disabled,
+        onBlur: this.handleBlur,
+        onFocus: this.handleFocus,
+        onChange: this.handleChange
+      }, touchHandlers));
+
+      // If toggle component (indicated by whether the style includes thumb) manually lay out
+      // elements in order to nest ripple elements
+      var switchOrThumbElement = !thumbStyle ? _react2.default.createElement(
+        'div',
+        { style: prepareStyles(wrapStyles) },
+        switchElement,
+        ripples
+      ) : _react2.default.createElement(
+        'div',
+        { style: prepareStyles(wrapStyles) },
+        _react2.default.createElement('div', { style: prepareStyles((0, _simpleAssign2.default)({}, trackStyle)) }),
+        _react2.default.createElement(
+          _Paper2.default,
+          { style: thumbStyle, zDepth: 1, circle: true },
+          ' ',
+          ripples,
+          ' '
+        )
+      );
+
+      var elementsInOrder = labelPosition === 'right' ? _react2.default.createElement(
+        'div',
+        { style: styles.controls },
+        switchOrThumbElement,
+        labelElement
+      ) : _react2.default.createElement(
+        'div',
+        { style: styles.controls },
+        labelElement,
+        switchOrThumbElement
+      );
+
+      return _react2.default.createElement(
+        'div',
+        { ref: 'root', className: className, style: prepareStyles((0, _simpleAssign2.default)(styles.root, style)) },
+        _react2.default.createElement(_reactEventListener2.default, {
+          target: 'window',
+          onKeyDown: this.handleKeyDown,
+          onKeyUp: this.handleKeyUp
+        }),
+        inputElement,
+        elementsInOrder
+      );
+    }
+  }]);
+  return EnhancedSwitch;
+}(_react.Component);
+
+EnhancedSwitch.contextTypes = {
+  muiTheme: _propTypes2.default.object.isRequired
+};
+EnhancedSwitch.propTypes = process.env.NODE_ENV !== "production" ? {
+  checked: _propTypes2.default.bool,
+  className: _propTypes2.default.string,
+  defaultChecked: _propTypes2.default.bool,
+  disableFocusRipple: _propTypes2.default.bool,
+  disableTouchRipple: _propTypes2.default.bool,
+  disabled: _propTypes2.default.bool,
+  iconStyle: _propTypes2.default.object,
+  inputStyle: _propTypes2.default.object,
+  inputType: _propTypes2.default.string.isRequired,
+  label: _propTypes2.default.node,
+  labelPosition: _propTypes2.default.oneOf(['left', 'right']),
+  labelStyle: _propTypes2.default.object,
+  name: _propTypes2.default.string,
+  onBlur: _propTypes2.default.func,
+  onFocus: _propTypes2.default.func,
+  onMouseDown: _propTypes2.default.func,
+  onMouseLeave: _propTypes2.default.func,
+  onMouseUp: _propTypes2.default.func,
+  onParentShouldUpdate: _propTypes2.default.func,
+  onSwitch: _propTypes2.default.func,
+  onTouchEnd: _propTypes2.default.func,
+  onTouchStart: _propTypes2.default.func,
+  rippleColor: _propTypes2.default.string,
+  rippleStyle: _propTypes2.default.object,
+  style: _propTypes2.default.object,
+  switchElement: _propTypes2.default.element.isRequired,
+  switched: _propTypes2.default.bool.isRequired,
+  thumbStyle: _propTypes2.default.object,
+  trackStyle: _propTypes2.default.object,
+  value: _propTypes2.default.any
+} : {};
+exports.default = EnhancedSwitch;
+}).call(this,require('_process'))
+},{"../styles/transitions":254,"./../Paper":211,"./FocusRipple":243,"./TouchRipple":248,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"keycode":182,"prop-types":278,"react":331,"react-event-listener":285,"simple-assign":350,"warning":360}],243:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -24925,7 +27871,7 @@ FocusRipple.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = FocusRipple;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"../utils/autoPrefix":250,"./ScaleIn":234,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-dom":270,"recompose/shallowEqual":325,"simple-assign":337}],233:[function(require,module,exports){
+},{"../styles/transitions":254,"../utils/autoPrefix":263,"./ScaleIn":245,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-dom":283,"recompose/shallowEqual":338,"simple-assign":350}],244:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -25107,7 +28053,7 @@ RenderToLayer.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = RenderToLayer;
 }).call(this,require('_process'))
-},{"../utils/dom":257,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-dom":270}],234:[function(require,module,exports){
+},{"../utils/dom":270,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-dom":283}],245:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -25238,7 +28184,7 @@ ScaleIn.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = ScaleIn;
 }).call(this,require('_process'))
-},{"./ScaleInChild":235,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-transition-group/TransitionGroup":314,"simple-assign":337}],235:[function(require,module,exports){
+},{"./ScaleInChild":246,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-transition-group/TransitionGroup":327,"simple-assign":350}],246:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -25411,7 +28357,7 @@ ScaleInChild.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = ScaleInChild;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"../utils/autoPrefix":250,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"react-dom":270,"simple-assign":337}],236:[function(require,module,exports){
+},{"../styles/transitions":254,"../utils/autoPrefix":263,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"react-dom":283,"simple-assign":350}],247:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -25642,7 +28588,7 @@ Tooltip.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = Tooltip;
 }).call(this,require('_process'))
-},{"../styles/transitions":243,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318,"simple-assign":337}],237:[function(require,module,exports){
+},{"../styles/transitions":254,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/extends":24,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331,"simple-assign":350}],248:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -25956,7 +28902,7 @@ TouchRipple.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = TouchRipple;
 }).call(this,require('_process'))
-},{"../utils/dom":257,"./CircleRipple":228,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"babel-runtime/helpers/toArray":28,"babel-runtime/helpers/toConsumableArray":29,"prop-types":265,"react":318,"react-dom":270,"react-transition-group/TransitionGroup":314,"simple-assign":337}],238:[function(require,module,exports){
+},{"../utils/dom":270,"./CircleRipple":238,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"babel-runtime/helpers/toArray":28,"babel-runtime/helpers/toConsumableArray":29,"prop-types":278,"react":331,"react-dom":283,"react-transition-group/TransitionGroup":327,"simple-assign":350}],249:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -26029,7 +28975,7 @@ MuiThemeProvider.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 exports.default = MuiThemeProvider;
 }).call(this,require('_process'))
-},{"./getMuiTheme":241,"_process":261,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":265,"react":318}],239:[function(require,module,exports){
+},{"./getMuiTheme":252,"_process":274,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/possibleConstructorReturn":27,"prop-types":278,"react":331}],250:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26075,7 +29021,7 @@ exports.default = {
 }; /**
     * NB: If you update this file, please also update `docs/src/app/customization/Themes.js`
     */
-},{"../../utils/colorManipulator":256,"../colors":240,"../spacing":242}],240:[function(require,module,exports){
+},{"../../utils/colorManipulator":269,"../colors":251,"../spacing":253}],251:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26366,7 +29312,7 @@ var faintBlack = exports.faintBlack = 'rgba(0, 0, 0, 0.12)';
 var fullWhite = exports.fullWhite = 'rgba(255, 255, 255, 1)';
 var darkWhite = exports.darkWhite = 'rgba(255, 255, 255, 0.87)';
 var lightWhite = exports.lightWhite = 'rgba(255, 255, 255, 0.54)';
-},{}],241:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26749,7 +29695,7 @@ function getMuiTheme(muiTheme) {
 
   return muiTheme;
 }
-},{"../utils/autoprefixer":251,"../utils/callOnce":254,"../utils/colorManipulator":256,"../utils/rtl":260,"./baseThemes/lightBaseTheme":239,"./colors":240,"./typography":244,"./zIndex":245,"babel-runtime/helpers/toConsumableArray":29,"lodash.merge":183,"recompose/compose":320}],242:[function(require,module,exports){
+},{"../utils/autoprefixer":264,"../utils/callOnce":267,"../utils/colorManipulator":269,"../utils/rtl":273,"./baseThemes/lightBaseTheme":250,"./colors":251,"./typography":255,"./zIndex":256,"babel-runtime/helpers/toConsumableArray":29,"lodash.merge":183,"recompose/compose":333}],253:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26769,7 +29715,7 @@ exports.default = {
   desktopSubheaderHeight: 48,
   desktopToolbarHeight: 56
 };
-},{}],243:[function(require,module,exports){
+},{}],254:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26804,7 +29750,7 @@ exports.default = {
     return property + ' ' + duration + ' ' + easeFunction + ' ' + delay;
   }
 };
-},{}],244:[function(require,module,exports){
+},{}],255:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26840,7 +29786,7 @@ var Typography = function Typography() {
 };
 
 exports.default = new Typography();
-},{"./colors":240,"babel-runtime/helpers/classCallCheck":22}],245:[function(require,module,exports){
+},{"./colors":251,"babel-runtime/helpers/classCallCheck":22}],256:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26858,7 +29804,7 @@ exports.default = {
   snackbar: 2900,
   tooltip: 3000
 };
-},{}],246:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26891,7 +29837,7 @@ NavigationArrowDropDown.displayName = 'NavigationArrowDropDown';
 NavigationArrowDropDown.muiName = 'SvgIcon';
 
 exports.default = NavigationArrowDropDown;
-},{"../../SvgIcon":220,"react":318,"recompose/pure":322}],247:[function(require,module,exports){
+},{"../../SvgIcon":222,"react":331,"recompose/pure":335}],258:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26924,7 +29870,7 @@ NavigationCheck.displayName = 'NavigationCheck';
 NavigationCheck.muiName = 'SvgIcon';
 
 exports.default = NavigationCheck;
-},{"../../SvgIcon":220,"react":318,"recompose/pure":322}],248:[function(require,module,exports){
+},{"../../SvgIcon":222,"react":331,"recompose/pure":335}],259:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26957,7 +29903,7 @@ NavigationExpandLess.displayName = 'NavigationExpandLess';
 NavigationExpandLess.muiName = 'SvgIcon';
 
 exports.default = NavigationExpandLess;
-},{"../../SvgIcon":220,"react":318,"recompose/pure":322}],249:[function(require,module,exports){
+},{"../../SvgIcon":222,"react":331,"recompose/pure":335}],260:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26990,7 +29936,73 @@ NavigationExpandMore.displayName = 'NavigationExpandMore';
 NavigationExpandMore.muiName = 'SvgIcon';
 
 exports.default = NavigationExpandMore;
-},{"../../SvgIcon":220,"react":318,"recompose/pure":322}],250:[function(require,module,exports){
+},{"../../SvgIcon":222,"react":331,"recompose/pure":335}],261:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _pure = require('recompose/pure');
+
+var _pure2 = _interopRequireDefault(_pure);
+
+var _SvgIcon = require('../../SvgIcon');
+
+var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ToggleCheckBoxOutlineBlank = function ToggleCheckBoxOutlineBlank(props) {
+  return _react2.default.createElement(
+    _SvgIcon2.default,
+    props,
+    _react2.default.createElement('path', { d: 'M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z' })
+  );
+};
+ToggleCheckBoxOutlineBlank = (0, _pure2.default)(ToggleCheckBoxOutlineBlank);
+ToggleCheckBoxOutlineBlank.displayName = 'ToggleCheckBoxOutlineBlank';
+ToggleCheckBoxOutlineBlank.muiName = 'SvgIcon';
+
+exports.default = ToggleCheckBoxOutlineBlank;
+},{"../../SvgIcon":222,"react":331,"recompose/pure":335}],262:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _pure = require('recompose/pure');
+
+var _pure2 = _interopRequireDefault(_pure);
+
+var _SvgIcon = require('../../SvgIcon');
+
+var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ToggleCheckBox = function ToggleCheckBox(props) {
+  return _react2.default.createElement(
+    _SvgIcon2.default,
+    props,
+    _react2.default.createElement('path', { d: 'M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' })
+  );
+};
+ToggleCheckBox = (0, _pure2.default)(ToggleCheckBox);
+ToggleCheckBox.displayName = 'ToggleCheckBox';
+ToggleCheckBox.muiName = 'SvgIcon';
+
+exports.default = ToggleCheckBox;
+},{"../../SvgIcon":222,"react":331,"recompose/pure":335}],263:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27001,7 +30013,7 @@ exports.default = {
     style[key] = value;
   }
 };
-},{}],251:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -27083,7 +30095,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var hasWarnedAboutUserAgent = false;
 }).call(this,require('_process'))
-},{"./autoprefixerDynamic":252,"./autoprefixerStatic":253,"_process":261,"inline-style-prefixer/dynamic/createPrefixer":156,"inline-style-prefixer/static/createPrefixer":164,"warning":347}],252:[function(require,module,exports){
+},{"./autoprefixerDynamic":265,"./autoprefixerStatic":266,"_process":274,"inline-style-prefixer/dynamic/createPrefixer":156,"inline-style-prefixer/static/createPrefixer":164,"warning":360}],265:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27124,7 +30136,7 @@ exports.default = {
   plugins: [_calc2.default, _flex2.default, _flexboxIE2.default, _flexboxOld2.default, _gradient2.default, _sizing2.default, _transition2.default],
   prefixMap: { "chrome": { "transform": 35, "transformOrigin": 35, "transformOriginX": 35, "transformOriginY": 35, "backfaceVisibility": 35, "perspective": 35, "perspectiveOrigin": 35, "transformStyle": 35, "transformOriginZ": 35, "animation": 42, "animationDelay": 42, "animationDirection": 42, "animationFillMode": 42, "animationDuration": 42, "animationIterationCount": 42, "animationName": 42, "animationPlayState": 42, "animationTimingFunction": 42, "appearance": 60, "userSelect": 53, "fontKerning": 32, "textEmphasisPosition": 60, "textEmphasis": 60, "textEmphasisStyle": 60, "textEmphasisColor": 60, "boxDecorationBreak": 60, "clipPath": 54, "maskImage": 60, "maskMode": 60, "maskRepeat": 60, "maskPosition": 60, "maskClip": 60, "maskOrigin": 60, "maskSize": 60, "maskComposite": 60, "mask": 60, "maskBorderSource": 60, "maskBorderMode": 60, "maskBorderSlice": 60, "maskBorderWidth": 60, "maskBorderOutset": 60, "maskBorderRepeat": 60, "maskBorder": 60, "maskType": 60, "textDecorationStyle": 56, "textDecorationSkip": 56, "textDecorationLine": 56, "textDecorationColor": 56, "filter": 52, "fontFeatureSettings": 47, "breakAfter": 49, "breakBefore": 49, "breakInside": 49, "columnCount": 49, "columnFill": 49, "columnGap": 49, "columnRule": 49, "columnRuleColor": 49, "columnRuleStyle": 49, "columnRuleWidth": 49, "columns": 49, "columnSpan": 49, "columnWidth": 49 }, "safari": { "flex": 8, "flexBasis": 8, "flexDirection": 8, "flexGrow": 8, "flexFlow": 8, "flexShrink": 8, "flexWrap": 8, "alignContent": 8, "alignItems": 8, "alignSelf": 8, "justifyContent": 8, "order": 8, "transition": 6, "transitionDelay": 6, "transitionDuration": 6, "transitionProperty": 6, "transitionTimingFunction": 6, "transform": 8, "transformOrigin": 8, "transformOriginX": 8, "transformOriginY": 8, "backfaceVisibility": 8, "perspective": 8, "perspectiveOrigin": 8, "transformStyle": 8, "transformOriginZ": 8, "animation": 8, "animationDelay": 8, "animationDirection": 8, "animationFillMode": 8, "animationDuration": 8, "animationIterationCount": 8, "animationName": 8, "animationPlayState": 8, "animationTimingFunction": 8, "appearance": 10.1, "userSelect": 10.1, "backdropFilter": 10.1, "fontKerning": 9, "scrollSnapType": 10, "scrollSnapPointsX": 10, "scrollSnapPointsY": 10, "scrollSnapDestination": 10, "scrollSnapCoordinate": 10, "textEmphasisPosition": 7, "textEmphasis": 7, "textEmphasisStyle": 7, "textEmphasisColor": 7, "boxDecorationBreak": 10.1, "clipPath": 10.1, "maskImage": 10.1, "maskMode": 10.1, "maskRepeat": 10.1, "maskPosition": 10.1, "maskClip": 10.1, "maskOrigin": 10.1, "maskSize": 10.1, "maskComposite": 10.1, "mask": 10.1, "maskBorderSource": 10.1, "maskBorderMode": 10.1, "maskBorderSlice": 10.1, "maskBorderWidth": 10.1, "maskBorderOutset": 10.1, "maskBorderRepeat": 10.1, "maskBorder": 10.1, "maskType": 10.1, "textDecorationStyle": 10.1, "textDecorationSkip": 10.1, "textDecorationLine": 10.1, "textDecorationColor": 10.1, "shapeImageThreshold": 10, "shapeImageMargin": 10, "shapeImageOutside": 10, "filter": 9, "hyphens": 10.1, "flowInto": 10.1, "flowFrom": 10.1, "breakBefore": 8, "breakAfter": 8, "breakInside": 8, "regionFragment": 10.1, "columnCount": 8, "columnFill": 8, "columnGap": 8, "columnRule": 8, "columnRuleColor": 8, "columnRuleStyle": 8, "columnRuleWidth": 8, "columns": 8, "columnSpan": 8, "columnWidth": 8 }, "firefox": { "appearance": 55, "userSelect": 55, "boxSizing": 28, "textAlignLast": 48, "textDecorationStyle": 35, "textDecorationSkip": 35, "textDecorationLine": 35, "textDecorationColor": 35, "tabSize": 55, "hyphens": 42, "fontFeatureSettings": 33, "breakAfter": 51, "breakBefore": 51, "breakInside": 51, "columnCount": 51, "columnFill": 51, "columnGap": 51, "columnRule": 51, "columnRuleColor": 51, "columnRuleStyle": 51, "columnRuleWidth": 51, "columns": 51, "columnSpan": 51, "columnWidth": 51 }, "opera": { "flex": 16, "flexBasis": 16, "flexDirection": 16, "flexGrow": 16, "flexFlow": 16, "flexShrink": 16, "flexWrap": 16, "alignContent": 16, "alignItems": 16, "alignSelf": 16, "justifyContent": 16, "order": 16, "transform": 22, "transformOrigin": 22, "transformOriginX": 22, "transformOriginY": 22, "backfaceVisibility": 22, "perspective": 22, "perspectiveOrigin": 22, "transformStyle": 22, "transformOriginZ": 22, "animation": 29, "animationDelay": 29, "animationDirection": 29, "animationFillMode": 29, "animationDuration": 29, "animationIterationCount": 29, "animationName": 29, "animationPlayState": 29, "animationTimingFunction": 29, "appearance": 45, "userSelect": 40, "fontKerning": 19, "textEmphasisPosition": 45, "textEmphasis": 45, "textEmphasisStyle": 45, "textEmphasisColor": 45, "boxDecorationBreak": 45, "clipPath": 41, "maskImage": 45, "maskMode": 45, "maskRepeat": 45, "maskPosition": 45, "maskClip": 45, "maskOrigin": 45, "maskSize": 45, "maskComposite": 45, "mask": 45, "maskBorderSource": 45, "maskBorderMode": 45, "maskBorderSlice": 45, "maskBorderWidth": 45, "maskBorderOutset": 45, "maskBorderRepeat": 45, "maskBorder": 45, "maskType": 45, "textDecorationStyle": 43, "textDecorationSkip": 43, "textDecorationLine": 43, "textDecorationColor": 43, "filter": 39, "fontFeatureSettings": 34, "breakAfter": 36, "breakBefore": 36, "breakInside": 36, "columnCount": 36, "columnFill": 36, "columnGap": 36, "columnRule": 36, "columnRuleColor": 36, "columnRuleStyle": 36, "columnRuleWidth": 36, "columns": 36, "columnSpan": 36, "columnWidth": 36 }, "ie": { "flex": 10, "flexDirection": 10, "flexFlow": 10, "flexWrap": 10, "transform": 9, "transformOrigin": 9, "transformOriginX": 9, "transformOriginY": 9, "userSelect": 11, "wrapFlow": 11, "wrapThrough": 11, "wrapMargin": 11, "scrollSnapType": 11, "scrollSnapPointsX": 11, "scrollSnapPointsY": 11, "scrollSnapDestination": 11, "scrollSnapCoordinate": 11, "touchAction": 10, "hyphens": 11, "flowInto": 11, "flowFrom": 11, "breakBefore": 11, "breakAfter": 11, "breakInside": 11, "regionFragment": 11, "gridTemplateColumns": 11, "gridTemplateRows": 11, "gridTemplateAreas": 11, "gridTemplate": 11, "gridAutoColumns": 11, "gridAutoRows": 11, "gridAutoFlow": 11, "grid": 11, "gridRowStart": 11, "gridColumnStart": 11, "gridRowEnd": 11, "gridRow": 11, "gridColumn": 11, "gridColumnEnd": 11, "gridColumnGap": 11, "gridRowGap": 11, "gridArea": 11, "gridGap": 11, "textSizeAdjust": 11 }, "edge": { "userSelect": 15, "wrapFlow": 15, "wrapThrough": 15, "wrapMargin": 15, "scrollSnapType": 15, "scrollSnapPointsX": 15, "scrollSnapPointsY": 15, "scrollSnapDestination": 15, "scrollSnapCoordinate": 15, "hyphens": 15, "flowInto": 15, "flowFrom": 15, "breakBefore": 15, "breakAfter": 15, "breakInside": 15, "regionFragment": 15, "gridTemplateColumns": 15, "gridTemplateRows": 15, "gridTemplateAreas": 15, "gridTemplate": 15, "gridAutoColumns": 15, "gridAutoRows": 15, "gridAutoFlow": 15, "grid": 15, "gridRowStart": 15, "gridColumnStart": 15, "gridRowEnd": 15, "gridRow": 15, "gridColumn": 15, "gridColumnEnd": 15, "gridColumnGap": 15, "gridRowGap": 15, "gridArea": 15, "gridGap": 15 }, "ios_saf": { "flex": 8.1, "flexBasis": 8.1, "flexDirection": 8.1, "flexGrow": 8.1, "flexFlow": 8.1, "flexShrink": 8.1, "flexWrap": 8.1, "alignContent": 8.1, "alignItems": 8.1, "alignSelf": 8.1, "justifyContent": 8.1, "order": 8.1, "transition": 6, "transitionDelay": 6, "transitionDuration": 6, "transitionProperty": 6, "transitionTimingFunction": 6, "transform": 8.1, "transformOrigin": 8.1, "transformOriginX": 8.1, "transformOriginY": 8.1, "backfaceVisibility": 8.1, "perspective": 8.1, "perspectiveOrigin": 8.1, "transformStyle": 8.1, "transformOriginZ": 8.1, "animation": 8.1, "animationDelay": 8.1, "animationDirection": 8.1, "animationFillMode": 8.1, "animationDuration": 8.1, "animationIterationCount": 8.1, "animationName": 8.1, "animationPlayState": 8.1, "animationTimingFunction": 8.1, "appearance": 10, "userSelect": 10, "backdropFilter": 10, "fontKerning": 10, "scrollSnapType": 10, "scrollSnapPointsX": 10, "scrollSnapPointsY": 10, "scrollSnapDestination": 10, "scrollSnapCoordinate": 10, "boxDecorationBreak": 10, "clipPath": 10, "maskImage": 10, "maskMode": 10, "maskRepeat": 10, "maskPosition": 10, "maskClip": 10, "maskOrigin": 10, "maskSize": 10, "maskComposite": 10, "mask": 10, "maskBorderSource": 10, "maskBorderMode": 10, "maskBorderSlice": 10, "maskBorderWidth": 10, "maskBorderOutset": 10, "maskBorderRepeat": 10, "maskBorder": 10, "maskType": 10, "textSizeAdjust": 10, "textDecorationStyle": 10, "textDecorationSkip": 10, "textDecorationLine": 10, "textDecorationColor": 10, "shapeImageThreshold": 10, "shapeImageMargin": 10, "shapeImageOutside": 10, "filter": 9, "hyphens": 10, "flowInto": 10, "flowFrom": 10, "breakBefore": 8.1, "breakAfter": 8.1, "breakInside": 8.1, "regionFragment": 10, "columnCount": 8.1, "columnFill": 8.1, "columnGap": 8.1, "columnRule": 8.1, "columnRuleColor": 8.1, "columnRuleStyle": 8.1, "columnRuleWidth": 8.1, "columns": 8.1, "columnSpan": 8.1, "columnWidth": 8.1 }, "android": { "borderImage": 4.2, "borderImageOutset": 4.2, "borderImageRepeat": 4.2, "borderImageSlice": 4.2, "borderImageSource": 4.2, "borderImageWidth": 4.2, "flex": 4.2, "flexBasis": 4.2, "flexDirection": 4.2, "flexGrow": 4.2, "flexFlow": 4.2, "flexShrink": 4.2, "flexWrap": 4.2, "alignContent": 4.2, "alignItems": 4.2, "alignSelf": 4.2, "justifyContent": 4.2, "order": 4.2, "transition": 4.2, "transitionDelay": 4.2, "transitionDuration": 4.2, "transitionProperty": 4.2, "transitionTimingFunction": 4.2, "transform": 4.4, "transformOrigin": 4.4, "transformOriginX": 4.4, "transformOriginY": 4.4, "backfaceVisibility": 4.4, "perspective": 4.4, "perspectiveOrigin": 4.4, "transformStyle": 4.4, "transformOriginZ": 4.4, "animation": 4.4, "animationDelay": 4.4, "animationDirection": 4.4, "animationFillMode": 4.4, "animationDuration": 4.4, "animationIterationCount": 4.4, "animationName": 4.4, "animationPlayState": 4.4, "animationTimingFunction": 4.4, "appearance": 53, "userSelect": 53, "fontKerning": 4.4, "textEmphasisPosition": 53, "textEmphasis": 53, "textEmphasisStyle": 53, "textEmphasisColor": 53, "boxDecorationBreak": 53, "clipPath": 53, "maskImage": 53, "maskMode": 53, "maskRepeat": 53, "maskPosition": 53, "maskClip": 53, "maskOrigin": 53, "maskSize": 53, "maskComposite": 53, "mask": 53, "maskBorderSource": 53, "maskBorderMode": 53, "maskBorderSlice": 53, "maskBorderWidth": 53, "maskBorderOutset": 53, "maskBorderRepeat": 53, "maskBorder": 53, "maskType": 53, "filter": 4.4, "fontFeatureSettings": 4.4, "breakAfter": 53, "breakBefore": 53, "breakInside": 53, "columnCount": 53, "columnFill": 53, "columnGap": 53, "columnRule": 53, "columnRuleColor": 53, "columnRuleStyle": 53, "columnRuleWidth": 53, "columns": 53, "columnSpan": 53, "columnWidth": 53 }, "and_chr": { "appearance": 56, "textEmphasisPosition": 56, "textEmphasis": 56, "textEmphasisStyle": 56, "textEmphasisColor": 56, "boxDecorationBreak": 56, "maskImage": 56, "maskMode": 56, "maskRepeat": 56, "maskPosition": 56, "maskClip": 56, "maskOrigin": 56, "maskSize": 56, "maskComposite": 56, "mask": 56, "maskBorderSource": 56, "maskBorderMode": 56, "maskBorderSlice": 56, "maskBorderWidth": 56, "maskBorderOutset": 56, "maskBorderRepeat": 56, "maskBorder": 56, "maskType": 56, "textDecorationStyle": 56, "textDecorationSkip": 56, "textDecorationLine": 56, "textDecorationColor": 56 }, "and_uc": { "flex": 11, "flexBasis": 11, "flexDirection": 11, "flexGrow": 11, "flexFlow": 11, "flexShrink": 11, "flexWrap": 11, "alignContent": 11, "alignItems": 11, "alignSelf": 11, "justifyContent": 11, "order": 11, "transition": 11, "transitionDelay": 11, "transitionDuration": 11, "transitionProperty": 11, "transitionTimingFunction": 11, "transform": 11, "transformOrigin": 11, "transformOriginX": 11, "transformOriginY": 11, "backfaceVisibility": 11, "perspective": 11, "perspectiveOrigin": 11, "transformStyle": 11, "transformOriginZ": 11, "animation": 11, "animationDelay": 11, "animationDirection": 11, "animationFillMode": 11, "animationDuration": 11, "animationIterationCount": 11, "animationName": 11, "animationPlayState": 11, "animationTimingFunction": 11, "appearance": 11, "userSelect": 11, "fontKerning": 11, "textEmphasisPosition": 11, "textEmphasis": 11, "textEmphasisStyle": 11, "textEmphasisColor": 11, "maskImage": 11, "maskMode": 11, "maskRepeat": 11, "maskPosition": 11, "maskClip": 11, "maskOrigin": 11, "maskSize": 11, "maskComposite": 11, "mask": 11, "maskBorderSource": 11, "maskBorderMode": 11, "maskBorderSlice": 11, "maskBorderWidth": 11, "maskBorderOutset": 11, "maskBorderRepeat": 11, "maskBorder": 11, "maskType": 11, "textSizeAdjust": 11, "filter": 11, "hyphens": 11, "flowInto": 11, "flowFrom": 11, "breakBefore": 11, "breakAfter": 11, "breakInside": 11, "regionFragment": 11, "fontFeatureSettings": 11, "columnCount": 11, "columnFill": 11, "columnGap": 11, "columnRule": 11, "columnRuleColor": 11, "columnRuleStyle": 11, "columnRuleWidth": 11, "columns": 11, "columnSpan": 11, "columnWidth": 11 }, "op_mini": {} }
 }; /* eslint-disable */
-},{"inline-style-prefixer/dynamic/plugins/calc":157,"inline-style-prefixer/dynamic/plugins/flex":158,"inline-style-prefixer/dynamic/plugins/flexboxIE":159,"inline-style-prefixer/dynamic/plugins/flexboxOld":160,"inline-style-prefixer/dynamic/plugins/gradient":161,"inline-style-prefixer/dynamic/plugins/sizing":162,"inline-style-prefixer/dynamic/plugins/transition":163}],253:[function(require,module,exports){
+},{"inline-style-prefixer/dynamic/plugins/calc":157,"inline-style-prefixer/dynamic/plugins/flex":158,"inline-style-prefixer/dynamic/plugins/flexboxIE":159,"inline-style-prefixer/dynamic/plugins/flexboxOld":160,"inline-style-prefixer/dynamic/plugins/gradient":161,"inline-style-prefixer/dynamic/plugins/sizing":162,"inline-style-prefixer/dynamic/plugins/transition":163}],266:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27165,7 +30177,7 @@ exports.default = {
   plugins: [_calc2.default, _flex2.default, _flexboxIE2.default, _flexboxOld2.default, _gradient2.default, _sizing2.default, _transition2.default],
   prefixMap: { "transform": ["Webkit", "ms"], "transformOrigin": ["Webkit", "ms"], "transformOriginX": ["Webkit", "ms"], "transformOriginY": ["Webkit", "ms"], "backfaceVisibility": ["Webkit"], "perspective": ["Webkit"], "perspectiveOrigin": ["Webkit"], "transformStyle": ["Webkit"], "transformOriginZ": ["Webkit"], "animation": ["Webkit"], "animationDelay": ["Webkit"], "animationDirection": ["Webkit"], "animationFillMode": ["Webkit"], "animationDuration": ["Webkit"], "animationIterationCount": ["Webkit"], "animationName": ["Webkit"], "animationPlayState": ["Webkit"], "animationTimingFunction": ["Webkit"], "appearance": ["Webkit", "Moz"], "userSelect": ["Webkit", "Moz", "ms"], "fontKerning": ["Webkit"], "textEmphasisPosition": ["Webkit"], "textEmphasis": ["Webkit"], "textEmphasisStyle": ["Webkit"], "textEmphasisColor": ["Webkit"], "boxDecorationBreak": ["Webkit"], "clipPath": ["Webkit"], "maskImage": ["Webkit"], "maskMode": ["Webkit"], "maskRepeat": ["Webkit"], "maskPosition": ["Webkit"], "maskClip": ["Webkit"], "maskOrigin": ["Webkit"], "maskSize": ["Webkit"], "maskComposite": ["Webkit"], "mask": ["Webkit"], "maskBorderSource": ["Webkit"], "maskBorderMode": ["Webkit"], "maskBorderSlice": ["Webkit"], "maskBorderWidth": ["Webkit"], "maskBorderOutset": ["Webkit"], "maskBorderRepeat": ["Webkit"], "maskBorder": ["Webkit"], "maskType": ["Webkit"], "textDecorationStyle": ["Webkit", "Moz"], "textDecorationSkip": ["Webkit", "Moz"], "textDecorationLine": ["Webkit", "Moz"], "textDecorationColor": ["Webkit", "Moz"], "filter": ["Webkit"], "fontFeatureSettings": ["Webkit", "Moz"], "breakAfter": ["Webkit", "Moz", "ms"], "breakBefore": ["Webkit", "Moz", "ms"], "breakInside": ["Webkit", "Moz", "ms"], "columnCount": ["Webkit", "Moz"], "columnFill": ["Webkit", "Moz"], "columnGap": ["Webkit", "Moz"], "columnRule": ["Webkit", "Moz"], "columnRuleColor": ["Webkit", "Moz"], "columnRuleStyle": ["Webkit", "Moz"], "columnRuleWidth": ["Webkit", "Moz"], "columns": ["Webkit", "Moz"], "columnSpan": ["Webkit", "Moz"], "columnWidth": ["Webkit", "Moz"], "flex": ["Webkit", "ms"], "flexBasis": ["Webkit"], "flexDirection": ["Webkit", "ms"], "flexGrow": ["Webkit"], "flexFlow": ["Webkit", "ms"], "flexShrink": ["Webkit"], "flexWrap": ["Webkit", "ms"], "alignContent": ["Webkit"], "alignItems": ["Webkit"], "alignSelf": ["Webkit"], "justifyContent": ["Webkit"], "order": ["Webkit"], "transitionDelay": ["Webkit"], "transitionDuration": ["Webkit"], "transitionProperty": ["Webkit"], "transitionTimingFunction": ["Webkit"], "backdropFilter": ["Webkit"], "scrollSnapType": ["Webkit", "ms"], "scrollSnapPointsX": ["Webkit", "ms"], "scrollSnapPointsY": ["Webkit", "ms"], "scrollSnapDestination": ["Webkit", "ms"], "scrollSnapCoordinate": ["Webkit", "ms"], "shapeImageThreshold": ["Webkit"], "shapeImageMargin": ["Webkit"], "shapeImageOutside": ["Webkit"], "hyphens": ["Webkit", "Moz", "ms"], "flowInto": ["Webkit", "ms"], "flowFrom": ["Webkit", "ms"], "regionFragment": ["Webkit", "ms"], "boxSizing": ["Moz"], "textAlignLast": ["Moz"], "tabSize": ["Moz"], "wrapFlow": ["ms"], "wrapThrough": ["ms"], "wrapMargin": ["ms"], "touchAction": ["ms"], "gridTemplateColumns": ["ms"], "gridTemplateRows": ["ms"], "gridTemplateAreas": ["ms"], "gridTemplate": ["ms"], "gridAutoColumns": ["ms"], "gridAutoRows": ["ms"], "gridAutoFlow": ["ms"], "grid": ["ms"], "gridRowStart": ["ms"], "gridColumnStart": ["ms"], "gridRowEnd": ["ms"], "gridRow": ["ms"], "gridColumn": ["ms"], "gridColumnEnd": ["ms"], "gridColumnGap": ["ms"], "gridRowGap": ["ms"], "gridArea": ["ms"], "gridGap": ["ms"], "textSizeAdjust": ["Webkit", "ms"], "borderImage": ["Webkit"], "borderImageOutset": ["Webkit"], "borderImageRepeat": ["Webkit"], "borderImageSlice": ["Webkit"], "borderImageSource": ["Webkit"], "borderImageWidth": ["Webkit"] }
 }; /* eslint-disable */
-},{"inline-style-prefixer/static/plugins/calc":165,"inline-style-prefixer/static/plugins/flex":166,"inline-style-prefixer/static/plugins/flexboxIE":167,"inline-style-prefixer/static/plugins/flexboxOld":168,"inline-style-prefixer/static/plugins/gradient":169,"inline-style-prefixer/static/plugins/sizing":170,"inline-style-prefixer/static/plugins/transition":171}],254:[function(require,module,exports){
+},{"inline-style-prefixer/static/plugins/calc":165,"inline-style-prefixer/static/plugins/flex":166,"inline-style-prefixer/static/plugins/flexboxIE":167,"inline-style-prefixer/static/plugins/flexboxOld":168,"inline-style-prefixer/static/plugins/gradient":169,"inline-style-prefixer/static/plugins/sizing":170,"inline-style-prefixer/static/plugins/transition":171}],267:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -27194,7 +30206,7 @@ function callOnce() {
   }
 }
 }).call(this,require('_process'))
-},{"_process":261,"warning":347}],255:[function(require,module,exports){
+},{"_process":274,"warning":360}],268:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27221,7 +30233,7 @@ function extendChildren(children, extendedProps, extendedChildren) {
     return _react2.default.cloneElement(child, newProps, newChildren);
   });
 }
-},{"react":318}],256:[function(require,module,exports){
+},{"react":331}],269:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -27466,7 +30478,7 @@ function lighten(color, coefficient) {
   return convertColorToString(color);
 }
 }).call(this,require('_process'))
-},{"_process":261,"warning":347}],257:[function(require,module,exports){
+},{"_process":274,"warning":360}],270:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27491,7 +30503,7 @@ exports.default = {
     };
   }
 };
-},{}],258:[function(require,module,exports){
+},{}],271:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27531,7 +30543,7 @@ exports.default = {
     return ['keydown', 'keypress', 'keyup'].indexOf(event.type) !== -1;
   }
 };
-},{}],259:[function(require,module,exports){
+},{}],272:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27567,7 +30579,7 @@ exports.default = {
   zDepth: _propTypes2.default.oneOf([0, 1, 2, 3, 4, 5])
 
 };
-},{"prop-types":265}],260:[function(require,module,exports){
+},{"prop-types":278}],273:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27665,7 +30677,7 @@ function rtl(muiTheme) {
     };
   }
 }
-},{"babel-runtime/core-js/object/keys":18}],261:[function(require,module,exports){
+},{"babel-runtime/core-js/object/keys":18}],274:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -27851,7 +30863,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],262:[function(require,module,exports){
+},{}],275:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -27914,7 +30926,7 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
 module.exports = checkPropTypes;
 
 }).call(this,require('_process'))
-},{"./lib/ReactPropTypesSecret":266,"_process":261,"fbjs/lib/invariant":141,"fbjs/lib/warning":145}],263:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":279,"_process":274,"fbjs/lib/invariant":141,"fbjs/lib/warning":145}],276:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -27974,7 +30986,7 @@ module.exports = function() {
   return ReactPropTypes;
 };
 
-},{"./lib/ReactPropTypesSecret":266,"fbjs/lib/emptyFunction":136,"fbjs/lib/invariant":141}],264:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":279,"fbjs/lib/emptyFunction":136,"fbjs/lib/invariant":141}],277:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -28520,7 +31532,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 };
 
 }).call(this,require('_process'))
-},{"./checkPropTypes":262,"./lib/ReactPropTypesSecret":266,"_process":261,"fbjs/lib/emptyFunction":136,"fbjs/lib/invariant":141,"fbjs/lib/warning":145,"object-assign":267}],265:[function(require,module,exports){
+},{"./checkPropTypes":275,"./lib/ReactPropTypesSecret":279,"_process":274,"fbjs/lib/emptyFunction":136,"fbjs/lib/invariant":141,"fbjs/lib/warning":145,"object-assign":280}],278:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -28552,7 +31564,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./factoryWithThrowingShims":263,"./factoryWithTypeCheckers":264,"_process":261}],266:[function(require,module,exports){
+},{"./factoryWithThrowingShims":276,"./factoryWithTypeCheckers":277,"_process":274}],279:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -28566,7 +31578,7 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 module.exports = ReactPropTypesSecret;
 
-},{}],267:[function(require,module,exports){
+},{}],280:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -28658,7 +31670,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],268:[function(require,module,exports){
+},{}],281:[function(require,module,exports){
 (function (process){
 /** @license React v16.3.1
  * react-dom.development.js
@@ -45286,7 +48298,7 @@ module.exports = reactDom;
 }
 
 }).call(this,require('_process'))
-},{"_process":261,"fbjs/lib/ExecutionEnvironment":132,"fbjs/lib/camelizeStyleName":134,"fbjs/lib/containsNode":135,"fbjs/lib/emptyFunction":136,"fbjs/lib/emptyObject":137,"fbjs/lib/getActiveElement":138,"fbjs/lib/hyphenateStyleName":140,"fbjs/lib/invariant":141,"fbjs/lib/shallowEqual":144,"fbjs/lib/warning":145,"object-assign":271,"prop-types/checkPropTypes":262,"react":318}],269:[function(require,module,exports){
+},{"_process":274,"fbjs/lib/ExecutionEnvironment":132,"fbjs/lib/camelizeStyleName":134,"fbjs/lib/containsNode":135,"fbjs/lib/emptyFunction":136,"fbjs/lib/emptyObject":137,"fbjs/lib/getActiveElement":138,"fbjs/lib/hyphenateStyleName":140,"fbjs/lib/invariant":141,"fbjs/lib/shallowEqual":144,"fbjs/lib/warning":145,"object-assign":284,"prop-types/checkPropTypes":275,"react":331}],282:[function(require,module,exports){
 /** @license React v16.3.1
  * react-dom.production.min.js
  *
@@ -45533,7 +48545,7 @@ var Gg={createPortal:Fg,findDOMNode:function(a){if(null==a)return null;if(1===a.
 D("40");return a._reactRootContainer?(X.unbatchedUpdates(function(){Eg(null,null,a,!1,function(){a._reactRootContainer=null})}),!0):!1},unstable_createPortal:function(){return Fg.apply(void 0,arguments)},unstable_batchedUpdates:X.batchedUpdates,unstable_deferredUpdates:X.deferredUpdates,flushSync:X.flushSync,unstable_flushControlled:X.flushControlled,__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{EventPluginHub:Qa,EventPluginRegistry:xa,EventPropagators:jb,ReactControlledComponent:Zb,ReactDOMComponentTree:Xa,
 ReactDOMEventListener:Zd},unstable_createRoot:function(a,b){return new sg(a,!0,null!=b&&!0===b.hydrate)}};X.injectIntoDevTools({findFiberByHostInstance:Ta,bundleType:0,version:"16.3.1",rendererPackageName:"react-dom"});var Hg=Object.freeze({default:Gg}),Ig=Hg&&Gg||Hg;module.exports=Ig["default"]?Ig["default"]:Ig;
 
-},{"fbjs/lib/ExecutionEnvironment":132,"fbjs/lib/containsNode":135,"fbjs/lib/emptyFunction":136,"fbjs/lib/emptyObject":137,"fbjs/lib/getActiveElement":138,"fbjs/lib/shallowEqual":144,"object-assign":271,"react":318}],270:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":132,"fbjs/lib/containsNode":135,"fbjs/lib/emptyFunction":136,"fbjs/lib/emptyObject":137,"fbjs/lib/getActiveElement":138,"fbjs/lib/shallowEqual":144,"object-assign":284,"react":331}],283:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -45575,9 +48587,9 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./cjs/react-dom.development.js":268,"./cjs/react-dom.production.min.js":269,"_process":261}],271:[function(require,module,exports){
-arguments[4][267][0].apply(exports,arguments)
-},{"dup":267}],272:[function(require,module,exports){
+},{"./cjs/react-dom.development.js":281,"./cjs/react-dom.production.min.js":282,"_process":274}],284:[function(require,module,exports){
+arguments[4][280][0].apply(exports,arguments)
+},{"dup":280}],285:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -45790,7 +48802,7 @@ EventListener.propTypes = process.env.NODE_ENV !== "production" ? {
 
 exports.default = EventListener;
 }).call(this,require('_process'))
-},{"./supports":273,"_process":261,"babel-runtime/core-js/object/assign":14,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/core-js/object/keys":18,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"babel-runtime/helpers/typeof":30,"fbjs/lib/shallowEqual":144,"prop-types":265,"react":318,"warning":347}],273:[function(require,module,exports){
+},{"./supports":286,"_process":274,"babel-runtime/core-js/object/assign":14,"babel-runtime/core-js/object/get-prototype-of":17,"babel-runtime/core-js/object/keys":18,"babel-runtime/helpers/classCallCheck":22,"babel-runtime/helpers/createClass":23,"babel-runtime/helpers/inherits":25,"babel-runtime/helpers/objectWithoutProperties":26,"babel-runtime/helpers/possibleConstructorReturn":27,"babel-runtime/helpers/typeof":30,"fbjs/lib/shallowEqual":144,"prop-types":278,"react":331,"warning":360}],286:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -45837,7 +48849,7 @@ var passiveOption = exports.passiveOption = function () {
 }();
 
 exports.default = {};
-},{"babel-runtime/core-js/object/define-property":16}],274:[function(require,module,exports){
+},{"babel-runtime/core-js/object/define-property":16}],287:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -45926,7 +48938,7 @@ function createProvider() {
 
 exports.default = createProvider();
 }).call(this,require('_process'))
-},{"../utils/PropTypes":284,"../utils/warning":288,"_process":261,"prop-types":265,"react":318}],275:[function(require,module,exports){
+},{"../utils/PropTypes":297,"../utils/warning":301,"_process":274,"prop-types":278,"react":331}],288:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -46235,7 +49247,7 @@ selectorFactory) {
   };
 }
 }).call(this,require('_process'))
-},{"../utils/PropTypes":284,"../utils/Subscription":285,"_process":261,"hoist-non-react-statics":154,"invariant":180,"react":318}],276:[function(require,module,exports){
+},{"../utils/PropTypes":297,"../utils/Subscription":298,"_process":274,"hoist-non-react-statics":154,"invariant":180,"react":331}],289:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46364,7 +49376,7 @@ function createConnect() {
 }
 
 exports.default = createConnect();
-},{"../components/connectAdvanced":275,"../utils/shallowEqual":286,"./mapDispatchToProps":277,"./mapStateToProps":278,"./mergeProps":279,"./selectorFactory":280}],277:[function(require,module,exports){
+},{"../components/connectAdvanced":288,"../utils/shallowEqual":299,"./mapDispatchToProps":290,"./mapStateToProps":291,"./mergeProps":292,"./selectorFactory":293}],290:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46393,7 +49405,7 @@ function whenMapDispatchToPropsIsObject(mapDispatchToProps) {
 }
 
 exports.default = [whenMapDispatchToPropsIsFunction, whenMapDispatchToPropsIsMissing, whenMapDispatchToPropsIsObject];
-},{"./wrapMapToProps":282,"redux":334}],278:[function(require,module,exports){
+},{"./wrapMapToProps":295,"redux":347}],291:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46413,7 +49425,7 @@ function whenMapStateToPropsIsMissing(mapStateToProps) {
 }
 
 exports.default = [whenMapStateToPropsIsFunction, whenMapStateToPropsIsMissing];
-},{"./wrapMapToProps":282}],279:[function(require,module,exports){
+},{"./wrapMapToProps":295}],292:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -46474,7 +49486,7 @@ function whenMergePropsIsOmitted(mergeProps) {
 
 exports.default = [whenMergePropsIsFunction, whenMergePropsIsOmitted];
 }).call(this,require('_process'))
-},{"../utils/verifyPlainObject":287,"_process":261}],280:[function(require,module,exports){
+},{"../utils/verifyPlainObject":300,"_process":274}],293:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -46590,7 +49602,7 @@ function finalPropsSelectorFactory(dispatch, _ref2) {
   return selectorFactory(mapStateToProps, mapDispatchToProps, mergeProps, dispatch, options);
 }
 }).call(this,require('_process'))
-},{"./verifySubselectors":281,"_process":261}],281:[function(require,module,exports){
+},{"./verifySubselectors":294,"_process":274}],294:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46617,7 +49629,7 @@ function verifySubselectors(mapStateToProps, mapDispatchToProps, mergeProps, dis
   verify(mapDispatchToProps, 'mapDispatchToProps', displayName);
   verify(mergeProps, 'mergeProps', displayName);
 }
-},{"../utils/warning":288}],282:[function(require,module,exports){
+},{"../utils/warning":301}],295:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -46698,7 +49710,7 @@ function wrapMapToPropsFunc(mapToProps, methodName) {
   };
 }
 }).call(this,require('_process'))
-},{"../utils/verifyPlainObject":287,"_process":261}],283:[function(require,module,exports){
+},{"../utils/verifyPlainObject":300,"_process":274}],296:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46722,7 +49734,7 @@ exports.Provider = _Provider2.default;
 exports.createProvider = _Provider.createProvider;
 exports.connectAdvanced = _connectAdvanced2.default;
 exports.connect = _connect2.default;
-},{"./components/Provider":274,"./components/connectAdvanced":275,"./connect/connect":276}],284:[function(require,module,exports){
+},{"./components/Provider":287,"./components/connectAdvanced":288,"./connect/connect":289}],297:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46746,7 +49758,7 @@ var storeShape = exports.storeShape = _propTypes2.default.shape({
   dispatch: _propTypes2.default.func.isRequired,
   getState: _propTypes2.default.func.isRequired
 });
-},{"prop-types":265}],285:[function(require,module,exports){
+},{"prop-types":278}],298:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -46843,7 +49855,7 @@ var Subscription = function () {
 }();
 
 exports.default = Subscription;
-},{}],286:[function(require,module,exports){
+},{}],299:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46878,7 +49890,7 @@ function shallowEqual(objA, objB) {
 
   return true;
 }
-},{}],287:[function(require,module,exports){
+},{}],300:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46899,7 +49911,7 @@ function verifyPlainObject(value, displayName, methodName) {
     (0, _warning2.default)(methodName + '() in ' + displayName + ' must return a plain object. Instead received ' + value + '.');
   }
 }
-},{"./warning":288,"lodash/isPlainObject":194}],288:[function(require,module,exports){
+},{"./warning":301,"lodash/isPlainObject":194}],301:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46925,7 +49937,7 @@ function warning(message) {
   } catch (e) {}
   /* eslint-enable no-empty */
 }
-},{}],289:[function(require,module,exports){
+},{}],302:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46995,7 +50007,7 @@ BrowserRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = BrowserRouter;
-},{"./Router":297,"history/createBrowserHistory":149,"prop-types":265,"react":318,"warning":347}],290:[function(require,module,exports){
+},{"./Router":310,"history/createBrowserHistory":149,"prop-types":278,"react":331,"warning":360}],303:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47064,7 +50076,7 @@ HashRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = HashRouter;
-},{"./Router":297,"history/createHashHistory":150,"prop-types":265,"react":318,"warning":347}],291:[function(require,module,exports){
+},{"./Router":310,"history/createHashHistory":150,"prop-types":278,"react":331,"warning":360}],304:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47175,7 +50187,7 @@ Link.contextTypes = {
   }).isRequired
 };
 exports.default = Link;
-},{"invariant":180,"prop-types":265,"react":318}],292:[function(require,module,exports){
+},{"invariant":180,"prop-types":278,"react":331}],305:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47187,7 +50199,7 @@ var _MemoryRouter2 = _interopRequireDefault(_MemoryRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _MemoryRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/MemoryRouter":303}],293:[function(require,module,exports){
+},{"react-router/MemoryRouter":316}],306:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47274,7 +50286,7 @@ NavLink.defaultProps = {
 };
 
 exports.default = NavLink;
-},{"./Link":291,"./Route":296,"prop-types":265,"react":318}],294:[function(require,module,exports){
+},{"./Link":304,"./Route":309,"prop-types":278,"react":331}],307:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47286,7 +50298,7 @@ var _Prompt2 = _interopRequireDefault(_Prompt);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Prompt2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Prompt":304}],295:[function(require,module,exports){
+},{"react-router/Prompt":317}],308:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47298,7 +50310,7 @@ var _Redirect2 = _interopRequireDefault(_Redirect);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Redirect2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Redirect":305}],296:[function(require,module,exports){
+},{"react-router/Redirect":318}],309:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47310,7 +50322,7 @@ var _Route2 = _interopRequireDefault(_Route);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Route2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Route":306}],297:[function(require,module,exports){
+},{"react-router/Route":319}],310:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47322,7 +50334,7 @@ var _Router2 = _interopRequireDefault(_Router);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Router2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Router":307}],298:[function(require,module,exports){
+},{"react-router/Router":320}],311:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47334,7 +50346,7 @@ var _StaticRouter2 = _interopRequireDefault(_StaticRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _StaticRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/StaticRouter":308}],299:[function(require,module,exports){
+},{"react-router/StaticRouter":321}],312:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47346,7 +50358,7 @@ var _Switch2 = _interopRequireDefault(_Switch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Switch2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Switch":309}],300:[function(require,module,exports){
+},{"react-router/Switch":322}],313:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47419,7 +50431,7 @@ exports.StaticRouter = _StaticRouter3.default;
 exports.Switch = _Switch3.default;
 exports.matchPath = _matchPath3.default;
 exports.withRouter = _withRouter3.default;
-},{"./BrowserRouter":289,"./HashRouter":290,"./Link":291,"./MemoryRouter":292,"./NavLink":293,"./Prompt":294,"./Redirect":295,"./Route":296,"./Router":297,"./StaticRouter":298,"./Switch":299,"./matchPath":301,"./withRouter":302}],301:[function(require,module,exports){
+},{"./BrowserRouter":302,"./HashRouter":303,"./Link":304,"./MemoryRouter":305,"./NavLink":306,"./Prompt":307,"./Redirect":308,"./Route":309,"./Router":310,"./StaticRouter":311,"./Switch":312,"./matchPath":314,"./withRouter":315}],314:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47431,7 +50443,7 @@ var _matchPath2 = _interopRequireDefault(_matchPath);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _matchPath2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/matchPath":311}],302:[function(require,module,exports){
+},{"react-router/matchPath":324}],315:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47443,7 +50455,7 @@ var _withRouter2 = _interopRequireDefault(_withRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _withRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/withRouter":313}],303:[function(require,module,exports){
+},{"react-router/withRouter":326}],316:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47513,7 +50525,7 @@ MemoryRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = MemoryRouter;
-},{"./Router":307,"history/createMemoryHistory":151,"prop-types":265,"react":318,"warning":347}],304:[function(require,module,exports){
+},{"./Router":320,"history/createMemoryHistory":151,"prop-types":278,"react":331,"warning":360}],317:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47604,7 +50616,7 @@ Prompt.contextTypes = {
   }).isRequired
 };
 exports.default = Prompt;
-},{"invariant":180,"prop-types":265,"react":318}],305:[function(require,module,exports){
+},{"invariant":180,"prop-types":278,"react":331}],318:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47713,7 +50725,7 @@ Redirect.contextTypes = {
   }).isRequired
 };
 exports.default = Redirect;
-},{"history":153,"invariant":180,"prop-types":265,"react":318,"warning":347}],306:[function(require,module,exports){
+},{"history":153,"invariant":180,"prop-types":278,"react":331,"warning":360}],319:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47866,7 +50878,7 @@ Route.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Route;
-},{"./matchPath":311,"invariant":180,"prop-types":265,"react":318,"warning":347}],307:[function(require,module,exports){
+},{"./matchPath":324,"invariant":180,"prop-types":278,"react":331,"warning":360}],320:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47986,7 +50998,7 @@ Router.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Router;
-},{"invariant":180,"prop-types":265,"react":318,"warning":347}],308:[function(require,module,exports){
+},{"invariant":180,"prop-types":278,"react":331,"warning":360}],321:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48172,7 +51184,7 @@ StaticRouter.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = StaticRouter;
-},{"./Router":307,"history/PathUtils":148,"invariant":180,"prop-types":265,"react":318,"warning":347}],309:[function(require,module,exports){
+},{"./Router":320,"history/PathUtils":148,"invariant":180,"prop-types":278,"react":331,"warning":360}],322:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48269,7 +51281,7 @@ Switch.propTypes = {
   location: _propTypes2.default.object
 };
 exports.default = Switch;
-},{"./matchPath":311,"invariant":180,"prop-types":265,"react":318,"warning":347}],310:[function(require,module,exports){
+},{"./matchPath":324,"invariant":180,"prop-types":278,"react":331,"warning":360}],323:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48322,7 +51334,7 @@ exports.StaticRouter = _StaticRouter3.default;
 exports.Switch = _Switch3.default;
 exports.matchPath = _matchPath3.default;
 exports.withRouter = _withRouter3.default;
-},{"./MemoryRouter":303,"./Prompt":304,"./Redirect":305,"./Route":306,"./Router":307,"./StaticRouter":308,"./Switch":309,"./matchPath":311,"./withRouter":313}],311:[function(require,module,exports){
+},{"./MemoryRouter":316,"./Prompt":317,"./Redirect":318,"./Route":319,"./Router":320,"./StaticRouter":321,"./Switch":322,"./matchPath":324,"./withRouter":326}],324:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48400,7 +51412,7 @@ var matchPath = function matchPath(pathname) {
 };
 
 exports.default = matchPath;
-},{"path-to-regexp":312}],312:[function(require,module,exports){
+},{"path-to-regexp":325}],325:[function(require,module,exports){
 var isarray = require('isarray')
 
 /**
@@ -48828,7 +51840,7 @@ function pathToRegexp (path, keys, options) {
   return stringToRegexp(/** @type {string} */ (path), /** @type {!Array} */ (keys), options)
 }
 
-},{"isarray":181}],313:[function(require,module,exports){
+},{"isarray":181}],326:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48878,7 +51890,7 @@ var withRouter = function withRouter(Component) {
 };
 
 exports.default = withRouter;
-},{"./Route":306,"hoist-non-react-statics":154,"prop-types":265,"react":318}],314:[function(require,module,exports){
+},{"./Route":319,"hoist-non-react-statics":154,"prop-types":278,"react":331}],327:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -49150,7 +52162,7 @@ TransitionGroup.defaultProps = defaultProps;
 exports.default = TransitionGroup;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./utils/ChildMapping":315,"_process":261,"chain-function":32,"prop-types":265,"react":318,"warning":347}],315:[function(require,module,exports){
+},{"./utils/ChildMapping":328,"_process":274,"chain-function":32,"prop-types":278,"react":331,"warning":360}],328:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49242,7 +52254,7 @@ function mergeChildMappings(prev, next) {
 
   return childMapping;
 }
-},{"react":318}],316:[function(require,module,exports){
+},{"react":331}],329:[function(require,module,exports){
 (function (process){
 /** @license React v16.3.1
  * react.development.js
@@ -50655,7 +53667,7 @@ module.exports = react;
 }
 
 }).call(this,require('_process'))
-},{"_process":261,"fbjs/lib/emptyFunction":136,"fbjs/lib/emptyObject":137,"fbjs/lib/invariant":141,"fbjs/lib/warning":145,"object-assign":319,"prop-types/checkPropTypes":262}],317:[function(require,module,exports){
+},{"_process":274,"fbjs/lib/emptyFunction":136,"fbjs/lib/emptyObject":137,"fbjs/lib/invariant":141,"fbjs/lib/warning":145,"object-assign":332,"prop-types/checkPropTypes":275}],330:[function(require,module,exports){
 /** @license React v16.3.1
  * react.production.min.js
  *
@@ -50679,7 +53691,7 @@ _calculateChangedBits:b,_defaultValue:a,_currentValue:a,_changedBits:0,Provider:
 c)&&!J.hasOwnProperty(c)&&(d[c]=void 0===b[c]&&void 0!==k?k[c]:b[c])}c=arguments.length-2;if(1===c)d.children=e;else if(1<c){k=Array(c);for(var l=0;l<c;l++)k[l]=arguments[l+2];d.children=k}return{$$typeof:r,type:a.type,key:g,ref:h,props:d,_owner:f}},createFactory:function(a){var b=K.bind(null,a);b.type=a;return b},isValidElement:L,version:"16.3.1",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{ReactCurrentOwner:H,assign:m}},W=Object.freeze({default:V}),X=W&&V||W;
 module.exports=X["default"]?X["default"]:X;
 
-},{"fbjs/lib/emptyFunction":136,"fbjs/lib/emptyObject":137,"object-assign":319}],318:[function(require,module,exports){
+},{"fbjs/lib/emptyFunction":136,"fbjs/lib/emptyObject":137,"object-assign":332}],331:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -50690,9 +53702,9 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./cjs/react.development.js":316,"./cjs/react.production.min.js":317,"_process":261}],319:[function(require,module,exports){
-arguments[4][267][0].apply(exports,arguments)
-},{"dup":267}],320:[function(require,module,exports){
+},{"./cjs/react.development.js":329,"./cjs/react.production.min.js":330,"_process":274}],332:[function(require,module,exports){
+arguments[4][280][0].apply(exports,arguments)
+},{"dup":280}],333:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -50718,7 +53730,7 @@ function compose() {
     };
   });
 }
-},{}],321:[function(require,module,exports){
+},{}],334:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50735,7 +53747,7 @@ var getDisplayName = function getDisplayName(Component) {
 };
 
 exports.default = getDisplayName;
-},{}],322:[function(require,module,exports){
+},{}],335:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -50773,7 +53785,7 @@ var pure = function pure(BaseComponent) {
 
 exports.default = pure;
 }).call(this,require('_process'))
-},{"./setDisplayName":323,"./shallowEqual":325,"./shouldUpdate":326,"./wrapDisplayName":327,"_process":261}],323:[function(require,module,exports){
+},{"./setDisplayName":336,"./shallowEqual":338,"./shouldUpdate":339,"./wrapDisplayName":340,"_process":274}],336:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50789,7 +53801,7 @@ var setDisplayName = function setDisplayName(displayName) {
 };
 
 exports.default = setDisplayName;
-},{"./setStatic":324}],324:[function(require,module,exports){
+},{"./setStatic":337}],337:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -50803,7 +53815,7 @@ var setStatic = function setStatic(key, value) {
 };
 
 exports.default = setStatic;
-},{}],325:[function(require,module,exports){
+},{}],338:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50815,7 +53827,7 @@ var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _shallowEqual2.default;
-},{"fbjs/lib/shallowEqual":144}],326:[function(require,module,exports){
+},{"fbjs/lib/shallowEqual":144}],339:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -50872,7 +53884,7 @@ var shouldUpdate = function shouldUpdate(test) {
 
 exports.default = shouldUpdate;
 }).call(this,require('_process'))
-},{"./setDisplayName":323,"./wrapDisplayName":327,"_process":261,"react":318}],327:[function(require,module,exports){
+},{"./setDisplayName":336,"./wrapDisplayName":340,"_process":274,"react":331}],340:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50888,7 +53900,7 @@ var wrapDisplayName = function wrapDisplayName(BaseComponent, hocName) {
 };
 
 exports.default = wrapDisplayName;
-},{"./getDisplayName":321}],328:[function(require,module,exports){
+},{"./getDisplayName":334}],341:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50912,7 +53924,7 @@ var thunk = createThunkMiddleware();
 thunk.withExtraArgument = createThunkMiddleware;
 
 exports['default'] = thunk;
-},{}],329:[function(require,module,exports){
+},{}],342:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50971,7 +53983,7 @@ function applyMiddleware() {
     };
   };
 }
-},{"./compose":332}],330:[function(require,module,exports){
+},{"./compose":345}],343:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51023,7 +54035,7 @@ function bindActionCreators(actionCreators, dispatch) {
   }
   return boundActionCreators;
 }
-},{}],331:[function(require,module,exports){
+},{}],344:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -51169,7 +54181,7 @@ function combineReducers(reducers) {
   };
 }
 }).call(this,require('_process'))
-},{"./createStore":333,"./utils/warning":335,"_process":261,"lodash/isPlainObject":194}],332:[function(require,module,exports){
+},{"./createStore":346,"./utils/warning":348,"_process":274,"lodash/isPlainObject":194}],345:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -51206,7 +54218,7 @@ function compose() {
     };
   });
 }
-},{}],333:[function(require,module,exports){
+},{}],346:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51468,7 +54480,7 @@ var ActionTypes = exports.ActionTypes = {
     replaceReducer: replaceReducer
   }, _ref2[_symbolObservable2['default']] = observable, _ref2;
 }
-},{"lodash/isPlainObject":194,"symbol-observable":344}],334:[function(require,module,exports){
+},{"lodash/isPlainObject":194,"symbol-observable":357}],347:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -51517,7 +54529,7 @@ exports.bindActionCreators = _bindActionCreators2['default'];
 exports.applyMiddleware = _applyMiddleware2['default'];
 exports.compose = _compose2['default'];
 }).call(this,require('_process'))
-},{"./applyMiddleware":329,"./bindActionCreators":330,"./combineReducers":331,"./compose":332,"./createStore":333,"./utils/warning":335,"_process":261}],335:[function(require,module,exports){
+},{"./applyMiddleware":342,"./bindActionCreators":343,"./combineReducers":344,"./compose":345,"./createStore":346,"./utils/warning":348,"_process":274}],348:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51543,7 +54555,7 @@ function warning(message) {
   } catch (e) {}
   /* eslint-enable no-empty */
 }
-},{}],336:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51618,7 +54630,7 @@ function resolvePathname(to) {
 
 exports.default = resolvePathname;
 module.exports = exports['default'];
-},{}],337:[function(require,module,exports){
+},{}],350:[function(require,module,exports){
 module.exports = function (target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i];
@@ -51631,7 +54643,7 @@ module.exports = function (target) {
   return target;
 };
 
-},{}],338:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 function Agent() {
   this._defaults = [];
 }
@@ -51653,7 +54665,7 @@ Agent.prototype._setDefaults = function(req) {
 
 module.exports = Agent;
 
-},{}],339:[function(require,module,exports){
+},{}],352:[function(require,module,exports){
 /**
  * Root reference for iframes.
  */
@@ -52575,7 +55587,7 @@ request.put = function(url, data, fn) {
   return req;
 };
 
-},{"./agent-base":338,"./is-object":340,"./request-base":341,"./response-base":342,"component-emitter":33}],340:[function(require,module,exports){
+},{"./agent-base":351,"./is-object":353,"./request-base":354,"./response-base":355,"component-emitter":33}],353:[function(require,module,exports){
 'use strict';
 
 /**
@@ -52592,7 +55604,7 @@ function isObject(obj) {
 
 module.exports = isObject;
 
-},{}],341:[function(require,module,exports){
+},{}],354:[function(require,module,exports){
 'use strict';
 
 /**
@@ -53288,7 +56300,7 @@ RequestBase.prototype._setTimeouts = function() {
   }
 };
 
-},{"./is-object":340}],342:[function(require,module,exports){
+},{"./is-object":353}],355:[function(require,module,exports){
 'use strict';
 
 /**
@@ -53424,7 +56436,7 @@ ResponseBase.prototype._setStatusProperties = function(status){
     this.notFound = 404 == status;
 };
 
-},{"./utils":343}],343:[function(require,module,exports){
+},{"./utils":356}],356:[function(require,module,exports){
 'use strict';
 
 /**
@@ -53497,7 +56509,7 @@ exports.cleanHeader = function(header, changesOrigin){
   return header;
 };
 
-},{}],344:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -53529,7 +56541,7 @@ if (typeof self !== 'undefined') {
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./ponyfill.js":345}],345:[function(require,module,exports){
+},{"./ponyfill.js":358}],358:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -53553,7 +56565,7 @@ function symbolObservablePonyfill(root) {
 
 	return result;
 };
-},{}],346:[function(require,module,exports){
+},{}],359:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53597,7 +56609,7 @@ function valueEqual(a, b) {
 
 exports.default = valueEqual;
 module.exports = exports['default'];
-},{}],347:[function(require,module,exports){
+},{}],360:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -53661,4 +56673,4 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = warning;
 
 }).call(this,require('_process'))
-},{"_process":261}]},{},[10]);
+},{"_process":274}]},{},[10]);

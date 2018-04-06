@@ -51,3 +51,9 @@ export const updateViewMode = (newMode)=>({
   type: UPDATE_VIEW_MODE,
   mode: newMode
 });
+
+export const EDIT_CHECK = 'EDIT_CHECK';
+export const editCheck = (editId)=>({
+  type: EDIT_CHECK,
+  editId
+});

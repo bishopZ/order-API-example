@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-var CheckList = ({list, mode})=>{
+var CheckList = ({list, mode, editCheck})=>{
   const displayList = list.filter((item)=>(item.closed === (mode !== 'open')));
   if (displayList.length < 1) return (<h2>no {mode} checks</h2>);
 
@@ -12,7 +12,7 @@ var CheckList = ({list, mode})=>{
         {displayList.map(function(item, index){
           return (
             <div key={index}>
-              <button>{mode} check for table #{item.table.number}</button>
+              <button onClick={()=>(editCheck(item.id))}>{mode} check for table #{item.table.number}</button>
             </div>
           );            
         })}
@@ -22,6 +22,7 @@ var CheckList = ({list, mode})=>{
 };
 
 CheckList.propTypes = {
+  editCheck: PropTypes.func.isRequired,
   list: PropTypes.array.isRequired,
   mode: PropTypes.string
 };

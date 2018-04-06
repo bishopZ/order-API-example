@@ -25,11 +25,12 @@ class HomePage extends React.Component {
           />
           <CheckList 
             mode={this.props.data.viewMode} 
-            list={this.props.data.checkList} 
+            list={this.props.data.checkList}
+            editCheck={this.props.editCheck}
           />
           <EditForm 
-            editId={this.props.data.editId} 
-            tables={this.props.data.tableList}
+            editId={this.props.data.editId}
+            checkList={this.props.data.checkList}
           />
         </div>
       );
@@ -41,6 +42,7 @@ HomePage.propTypes = {
   initApplication: PropTypes.func.isRequired,
   createNewCheck: PropTypes.func.isRequired,
   updateViewMode: PropTypes.func.isRequired,
+  editCheck: PropTypes.func.isRequired,
   data: PropTypes.shape({
     documentPhase: PropTypes.number.isRequired,
     tableList: PropTypes.array,
