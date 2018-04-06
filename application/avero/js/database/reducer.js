@@ -2,7 +2,7 @@
 import * as Actions from './actions.js';
 import * as Manager from './dataManager.js';
 
-const dataReducer = (state = Manager.defaultState, action)=>{
+const Reducer = (state = Manager.defaultState, action)=>{
 
   console.log(action);
 
@@ -33,4 +33,4 @@ const dataReducer = (state = Manager.defaultState, action)=>{
 
 };
 
-module.exports = dataReducer;
+module.exports = Reducer;

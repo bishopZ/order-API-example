@@ -47,11 +47,11 @@ HomePage.propTypes = {
   editCheck: PropTypes.func.isRequired,
   data: PropTypes.shape({
     documentPhase: PropTypes.number.isRequired,
+    viewMode: PropTypes.string.isRequired,
     tableList: PropTypes.array,
     checkList: PropTypes.array,
     itemList: PropTypes.array,
     editItems: PropTypes.array,
-    viewMode: PropTypes.string.isRequired,
     editId: PropTypes.string
   }).isRequired
 };

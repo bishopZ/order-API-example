@@ -16,9 +16,11 @@ var CheckList = function CheckList(_ref) {
       mode = _ref.mode,
       editCheck = _ref.editCheck;
 
+
   var displayList = list.filter(function (item) {
     return item.closed === (mode !== 'open');
   });
+
   if (displayList.length < 1) return _react2.default.createElement(
     'h2',
     null,
@@ -35,7 +37,7 @@ var CheckList = function CheckList(_ref) {
       null,
       displayList.map(function (item, index) {
         return _react2.default.createElement(
-          'div',
+          'li',
           { key: index },
           _react2.default.createElement(
             'button',
@@ -120,17 +122,17 @@ var ControlBar = function (_React$Component) {
       var ViewStatus = _react2.default.createElement(
         'p',
         null,
-        'Viewing: ',
+        'Viewing:\xA0',
         _react2.default.createElement(
           'strong',
           null,
           'Open'
         ),
-        ' - ',
+        '\xA0-\xA0',
         _react2.default.createElement(
           'span',
           { onClick: function onClick() {
-              _this2.updateViewMode();
+              return _this2.updateViewMode();
             } },
           _react2.default.createElement(
             'a',
@@ -143,11 +145,11 @@ var ControlBar = function (_React$Component) {
         ViewStatus = _react2.default.createElement(
           'p',
           null,
-          'Viewing: ',
+          'Viewing:\xA0',
           _react2.default.createElement(
             'span',
             { onClick: function onClick() {
-                _this2.updateViewMode();
+                return _this2.updateViewMode();
               } },
             _react2.default.createElement(
               'a',
@@ -155,7 +157,7 @@ var ControlBar = function (_React$Component) {
               'Open'
             )
           ),
-          ' - ',
+          '\xA0-\xA0',
           _react2.default.createElement(
             'strong',
             null,
@@ -174,7 +176,7 @@ var ControlBar = function (_React$Component) {
             style: { marginTop: '2vw' },
             label: 'Create New Check',
             onClick: function onClick() {
-              _this2.createNewCheck();
+              return _this2.createNewCheck();
             }
           })
         ),
@@ -187,7 +189,7 @@ var ControlBar = function (_React$Component) {
               floatingLabelText: 'Table',
               value: this.state.currentTable,
               onChange: function onChange() {
-                _this2.updateTable();
+                return _this2.updateTable();
               }
             },
             tables.map(function (table, index) {
@@ -287,12 +289,12 @@ var EditForm = function EditForm(_ref) {
       _react2.default.createElement(
         'div',
         null,
-        'Check ID'
+        'Table '
       ),
       _react2.default.createElement(
         'div',
         null,
-        'Table '
+        'Check ID'
       ),
       _react2.default.createElement(
         'div',
@@ -311,13 +313,13 @@ var EditForm = function EditForm(_ref) {
       _react2.default.createElement(
         'div',
         null,
-        editId
+        '#',
+        editCheck.table.number
       ),
       _react2.default.createElement(
         'div',
         null,
-        '#',
-        editCheck.table.number
+        editId
       ),
       _react2.default.createElement(
         'div',
@@ -702,7 +704,7 @@ var Manager = _interopRequireWildcard(_dataManager);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var dataReducer = function dataReducer() {
+var Reducer = function Reducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Manager.defaultState;
   var action = arguments[1];
 
@@ -736,7 +738,7 @@ var dataReducer = function dataReducer() {
   return state;
 };
 
-module.exports = dataReducer;
+module.exports = Reducer;
 
 },{"./actions.js":4,"./dataManager.js":6}],8:[function(require,module,exports){
 'use strict';
@@ -832,11 +834,7 @@ var container = function container(Page) {
       _react2.default.createElement(
         _MuiThemeProvider2.default,
         null,
-        _react2.default.createElement(
-          'div',
-          { className: 'one-child' },
-          _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: container(_home2.default) })
-        )
+        _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: container(_home2.default) })
       )
     )
   )
@@ -938,11 +936,11 @@ HomePage.propTypes = {
   editCheck: _propTypes2.default.func.isRequired,
   data: _propTypes2.default.shape({
     documentPhase: _propTypes2.default.number.isRequired,
+    viewMode: _propTypes2.default.string.isRequired,
     tableList: _propTypes2.default.array,
     checkList: _propTypes2.default.array,
     itemList: _propTypes2.default.array,
     editItems: _propTypes2.default.array,
-    viewMode: _propTypes2.default.string.isRequired,
     editId: _propTypes2.default.string
   }).isRequired
 };

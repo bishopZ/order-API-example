@@ -13,25 +13,25 @@ export const initApplication = ()=>((dispatch)=>{
   // request api
   communication.getApiKey(({data})=>{
 
-    dispatch({ token: data, type: RECEIVED_API_KEY});
+    dispatch({ token: data, type: RECEIVED_API_KEY });
 
     dispatch((dispatch)=>{
       async.parallel([
         (callback)=>{
           communication.getTableList(({data})=>{
-            dispatch({ tableList: data, type: RECEIVED_TABLE_LIST});
+            dispatch({ tableList: data, type: RECEIVED_TABLE_LIST });
             callback(null);
           });
         },
         (callback)=>{
           communication.getCheckList(({data})=>{
-            dispatch({ checkList: data, type: RECEIVED_CHECK_LIST});
+            dispatch({ checkList: data, type: RECEIVED_CHECK_LIST });
             callback(null);
           });
         },
         (callback)=>{
           communication.getItemList(({data})=>{
-            dispatch({ itemList: data, type: RECEIVED_ITEM_LIST});
+            dispatch({ itemList: data, type: RECEIVED_ITEM_LIST });
             callback(null);
           });
         }

@@ -28,9 +28,7 @@ render(
     <ConnectedRouter history={history}>
       <Router>
         <MuiThemeProvider>
-          <div className="one-child">
-            <Route exact path="/" component={container(HomePage)}/>
-          </div>
+          <Route exact path="/" component={container(HomePage)}/>
         </MuiThemeProvider>
       </Router>
     </ConnectedRouter>

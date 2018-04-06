@@ -11,7 +11,6 @@ import {
 // helper function
 const dollarFormat = (price)=>(price.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,'));
 
-
 var EditForm = ({editId, checkList, itemList, editItems})=>{
   if (editId === '') return (<p></p>);
 
@@ -25,15 +24,16 @@ var EditForm = ({editId, checkList, itemList, editItems})=>{
 
   return (
     <section className="edit-form">
+
       <div className="left">
-        <div>Check ID</div>
         <div>Table </div>
+        <div>Check ID</div>
         <div>Tax</div>
         <div>Tip</div>
       </div>
       <div className="right">
-        <div>{editId}</div>
         <div>#{editCheck.table.number}</div>
+        <div>{editId}</div>
         <div>{editCheck.tax || 'not calculated'}</div>
         <div>{editCheck.tip || 'not calculated'}</div>
       </div>
