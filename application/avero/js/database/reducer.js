@@ -18,6 +18,8 @@ const dataReducer = (state = Manager.defaultState, action)=>{
     break;
   case Actions.RECEIVED_TABLE_LIST:
     Manager.updateTableList(action.tableList); break;
+  case Actions.RECEIVED_ITEM_LIST:
+    Manager.updateItemList(action.itemList); break;
   case Actions.BASE_DATA_RECIEVED:
     return Manager.initComplete();
   case Actions.UPDATE_VIEW_MODE:

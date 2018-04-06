@@ -6,6 +6,7 @@ export const BASE_DATA_RECIEVED = 'BASE_DATA_RECIEVED';
 export const RECEIVED_API_KEY = 'RECEIVED_API_KEY';
 export const RECEIVED_CHECK_LIST = 'RECEIVED_CHECK_LIST';
 export const RECEIVED_TABLE_LIST = 'RECEIVED_TABLE_LIST';
+export const RECEIVED_ITEM_LIST = 'RECEIVED_ITEM_LIST';
 
 export const initApplication = ()=>((dispatch)=>{
 
@@ -25,6 +26,12 @@ export const initApplication = ()=>((dispatch)=>{
         (callback)=>{
           communication.getCheckList(({data})=>{
             dispatch({ checkList: data, type: RECEIVED_CHECK_LIST});
+            callback(null);
+          });
+        },
+        (callback)=>{
+          communication.getItemList(({data})=>{
+            dispatch({ itemList: data, type: RECEIVED_ITEM_LIST});
             callback(null);
           });
         }

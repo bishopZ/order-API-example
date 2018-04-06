@@ -4,7 +4,6 @@ import request from 'superagent';
 import * as Manager from './dataManager.js';
 
 const PATH_BASE = 'https://check-api.herokuapp.com/';
-const STANDARD_DELAY = 1 * 1000; // 1 second
 
 // helper method
 const makeApiRequest = (method, path, data = null, callback)=>{
@@ -22,31 +21,33 @@ const communication = {
   getApiKey: (callback)=>{
     request.get('/api/token')
       .end((error, response)=>{
-        setTimeout(()=>{
-          callback({
-            data: response.text
-          });
-        }, STANDARD_DELAY);
+        callback({
+          data: response.text
+        });
       });
   },
 
   getCheckList: (callback)=>{
     makeApiRequest('get', 'checks', null, (error, response)=>{
-      setTimeout(()=>{
-        callback({
-          data: JSON.parse(response.text)
-        });
-      }, STANDARD_DELAY);
+      callback({
+        data: JSON.parse(response.text)
+      });
     });
   },
 
   getTableList: (callback)=>{
     makeApiRequest('get', 'tables', null, (error, response)=>{
-      setTimeout(()=>{
-        callback({
-          data: JSON.parse(response.text)
-        });
-      }, STANDARD_DELAY);
+      callback({
+        data: JSON.parse(response.text)
+      });
+    });
+  },
+
+  getItemList: (callback)=>{
+    makeApiRequest('get', 'items', null, (error, response)=>{
+      callback({
+        data: JSON.parse(response.text)
+      });
     });
   },
 

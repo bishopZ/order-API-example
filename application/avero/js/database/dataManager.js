@@ -5,7 +5,8 @@ export const defaultState = {
   viewMode: 'open',
   editId: '',
   checkList: [],
-  tableList: []
+  tableList: [],
+  itemList: []
 };
 
 // private state storage
@@ -38,6 +39,11 @@ export const updateCheckList = (checkList)=>{
 
 export const updateTableList = (tableList)=>{
   currentState.tableList = tableList;
+  linkChecksToTables();
+};
+
+export const updateItemList = (itemList)=>{
+  currentState.itemList = itemList;
   linkChecksToTables();
 };
 

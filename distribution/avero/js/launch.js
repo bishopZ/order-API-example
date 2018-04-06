@@ -406,7 +406,7 @@ module.exports = Navbar;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.editCheck = exports.EDIT_CHECK = exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
+exports.editCheck = exports.EDIT_CHECK = exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_ITEM_LIST = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
 
 var _async = require('async');
 
@@ -422,6 +422,7 @@ var BASE_DATA_RECIEVED = exports.BASE_DATA_RECIEVED = 'BASE_DATA_RECIEVED';
 var RECEIVED_API_KEY = exports.RECEIVED_API_KEY = 'RECEIVED_API_KEY';
 var RECEIVED_CHECK_LIST = exports.RECEIVED_CHECK_LIST = 'RECEIVED_CHECK_LIST';
 var RECEIVED_TABLE_LIST = exports.RECEIVED_TABLE_LIST = 'RECEIVED_TABLE_LIST';
+var RECEIVED_ITEM_LIST = exports.RECEIVED_ITEM_LIST = 'RECEIVED_ITEM_LIST';
 
 var initApplication = exports.initApplication = function initApplication() {
   return function (dispatch) {
@@ -446,6 +447,13 @@ var initApplication = exports.initApplication = function initApplication() {
             var data = _ref3.data;
 
             dispatch({ checkList: data, type: RECEIVED_CHECK_LIST });
+            callback(null);
+          });
+        }, function (callback) {
+          _communication2.default.getItemList(function (_ref4) {
+            var data = _ref4.data;
+
+            dispatch({ itemList: data, type: RECEIVED_ITEM_LIST });
             callback(null);
           });
         }], function () {
@@ -499,7 +507,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var PATH_BASE = 'https://check-api.herokuapp.com/';
-var STANDARD_DELAY = 1 * 1000; // 1 second
 
 // helper method
 var makeApiRequest = function makeApiRequest(method, path) {
@@ -519,31 +526,33 @@ var communication = {
 
   getApiKey: function getApiKey(callback) {
     _superagent2.default.get('/api/token').end(function (error, response) {
-      setTimeout(function () {
-        callback({
-          data: response.text
-        });
-      }, STANDARD_DELAY);
+      callback({
+        data: response.text
+      });
     });
   },
 
   getCheckList: function getCheckList(callback) {
     makeApiRequest('get', 'checks', null, function (error, response) {
-      setTimeout(function () {
-        callback({
-          data: JSON.parse(response.text)
-        });
-      }, STANDARD_DELAY);
+      callback({
+        data: JSON.parse(response.text)
+      });
     });
   },
 
   getTableList: function getTableList(callback) {
     makeApiRequest('get', 'tables', null, function (error, response) {
-      setTimeout(function () {
-        callback({
-          data: JSON.parse(response.text)
-        });
-      }, STANDARD_DELAY);
+      callback({
+        data: JSON.parse(response.text)
+      });
+    });
+  },
+
+  getItemList: function getItemList(callback) {
+    makeApiRequest('get', 'items', null, function (error, response) {
+      callback({
+        data: JSON.parse(response.text)
+      });
     });
   },
 
@@ -570,7 +579,8 @@ var defaultState = exports.defaultState = {
   viewMode: 'open',
   editId: '',
   checkList: [],
-  tableList: []
+  tableList: [],
+  itemList: []
 };
 
 // private state storage
@@ -609,6 +619,11 @@ var updateCheckList = exports.updateCheckList = function updateCheckList(checkLi
 
 var updateTableList = exports.updateTableList = function updateTableList(tableList) {
   currentState.tableList = tableList;
+  linkChecksToTables();
+};
+
+var updateItemList = exports.updateItemList = function updateItemList(itemList) {
+  currentState.itemList = itemList;
   linkChecksToTables();
 };
 
@@ -667,6 +682,8 @@ var dataReducer = function dataReducer() {
       break;
     case Actions.RECEIVED_TABLE_LIST:
       Manager.updateTableList(action.tableList);break;
+    case Actions.RECEIVED_ITEM_LIST:
+      Manager.updateItemList(action.itemList);break;
     case Actions.BASE_DATA_RECIEVED:
       return Manager.initComplete();
     case Actions.UPDATE_VIEW_MODE:
