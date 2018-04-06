@@ -34,6 +34,7 @@ class HomePage extends React.Component {
             checkList={this.props.data.checkList}
             itemList={this.props.data.itemList}
             editItems={this.props.data.editItems}
+            addItem={this.props.addItem}
           />
         </div>
       );
@@ -46,6 +47,7 @@ HomePage.propTypes = {
   createNewCheck: PropTypes.func.isRequired,
   updateViewMode: PropTypes.func.isRequired,
   editCheck: PropTypes.func.isRequired,
+  addItem: PropTypes.func.isRequired,
   data: PropTypes.shape({
     documentPhase: PropTypes.number.isRequired,
     viewMode: PropTypes.string.isRequired,

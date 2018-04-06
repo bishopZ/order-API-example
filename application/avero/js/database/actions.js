@@ -68,3 +68,9 @@ export const editCheck = (editId)=>((dispatch)=>{
     });
   });
 });
+
+export const addItem = (selectedItemId, editId)=>((dispatch)=>{
+  communication.addMenuItem(selectedItemId, editId, ()=>{
+    dispatch(editCheck(editId));
+  });
+});

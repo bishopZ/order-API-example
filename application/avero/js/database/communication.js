@@ -63,6 +63,12 @@ const communication = {
         data: JSON.parse(response.text).orderedItems
       });
     });
+  },
+
+  addMenuItem: (itemId, checkId, callback)=>{
+    makeApiRequest('put', 'checks/' + checkId + '/addItem', {itemId}, ()=>{
+      callback();
+    });
   }
 
 };

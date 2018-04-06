@@ -240,6 +240,8 @@ module.exports = ControlBar;
 },{"material-ui/MenuItem":208,"material-ui/RaisedButton":215,"material-ui/SelectField":217,"prop-types":277,"react":330}],3:[function(require,module,exports){
 'use strict';
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -264,165 +266,208 @@ var _Table = require('material-ui/Table');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 // helper function
 var dollarFormat = function dollarFormat(price) {
   return price.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
 };
 
-var EditForm = function EditForm(_ref) {
-  var editId = _ref.editId,
-      checkList = _ref.checkList,
-      itemList = _ref.itemList,
-      editItems = _ref.editItems;
+var EditForm = function (_React$Component) {
+  _inherits(EditForm, _React$Component);
 
-  if (editId === '') return _react2.default.createElement('p', null);
+  function EditForm() {
+    _classCallCheck(this, EditForm);
 
-  var editCheck = checkList.find(function (check) {
-    return check.id === editId;
-  });
+    return _possibleConstructorReturn(this, (EditForm.__proto__ || Object.getPrototypeOf(EditForm)).apply(this, arguments));
+  }
 
-  editItems = editItems.map(function (orderedItem) {
-    var itemDetails = itemList.find(function (item) {
-      return item.id === orderedItem.itemId;
-    });
-    orderedItem.item = itemDetails;
-    return orderedItem;
-  });
+  _createClass(EditForm, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      this.setState({ selectedItem: this.props.itemList[0].id });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
 
-  return _react2.default.createElement(
-    'section',
-    { className: 'edit-form' },
-    _react2.default.createElement(
-      'div',
-      { className: 'left' },
-      _react2.default.createElement(
-        'div',
-        null,
-        'Table '
-      ),
-      _react2.default.createElement(
-        'div',
-        null,
-        'Check ID'
-      ),
-      _react2.default.createElement(
-        'div',
-        null,
-        'Tax'
-      ),
-      _react2.default.createElement(
-        'div',
-        null,
-        'Tip'
-      )
-    ),
-    _react2.default.createElement(
-      'div',
-      { className: 'right' },
-      _react2.default.createElement(
-        'div',
-        null,
-        '#',
-        editCheck.table.number
-      ),
-      _react2.default.createElement(
-        'div',
-        null,
-        editId
-      ),
-      _react2.default.createElement(
-        'div',
-        null,
-        editCheck.tax || 'not calculated'
-      ),
-      _react2.default.createElement(
-        'div',
-        null,
-        editCheck.tip || 'not calculated'
-      )
-    ),
-    _react2.default.createElement(
-      'div',
-      { className: 'full' },
-      editItems.length > 0 && _react2.default.createElement(
-        'div',
-        { className: 'one-child' },
+      var _props = this.props,
+          editId = _props.editId,
+          checkList = _props.checkList,
+          itemList = _props.itemList,
+          editItems = _props.editItems;
+
+
+      if (editId === '') return _react2.default.createElement('p', null);
+
+      var editCheck = checkList.find(function (check) {
+        return check.id === editId;
+      });
+
+      editItems = editItems.map(function (orderedItem) {
+        var itemDetails = itemList.find(function (item) {
+          return item.id === orderedItem.itemId;
+        });
+        orderedItem.item = itemDetails;
+        return orderedItem;
+      });
+
+      return _react2.default.createElement(
+        'section',
+        { className: 'edit-form' },
         _react2.default.createElement(
-          _Table.Table,
-          null,
+          'div',
+          { className: 'left' },
           _react2.default.createElement(
-            _Table.TableHeader,
+            'div',
             null,
-            _react2.default.createElement(
-              _Table.TableRow,
-              null,
-              _react2.default.createElement(
-                _Table.TableHeaderColumn,
-                null,
-                'Price'
-              ),
-              _react2.default.createElement(
-                _Table.TableHeaderColumn,
-                null,
-                'Name'
-              )
-            )
+            'Table '
           ),
-          editItems.map(function (orderedItem, index) {
-            return _react2.default.createElement(
-              _Table.TableBody,
-              { key: index },
-              _react2.default.createElement(
-                _Table.TableRow,
-                null,
-                _react2.default.createElement(
-                  _Table.TableRowColumn,
-                  null,
-                  dollarFormat(orderedItem.item.price)
-                ),
-                _react2.default.createElement(
-                  _Table.TableRowColumn,
-                  null,
-                  orderedItem.item.name
-                )
-              )
-            );
-          })
+          _react2.default.createElement(
+            'div',
+            null,
+            'Check ID'
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            'Tax'
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            'Tip'
+          )
         ),
         _react2.default.createElement(
           'div',
-          { className: 'button-well' },
-          _react2.default.createElement(_RaisedButton2.default, { label: 'Void Selected Items' })
+          { className: 'right' },
+          _react2.default.createElement(
+            'div',
+            null,
+            '#',
+            editCheck.table.number
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            editId
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            editCheck.tax || 'not calculated'
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            editCheck.tip || 'not calculated'
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'full' },
+          editItems.length > 0 && _react2.default.createElement(
+            'div',
+            { className: 'one-child' },
+            _react2.default.createElement(
+              _Table.Table,
+              null,
+              _react2.default.createElement(
+                _Table.TableHeader,
+                null,
+                _react2.default.createElement(
+                  _Table.TableRow,
+                  null,
+                  _react2.default.createElement(
+                    _Table.TableHeaderColumn,
+                    null,
+                    'Price'
+                  ),
+                  _react2.default.createElement(
+                    _Table.TableHeaderColumn,
+                    null,
+                    'Name'
+                  )
+                )
+              ),
+              _react2.default.createElement(
+                _Table.TableBody,
+                null,
+                editItems.map(function (orderedItem, index) {
+                  return _react2.default.createElement(
+                    _Table.TableRow,
+                    { key: index },
+                    _react2.default.createElement(
+                      _Table.TableRowColumn,
+                      null,
+                      dollarFormat(orderedItem.item.price)
+                    ),
+                    _react2.default.createElement(
+                      _Table.TableRowColumn,
+                      null,
+                      orderedItem.item.name
+                    )
+                  );
+                })
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'button-well' },
+              _react2.default.createElement(_RaisedButton2.default, { label: 'Void Selected Items' })
+            )
+          ),
+          _react2.default.createElement(
+            _SelectField2.default,
+            {
+              floatingLabelText: 'New Menu Item',
+              value: this.state.selectedItem,
+              onChange: function onChange(e, i, v) {
+                return _this2.onSelectItem(v);
+              }
+            },
+            itemList.map(function (item) {
+              return _react2.default.createElement(_MenuItem2.default, { key: item.id, value: item.id, primaryText: item.name });
+            })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'button-well' },
+            _react2.default.createElement(_RaisedButton2.default, { label: 'Add Item', onClick: function onClick() {
+                return _this2.addItem();
+              } })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'button-well' },
+            _react2.default.createElement(_RaisedButton2.default, { label: 'Close Check' })
+          )
         )
-      ),
-      _react2.default.createElement(
-        _SelectField2.default,
-        {
-          floatingLabelText: 'New Menu Item',
-          value: itemList[0].id,
-          onChange: function onChange() {
-            return 0;
-          }
-        },
-        itemList.map(function (item) {
-          return _react2.default.createElement(_MenuItem2.default, { key: item.id, value: item.id, primaryText: item.name });
-        })
-      ),
-      _react2.default.createElement(
-        'div',
-        { className: 'button-well' },
-        _react2.default.createElement(_RaisedButton2.default, { label: 'Add Item' })
-      ),
-      _react2.default.createElement(
-        'div',
-        { className: 'button-well' },
-        _react2.default.createElement(_RaisedButton2.default, { label: 'Close Check' })
-      )
-    )
-  );
-};
+      );
+    }
+  }, {
+    key: 'onSelectItem',
+    value: function onSelectItem(value) {
+      this.setState({ selectedItem: value });
+    }
+  }, {
+    key: 'addItem',
+    value: function addItem() {
+      this.props.addItem(this.state.selectedItem, this.props.editId);
+    }
+  }]);
+
+  return EditForm;
+}(_react2.default.Component);
 
 EditForm.propTypes = {
+  addItem: _propTypes2.default.func.isRequired,
   editId: _propTypes2.default.string.isRequired,
   checkList: _propTypes2.default.array.isRequired,
   itemList: _propTypes2.default.array.isRequired,
@@ -437,7 +482,7 @@ module.exports = EditForm;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.editCheck = exports.EDIT_CHECK = exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_ITEM_LIST = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
+exports.addItem = exports.editCheck = exports.EDIT_CHECK = exports.updateViewMode = exports.UPDATE_VIEW_MODE = exports.createNewCheck = exports.NEW_CHECK = exports.initApplication = exports.RECEIVED_ITEM_LIST = exports.RECEIVED_TABLE_LIST = exports.RECEIVED_CHECK_LIST = exports.RECEIVED_API_KEY = exports.BASE_DATA_RECIEVED = undefined;
 
 var _async = require('async');
 
@@ -530,6 +575,14 @@ var editCheck = exports.editCheck = function editCheck(editId) {
   };
 };
 
+var addItem = exports.addItem = function addItem(selectedItemId, editId) {
+  return function (dispatch) {
+    _communication2.default.addMenuItem(selectedItemId, editId, function () {
+      dispatch(editCheck(editId));
+    });
+  };
+};
+
 },{"./communication.js":5,"async":11}],5:[function(require,module,exports){
 'use strict';
 
@@ -606,6 +659,12 @@ var communication = {
       callback({
         data: JSON.parse(response.text).orderedItems
       });
+    });
+  },
+
+  addMenuItem: function addMenuItem(itemId, checkId, callback) {
+    makeApiRequest('put', 'checks/' + checkId + '/addItem', { itemId: itemId }, function () {
+      callback();
     });
   }
 
@@ -928,7 +987,8 @@ var HomePage = function (_React$Component) {
               editId: this.props.data.editId,
               checkList: this.props.data.checkList,
               itemList: this.props.data.itemList,
-              editItems: this.props.data.editItems
+              editItems: this.props.data.editItems,
+              addItem: this.props.addItem
             })
           );
       }
@@ -943,6 +1003,7 @@ HomePage.propTypes = {
   createNewCheck: _propTypes2.default.func.isRequired,
   updateViewMode: _propTypes2.default.func.isRequired,
   editCheck: _propTypes2.default.func.isRequired,
+  addItem: _propTypes2.default.func.isRequired,
   data: _propTypes2.default.shape({
     documentPhase: _propTypes2.default.number.isRequired,
     viewMode: _propTypes2.default.string.isRequired,
