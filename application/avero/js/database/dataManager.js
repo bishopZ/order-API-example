@@ -22,18 +22,17 @@ export const apiToken = ()=>(currentRefrence.token);
 
 export const updateToken = (token)=>{
   currentRefrence.token = token;
-  currentState.documentPhase = 1;
-  return returnNewState();
 };
 
 export const updateCheckList = (checkList)=>{
   currentState.checkList = checkList;
-  currentState.documentPhase = 2;
-  return returnNewState();  
 };
 
 export const updateTableList = (tableList)=>{
   currentState.tableList = tableList;
-  currentState.documentPhase = 3;
-  return returnNewState();  
+};
+
+export const initComplete = ()=>{
+  currentState.documentPhase = 1;
+  return returnNewState();
 };

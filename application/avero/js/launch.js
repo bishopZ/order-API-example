@@ -23,8 +23,8 @@ const container = (Page) => {
   )(Page);
 };
 
-// render the provided connection to the rendered router route
-// with a navbar
+// render the provided connection to the rendered router themed route
+// ...with a navbar
 render(
   <Provider store={store}>
     <ConnectedRouter history={history}>

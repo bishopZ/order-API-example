@@ -6,18 +6,17 @@ import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
-
 var EditForm = ({editId, tables})=>{
   return (
     <section className="edit-form">
       
       <div>{editId}</div>
       <div><SelectField
-        style={{width: '100%'}} 
+        style={{width: '100%'}}
         floatingLabelText="Table"
         value={tables[0].id}
       >
-        { tables.map((table, index)=>{
+        {tables.map((table, index)=>{
           return (<MenuItem key={index} value={table.id} primaryText={'Table #' + table.number} />);
         })}
       </SelectField></div>

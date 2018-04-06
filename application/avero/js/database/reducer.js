@@ -4,15 +4,21 @@ import * as Manager from './dataManager.js';
 
 const dataReducer = (state = Manager.defaultState, action)=>{
 
+  console.log(action);
+
   switch (action.type) { 
   case Actions.RECEIVED_API_KEY:
-    return Manager.updateToken(action.token);
+    Manager.updateToken(action.token); break;
   case Actions.RECEIVED_CHECK_LIST:
-    return Manager.updateCheckList(action.checkList);
+    Manager.updateCheckList(action.checkList); break;
   case Actions.RECEIVED_TABLE_LIST:
-    return Manager.updateTableList(action.tableList);
-  default: return state;
+    Manager.updateTableList(action.tableList); break;
+  case Actions.BASE_DATA_RECIEVED:
+    return Manager.initComplete();
+  default: break;
   } 
+
+  return state;
 
 };
 

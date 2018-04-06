@@ -8,29 +8,19 @@ import EditForm from '../components/editform.js';
 
 class HomePage extends React.Component {
   componentWillMount(){
-    this.props.requestApiKey();
-  }
-  componentWillUpdate(){
-    if (this.props.data.documentPhase === 1) {
-      this.props.requestCheckList();
-    } else if (this.props.data.documentPhase === 2) {
-      this.props.requestTableList();
-    }
+    this.props.initApplication();
   }
   render(){
     switch(this.props.data.documentPhase){
     case 0:
-      return (<h1>Authorizing</h1>);
+      return (<h1>Loading Data</h1>);
     case 1: 
-      return (<h1>Getting Check List</h1>);
-    case 2: 
-      return (<h1>Getting Table List</h1>);
-    case 3:
       return (
         <div className="container">
           <ControlBar 
             mode={this.props.data.viewMode}
             tables={this.props.data.tableList}
+            createNewCheck={this.props.createNewCheck}
           />
           <CheckList 
             mode={this.props.data.viewMode} 
@@ -47,9 +37,8 @@ class HomePage extends React.Component {
 }
 
 HomePage.propTypes = {
-  requestApiKey: PropTypes.func.isRequired,
-  requestCheckList: PropTypes.func.isRequired,
-  requestTableList: PropTypes.func.isRequired,
+  initApplication: PropTypes.func.isRequired,
+  createNewCheck: PropTypes.func.isRequired,
   data: PropTypes.shape({
     documentPhase: PropTypes.number.isRequired,
     tableList: PropTypes.array,

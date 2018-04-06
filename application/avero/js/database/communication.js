@@ -7,7 +7,7 @@ const PATH_BASE = 'https://check-api.herokuapp.com/';
 const STANDARD_DELAY = 1 * 1000; // 1 second
 
 // helper method
-const makeApiRequest = (method, path, callback, data = null)=>{
+const makeApiRequest = (method, path, data = null, callback)=>{
   const apiRequest = request[method](PATH_BASE + path);
   apiRequest.set('Authorization', Manager.apiToken());
   if (data !== null) {
@@ -19,37 +19,40 @@ const makeApiRequest = (method, path, callback, data = null)=>{
 // API communication interface
 const communication = {
 
-  getApiKey: (action, dispatch)=>{
+  getApiKey: (callback)=>{
     request.get('/api/token')
       .end((error, response)=>{
         setTimeout(()=>{
-          dispatch({
-            type: action,
-            token: response.text
+          callback({
+            data: response.text
           });
         }, STANDARD_DELAY);
       });
   },
 
-  getCheckList: (action, dispatch)=>{
-    makeApiRequest('get', 'checks', (error, response)=>{
+  getCheckList: (callback)=>{
+    makeApiRequest('get', 'checks', null, (error, response)=>{
       setTimeout(()=>{
-        dispatch({
-          type: action,
-          checkList: JSON.parse(response.text)
+        callback({
+          data: JSON.parse(response.text)
         });
       }, STANDARD_DELAY);
     });
   },
 
-  getTableList: (action, dispatch)=>{
-    makeApiRequest('get', 'tables', (error, response)=>{
+  getTableList: (callback)=>{
+    makeApiRequest('get', 'tables', null, (error, response)=>{
       setTimeout(()=>{
-        dispatch({
-          type: action,
-          tableList: JSON.parse(response.text)
+        callback({
+          data: JSON.parse(response.text)
         });
       }, STANDARD_DELAY);
+    });
+  },
+
+  createNewCheck: (tableId, callback)=>{
+    makeApiRequest('post', 'checks', {tableId}, ()=>{
+      this.getCheckList(callback);
     });
   }
 
