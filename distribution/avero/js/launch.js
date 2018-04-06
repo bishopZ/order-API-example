@@ -255,7 +255,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var EditForm = function EditForm(_ref) {
   var editId = _ref.editId,
-      checkList = _ref.checkList;
+      checkList = _ref.checkList,
+      itemList = _ref.itemList;
 
   if (editId === '') return _react2.default.createElement('p', null);
 
@@ -268,100 +269,132 @@ var EditForm = function EditForm(_ref) {
     { className: 'edit-form' },
     _react2.default.createElement(
       'div',
-      null,
-      'Check ID: ',
-      editId
-    ),
-    _react2.default.createElement(
-      'div',
-      null,
-      'Table #',
-      editCheck.table.number
-    ),
-    _react2.default.createElement(
-      'div',
-      null,
-      'Tax: ',
-      editCheck.tax || 'not calculated'
-    ),
-    _react2.default.createElement(
-      'div',
-      null,
-      'Tip: ',
-      editCheck.tip || 'not calculated'
-    ),
-    _react2.default.createElement(
-      'div',
-      null,
-      'Menu Items'
-    ),
-    _react2.default.createElement(
-      _Table.Table,
-      null,
+      { className: 'left' },
       _react2.default.createElement(
-        _Table.TableHeader,
+        'div',
+        null,
+        'Check ID'
+      ),
+      _react2.default.createElement(
+        'div',
+        null,
+        'Table '
+      ),
+      _react2.default.createElement(
+        'div',
+        null,
+        'Tax'
+      ),
+      _react2.default.createElement(
+        'div',
+        null,
+        'Tip'
+      )
+    ),
+    _react2.default.createElement(
+      'div',
+      { className: 'right' },
+      _react2.default.createElement(
+        'div',
+        null,
+        editId
+      ),
+      _react2.default.createElement(
+        'div',
+        null,
+        '#',
+        editCheck.table.number
+      ),
+      _react2.default.createElement(
+        'div',
+        null,
+        editCheck.tax || 'not calculated'
+      ),
+      _react2.default.createElement(
+        'div',
+        null,
+        editCheck.tip || 'not calculated'
+      )
+    ),
+    _react2.default.createElement(
+      'div',
+      { className: 'full' },
+      _react2.default.createElement(
+        _Table.Table,
         null,
         _react2.default.createElement(
-          _Table.TableRow,
+          _Table.TableHeader,
           null,
           _react2.default.createElement(
-            _Table.TableHeaderColumn,
+            _Table.TableRow,
             null,
-            'ID'
-          ),
+            _react2.default.createElement(
+              _Table.TableHeaderColumn,
+              null,
+              'ID'
+            ),
+            _react2.default.createElement(
+              _Table.TableHeaderColumn,
+              null,
+              'Name'
+            )
+          )
+        ),
+        _react2.default.createElement(
+          _Table.TableBody,
+          null,
           _react2.default.createElement(
-            _Table.TableHeaderColumn,
+            _Table.TableRow,
             null,
-            'Name'
+            _react2.default.createElement(
+              _Table.TableRowColumn,
+              null,
+              '1'
+            ),
+            _react2.default.createElement(
+              _Table.TableRowColumn,
+              null,
+              'Corn Soup'
+            )
           )
         )
       ),
       _react2.default.createElement(
-        _Table.TableBody,
-        null,
-        _react2.default.createElement(
-          _Table.TableRow,
-          null,
-          _react2.default.createElement(
-            _Table.TableRowColumn,
-            null,
-            '1'
-          ),
-          _react2.default.createElement(
-            _Table.TableRowColumn,
-            null,
-            'Corn Soup'
-          )
-        )
-      )
-    ),
-    _react2.default.createElement(
-      'div',
-      null,
+        'div',
+        { className: 'button-well' },
+        _react2.default.createElement(_RaisedButton2.default, { label: 'Void Selected Items' })
+      ),
       _react2.default.createElement(
         _SelectField2.default,
         {
           floatingLabelText: 'New Menu Item',
-          value: 0,
+          value: itemList[0].id,
           onChange: function onChange() {
             return 0;
           }
         },
-        _react2.default.createElement(_MenuItem2.default, { value: 0, primaryText: 'None' })
+        itemList.map(function (item) {
+          return _react2.default.createElement(_MenuItem2.default, { key: item.id, value: item.id, primaryText: item.name });
+        })
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'button-well' },
+        _react2.default.createElement(_RaisedButton2.default, { label: 'Add Item' })
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'button-well' },
+        _react2.default.createElement(_RaisedButton2.default, { label: 'Close Check' })
       )
-    ),
-    _react2.default.createElement(
-      'div',
-      null,
-      _react2.default.createElement(_RaisedButton2.default, { style: { float: 'right' }, label: 'Close Check' }),
-      _react2.default.createElement(_RaisedButton2.default, { style: { float: 'right' }, label: 'Add Item' })
     )
   );
 };
 
 EditForm.propTypes = {
   editId: _propTypes2.default.string.isRequired,
-  checkList: _propTypes2.default.array.isRequired
+  checkList: _propTypes2.default.array.isRequired,
+  itemList: _propTypes2.default.array.isRequired
 };
 
 module.exports = EditForm;
@@ -886,7 +919,8 @@ var HomePage = function (_React$Component) {
             }),
             _react2.default.createElement(_editform2.default, {
               editId: this.props.data.editId,
-              checkList: this.props.data.checkList
+              checkList: this.props.data.checkList,
+              itemList: this.props.data.itemList
             })
           );
       }
@@ -905,6 +939,7 @@ HomePage.propTypes = {
     documentPhase: _propTypes2.default.number.isRequired,
     tableList: _propTypes2.default.array,
     checkList: _propTypes2.default.array,
+    itemList: _propTypes2.default.array,
     viewMode: _propTypes2.default.string.isRequired,
     editId: _propTypes2.default.string
   }).isRequired

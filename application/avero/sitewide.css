@@ -28,3 +28,17 @@ hr { height: 1px; border: none; background-color: #ddd; }
   & > p { float: left; margin-left: 2vw; padding-top: 2vw; }
   & > div { float: right; margin-right: 2vw; text-align: left; }
 }
+
+.edit-form {
+  border: 1px solid #dfdfdf; padding: 2vw;
+  display: grid;
+  grid-template-columns: 20% 80%;
+  grid-gap: 10px;
+  grid-template-rows: 1fr 100%;
+
+  .left, .right {}
+  .left { grid-column: 1 / 1; grid-row: 1 / 1; font-weight: bold; }
+  .right { grid-column: 2 / 2; grid-row: 1 / 1; }
+  .full { grid-column: 1 / 3; grid-row: 2 / 2; }
+  .button-well { text-align: right; padding: 2vw 0; border-bottom: 1px solid #dfdfdf; }
+}
