@@ -333,52 +333,56 @@ var EditForm = function EditForm(_ref) {
     _react2.default.createElement(
       'div',
       { className: 'full' },
-      _react2.default.createElement(
-        _Table.Table,
-        null,
+      editItems.length > 0 && _react2.default.createElement(
+        'div',
+        { className: 'one-child' },
         _react2.default.createElement(
-          _Table.TableHeader,
+          _Table.Table,
           null,
           _react2.default.createElement(
-            _Table.TableRow,
+            _Table.TableHeader,
             null,
-            _react2.default.createElement(
-              _Table.TableHeaderColumn,
-              null,
-              'Price'
-            ),
-            _react2.default.createElement(
-              _Table.TableHeaderColumn,
-              null,
-              'Name'
-            )
-          )
-        ),
-        editItems.map(function (orderedItem, index) {
-          return _react2.default.createElement(
-            _Table.TableBody,
-            { key: index },
             _react2.default.createElement(
               _Table.TableRow,
               null,
               _react2.default.createElement(
-                _Table.TableRowColumn,
+                _Table.TableHeaderColumn,
                 null,
-                dollarFormat(orderedItem.item.price)
+                'Price'
               ),
               _react2.default.createElement(
-                _Table.TableRowColumn,
+                _Table.TableHeaderColumn,
                 null,
-                orderedItem.item.name
+                'Name'
               )
             )
-          );
-        })
-      ),
-      _react2.default.createElement(
-        'div',
-        { className: 'button-well' },
-        _react2.default.createElement(_RaisedButton2.default, { label: 'Void Selected Items' })
+          ),
+          editItems.map(function (orderedItem, index) {
+            return _react2.default.createElement(
+              _Table.TableBody,
+              { key: index },
+              _react2.default.createElement(
+                _Table.TableRow,
+                null,
+                _react2.default.createElement(
+                  _Table.TableRowColumn,
+                  null,
+                  dollarFormat(orderedItem.item.price)
+                ),
+                _react2.default.createElement(
+                  _Table.TableRowColumn,
+                  null,
+                  orderedItem.item.name
+                )
+              )
+            );
+          })
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'button-well' },
+          _react2.default.createElement(_RaisedButton2.default, { label: 'Void Selected Items' })
+        )
       ),
       _react2.default.createElement(
         _SelectField2.default,

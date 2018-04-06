@@ -4,13 +4,8 @@ import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
+import { 
+  Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn
 } from 'material-ui/Table';
 
 // helper function
@@ -45,26 +40,30 @@ var EditForm = ({editId, checkList, itemList, editItems})=>{
 
       <div className="full">
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHeaderColumn>Price</TableHeaderColumn>
-              <TableHeaderColumn>Name</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
-          {editItems.map((orderedItem, index)=>(
-            <TableBody key={index}>
-              <TableRow>
-                <TableRowColumn>{dollarFormat(orderedItem.item.price)}</TableRowColumn>
-                <TableRowColumn>{orderedItem.item.name}</TableRowColumn>
-              </TableRow>
-            </TableBody>
-          ))}
-        </Table>
-
-        <div className="button-well">
-          <RaisedButton label="Void Selected Items" />
-        </div>
+        {editItems.length > 0 &&
+          <div className="one-child">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHeaderColumn>Price</TableHeaderColumn>
+                  <TableHeaderColumn>Name</TableHeaderColumn>
+                </TableRow>
+              </TableHeader>
+              {editItems.map((orderedItem, index)=>(
+                <TableBody key={index}>
+                  <TableRow>
+                    <TableRowColumn>{dollarFormat(orderedItem.item.price)}</TableRowColumn>
+                    <TableRowColumn>{orderedItem.item.name}</TableRowColumn>
+                  </TableRow>
+                </TableBody>
+              ))}
+            </Table>
+          
+            <div className="button-well">
+              <RaisedButton label="Void Selected Items" />
+            </div>
+          </div>
+        }
 
         <SelectField
           floatingLabelText="New Menu Item"
