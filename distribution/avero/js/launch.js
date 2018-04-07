@@ -651,7 +651,10 @@ var closeCheck = exports.closeCheck = function closeCheck(editId) {
         var data = _ref7.data;
 
         dispatch({ checkList: data, type: RECEIVED_CHECK_LIST });
-        dispatch({ type: BASE_DATA_RECIEVED });
+        dispatch(function (dispatch) {
+          // _.defer
+          dispatch({ type: BASE_DATA_RECIEVED });
+        });
       });
     });
   };
@@ -787,7 +790,7 @@ var defaultState = exports.defaultState = {
 };
 
 // private state storage
-var currentState = defaultState;
+var currentState = Object.assign({}, defaultState);
 var currentRefrence = {
   token: null
 };
@@ -827,7 +830,6 @@ var updateTableList = exports.updateTableList = function updateTableList(tableLi
 
 var updateItemList = exports.updateItemList = function updateItemList(itemList) {
   currentState.itemList = itemList;
-  linkChecksToTables();
 };
 
 var initComplete = exports.initComplete = function initComplete() {

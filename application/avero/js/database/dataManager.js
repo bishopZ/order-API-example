@@ -11,7 +11,7 @@ export const defaultState = {
 };
 
 // private state storage
-var currentState = defaultState;
+var currentState = Object.assign({}, defaultState);
 var currentRefrence = {
   token: null
 };
@@ -45,7 +45,6 @@ export const updateTableList = (tableList)=>{
 
 export const updateItemList = (itemList)=>{
   currentState.itemList = itemList;
-  linkChecksToTables();
 };
 
 export const initComplete = ()=>{

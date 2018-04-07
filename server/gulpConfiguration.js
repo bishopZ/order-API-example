@@ -27,9 +27,7 @@ const pages = [
   {
     path: 'avero',
     build: builds.react,
-    entryPoints: [ 'js/launch.js' ],
-    sass: libs.bootstrapcss,
-    fonts: libs.fontawesome
+    entryPoints: [ 'js/launch.js' ]
   }
 ];
 

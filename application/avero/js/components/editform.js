@@ -116,9 +116,9 @@ class EditForm extends React.Component {
     ));
     this.setState({voidable: filteredRows});
   }
-  isSelected(index) (
-    this.state.voidable.indexOf(index) !== -1
-  )
+  isSelected(index) {
+    return this.state.voidable.indexOf(index) !== -1;
+  }
   voidItems() {
     if (this.state.voidable.length) {
       const voidableItems = this.state.voidable.map((itemIndex)=>(this.props.editItems[itemIndex].id));

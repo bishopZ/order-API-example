@@ -36,7 +36,7 @@ export const initApplication = ()=>((dispatch)=>{
         }
       ],
       ()=>{
-        dispatch({type: BASE_DATA_RECIEVED});
+        dispatch({type: BASE_DATA_RECIEVED });
       });
 
     });
@@ -47,7 +47,7 @@ export const NEW_CHECK = 'NEW_CHECK';
 export const createNewCheck = (tableId)=>((dispatch)=>{
   communication.createNewCheck(tableId, ()=>{
     communication.getCheckList(({data})=>{
-      dispatch({ checkList: data, tableId, type: RECEIVED_CHECK_LIST});
+      dispatch({ checkList: data, tableId, type: RECEIVED_CHECK_LIST });
     });
   });
 });
@@ -85,7 +85,9 @@ export const closeCheck = (editId)=>((dispatch)=>{
   communication.closeCheck(editId, ()=>{
     communication.getCheckList(({data})=>{
       dispatch({ checkList: data, type: RECEIVED_CHECK_LIST });
-      dispatch({ type: BASE_DATA_RECIEVED});
+      dispatch((dispatch)=>{ // _.defer
+        dispatch({ type: BASE_DATA_RECIEVED });
+      });
     });
   });
 });
